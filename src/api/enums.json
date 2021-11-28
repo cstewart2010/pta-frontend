@@ -1,0 +1,45 @@
+{
+    "METHODS": {
+        "GET": "GET",
+        "POST": "POST",
+        "PUT": "PUT",
+        "DELETE": "DELETE"
+    },
+    "STATUSES": [
+        "FAINTED",
+        "NORMAL",
+        "ASLEEP",
+        "BADLYPOISONED",
+        "BURNED",
+        "FROZEN",
+        "PARALYZED",
+        "POISONED"
+    ],
+    "GENDERS": [
+        "GENDERLESS",
+        "MALE",
+        "FEMALE"
+    ],
+    "NATURES": [
+        "LONELY",
+        "BRAVE",
+        "ADAMANT",
+        "NAUGHTY",
+        "BOLD",
+        "RELAXED",
+        "IMPISH",
+        "LAX",
+        "TIMID",
+        "HASTY",
+        "JOLLY",
+        "NAIVE",
+        "MODEST",
+        "MILD",
+        "QUIET",
+        "RASH",
+        "CALM",
+        "GENTLE",
+        "SASSY",
+        "CAREFUL"
+    ]
+}
