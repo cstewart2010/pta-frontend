@@ -9,14 +9,21 @@ import {NATURES, GENDERS, STATUSES} from './enums.json'
  * @param {String} sessionAuth the user's pta-session-auth
  * @returns An array with null reference in the first position and the response in the second position
  */
- export async function requestHandler(endpoint, method, activityToken, sessionAuth, data) {
+ export async function requestHandler(endpoint, method, {activityToken, sessionAuth, data, contentType}) {
     let parsedResponse = null;
     
     let headers = {}
     if (activityToken){
-        headers = {'pta-activity-token': activityToken, 'pta-session-auth': sessionAuth}
+        headers = {'pta-activity-token': activityToken, 'pta-session-auth': sessionAuth};
+    }
+    if (contentType){
+        headers['Content-Type'] = contentType;
+    }
+    else {
+        headers['Content-Type'] = 'text/plain';
     }
 
+    alert(JSON.stringify(headers));
     const config = {headers}
     switch (method.toUpperCase()){
         case "GET":
