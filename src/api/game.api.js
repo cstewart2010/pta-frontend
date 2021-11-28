@@ -63,7 +63,7 @@ export async function createNewGame(gmUsername, gmPassword, gameSessionPassword,
         endpoint = `${endpoint}&nickname=${nickname}`;
     }
 
-    return await requestHandler(endpoint, METHODS.POST, {});
+    return await requestHandler(endpoint, METHODS.POST);
 }
 
 /**
@@ -75,13 +75,8 @@ export async function importGame(importFile){
     nullChecker(importFile, 'importFile');
     const data = new FormData();
     data.append("json", importFile);
-    const config = {
-        headers: {
-            'Content-Type': 'multipart/form-data'
-        }
-    };
 
-    return await requestHandler(`${GAME_RESOURCE}/import`, METHODS.POST, config, data);
+    return await requestHandler(`${GAME_RESOURCE}/import`, METHODS.POST, {data, contentType: 'multipart/form-data'});
 }
 
 /**
@@ -116,7 +111,7 @@ export async function createWildPokemon(gameMasterId, pokemon, nature, gender, s
         endpoint = `${endpoint}&nickname=${nickname}`
     }
 
-    return await requestHandler(endpoint, METHODS.POST, activityToken, sessionAuth)
+    return await requestHandler(endpoint, METHODS.POST, {activityToken, sessionAuth})
 }
 
 /**
@@ -177,7 +172,7 @@ export async function endGame(gameId, gameMasterId, activityToken, sessionAuth){
     nullChecker(activityToken, 'activityToken');
     nullChecker(sessionAuth, 'sessionAuth');
 
-    return await requestHandler(`${GAME_RESOURCE}/${gameId}/end?gameMasterId=${gameMasterId}`, METHODS.PUT, activityToken, sessionAuth);
+    return await requestHandler(`${GAME_RESOURCE}/${gameId}/end?gameMasterId=${gameMasterId}`, METHODS.PUT, {activityToken, sessionAuth});
 }
 
 /**
@@ -194,7 +189,7 @@ export async function addNpcs(gameId, npcList, activityToken, sessionAuth){
     nullChecker(activityToken, 'activityToken');
     nullChecker(sessionAuth, 'sessionAuth');
 
-    return await requestHandler(`${GAME_RESOURCE}/${gameId}/addNpcs?npcList=${npcList}`, METHODS.PUT, activityToken, sessionAuth);
+    return await requestHandler(`${GAME_RESOURCE}/${gameId}/addNpcs?npcList=${npcList}`, METHODS.PUT, {activityToken, sessionAuth});
 }
 
 /**
@@ -211,7 +206,7 @@ export async function removeNpcs(gameId, npcList, activityToken, sessionAuth){
     nullChecker(activityToken, 'activityToken');
     nullChecker(sessionAuth, 'sessionAuth');
 
-    return await requestHandler(`${GAME_RESOURCE}/${gameId}/removeNpcs?npcList=${npcList}`, METHODS.PUT, activityToken, sessionAuth);
+    return await requestHandler(`${GAME_RESOURCE}/${gameId}/removeNpcs?npcList=${npcList}`, METHODS.PUT, {activityToken, sessionAuth});
 }
 
 /**
@@ -244,7 +239,7 @@ export async function exportGame(gameId, gameMasterId, gameSessionPassword, acti
     nullChecker(sessionAuth, 'sessionAuth');
     
     const endpoint = `${GAME_RESOURCE}/${gameId}/export?gameMasterId=${gameMasterId}&gameSessionPassword=${gameSessionPassword}`;
-    return await requestHandler(endpoint, METHODS.DELETE, activityToken, sessionAuth);
+    return await requestHandler(endpoint, METHODS.DELETE, {activityToken, sessionAuth});
 }
 
 /**
