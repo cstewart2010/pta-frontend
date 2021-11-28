@@ -1,15 +1,22 @@
 import axios from 'axios';
 import {NATURES, GENDERS, STATUSES} from './enums.json'
 
+const client = axios.create();
+client.interceptors.response.use(dataUpdater);
+
 /**
  * Handles request for PTA
+ * @typedef {Object} Options 
+ * @property {String} activityToken the user's pta-activity-token
+ * @property {String} sessionAuth the user's pta-session-auth
+ * @property {Object} data
+ * @property {String} contentType
  * @param {String} endpoint - endpoint to hit
  * @param {String} method - method to hit endpoint with
- * @param {String} activityToken the user's pta-activity-token
- * @param {String} sessionAuth the user's pta-session-auth
+ * @param {Options} options - additional optional parameters
  * @returns An array with null reference in the first position and the response in the second position
  */
- export async function requestHandler(endpoint, method, {activityToken, sessionAuth, data, contentType}) {
+ export async function requestHandler(endpoint, method, {activityToken, sessionAuth, data, contentType}={}) {
     let parsedResponse = null;
     
     let headers = {}
@@ -23,20 +30,19 @@ import {NATURES, GENDERS, STATUSES} from './enums.json'
         headers['Content-Type'] = 'text/plain';
     }
 
-    alert(JSON.stringify(headers));
-    const config = {headers}
+    const config = {headers};
     switch (method.toUpperCase()){
         case "GET":
-            parsedResponse = await axios.get(endpoint, config).then(dataUpdater);
+            parsedResponse = await client.get(endpoint, config).catch(errorHandler);
             break;
         case "POST":
-            parsedResponse = await axios.post(endpoint, data, config).then(dataUpdater);
+            parsedResponse = await client.post(endpoint, data, config).catch(errorHandler);
             break;
         case "PUT":
-            parsedResponse = await axios.put(endpoint, data, config).then(dataUpdater);
+            parsedResponse = await client.put(endpoint, data, config).catch(errorHandler);
             break;
         case "DELETE":
-            parsedResponse = await axios.delete(endpoint, config).then(dataUpdater);
+            parsedResponse = await client.delete(endpoint, config).catch(errorHandler);
             break;
         default:
             throw `Argument was out of range: ${method}`
@@ -106,4 +112,12 @@ const dataUpdater = response => {
         status: response.status,
         headers: response.headers
     }
+}
+
+/**
+ * Handles errors by alerting the client
+ * @param {any} error 
+ */
+const errorHandler = error => {
+    alert(JSON.stringify(error));
 }
