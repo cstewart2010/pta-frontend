@@ -29,10 +29,7 @@
         methods: {
             async createGame() {
                 await this.deleteCreatedGame();
-                const response = await createNewGame("test", "test", "test")
-                    .catch(error => {
-                        alert(JSON.stringify(error));
-                    });
+                const response = await createNewGame("test", "test", "test");
                 if (response.status === 200){
                     this.gameId = response.data.gameId;
                     this.gmId = response.data.gameMaster.trainerId;
@@ -41,23 +38,13 @@
                 }
             },
             async getGame() {
-                const response = await findGameById(this.gameId)
-                    .catch(error => {
-                        alert(JSON.stringify(error));
-                    });
-
+                const response = await findGameById(this.gameId);
                 alert(JSON.stringify(response));
             },
             async deleteCreatedGame(){
                 if (this.gameId && this.gmId){
-                    await endGame(this.gameId, this.gmId, this.ptaActivityToken, this.ptaSessionAuth)
-                    .catch(error => {
-                        alert(JSON.stringify(error));
-                    })
-                    await deleteGame(this.gameId, this.gmId, "test")
-                    .catch(error => {
-                        alert(JSON.stringify(error));
-                    });
+                    await endGame(this.gameId, this.gmId, this.ptaActivityToken, this.ptaSessionAuth);
+                    await deleteGame(this.gameId, this.gmId, "test");
 
                     this.gameId = null;
                     this.gmId = null;
