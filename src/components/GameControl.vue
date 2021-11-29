@@ -9,12 +9,20 @@
                 <button @click="getGame">Get a Game's data</button>
                 <button @click="deleteCreatedGame">Delete current game</button>
             </div>
+            <div>
+                <select>
+                    <option v-for="(pokemon, index) in pokedex" v-bind:key="index" v-bind:id="pokemon.name" @click="getPokemonFromPokedex(pokemon.name)">
+                    {{ pokemon.name }}
+                    </option>
+                </select>
+            </div>
         </div>
     </div>
 </template>
 
 <script>
     import { createNewGame, deleteGame, endGame, findGameById } from "../api/game.api";
+    import { getAllPokemon, getPokemon } from '../api/pokedex.api';
 
     export default {
         name: "GameControl",
@@ -23,8 +31,12 @@
                 gameId: null,
                 gmId: null,
                 ptaActivityToken: null,
-                ptaSessionAuth: null
+                ptaSessionAuth: null,
+                pokedex: null
             }
+        },
+        mounted:function(){
+                getAllPokemon().then(response => { this.pokedex = response.data.results; })
         },
         methods: {
             async createGame() {
@@ -49,6 +61,11 @@
                     this.gameId = null;
                     this.gmId = null;
                 }
+            },
+            async getPokemonFromPokedex(pokemon){
+                await getPokemon(pokemon).then(reponse => {
+                    alert(JSON.stringify(reponse.data));
+                })
             }
         }
     }
