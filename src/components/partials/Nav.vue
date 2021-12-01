@@ -21,17 +21,26 @@
         <router-link to="/" class="navbar-item">Landing</router-link>
         <router-link to="/about" class="navbar-item">About</router-link>
       </div>
-      <div class="navbar-end">
+      <div class="navbar-end" v-if="isAuthenticated">
         <div class="navbar-item">
           <div class="buttons">
-            <a class="button is-dark">
+            <a class="button is-dark" @click="toGames">
               <strong>Search for Game</strong>
             </a>
-            <a class="button is-dark">
+            <a class="button is-dark" @click="toGM">
               <strong>Create a New Game</strong>
             </a>
-            <a class="button is-dark">
+            <a class="button is-dark" @click="toGM">
               <strong>Start Session</strong>
+            </a>
+          </div>
+        </div>
+      </div>
+      <div class="navbar-end" v-else>
+        <div class="navbar-item">
+          <div class="buttons">
+            <a class="button is-dark" @click="logout">
+              <strong>Log out</strong>
             </a>
           </div>
         </div>
@@ -40,8 +49,30 @@
   </nav>
 </template>
 <script>
+  import {checkStorage} from '../../utils/localStorage'
   export default {
     name: 'Nav',
+    data (){
+      return {
+        isAuthenticated: false
+      }
+    },
+    mounted:function(){
+      this.isAuthenticated = checkStorage().needsToAuthenticate;
+    },
+    methods: {
+      toGM(){
+        this.$router.push({
+          name: 'Registration',
+          params: {
+            isGM: true
+          }
+        });
+      },
+      toGames(){
+        this.$router.push('Games');
+      }
+    }
   };
 </script>
 <style lang="scss" scoped>
