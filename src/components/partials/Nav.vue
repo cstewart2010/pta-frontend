@@ -24,14 +24,20 @@
       <div class="navbar-end">
         <div class="navbar-item">
           <div class="buttons">
-            <a class="button is-dark">
+            <a class="button is-dark" @click="toGames">
               <strong>Search for Game</strong>
             </a>
-            <a class="button is-dark">
-              <strong>Create a New Game</strong>
-            </a>
-            <a class="button is-dark">
+            <a class="button is-dark" @click="toGM">
               <strong>Start Session</strong>
+            </a>
+          </div>
+        </div>
+      </div>
+      <div class="navbar-end" hidden>
+        <div class="navbar-item">
+          <div class="buttons">
+            <a class="button is-dark" @click="logout">
+              <strong>Log out</strong>
             </a>
           </div>
         </div>
@@ -42,6 +48,31 @@
 <script>
   export default {
     name: 'Nav',
+    props: {
+        isAuthenticated: {
+            default: false
+        }
+    },
+    beforeMount:function(){
+      
+    },
+    methods: {
+      toGM(){
+        this.$router.push({
+          name: 'Registration',
+          params: {
+            isGM: true
+          }
+        });
+      },
+      toGames(){
+        this.$router.push('Games');
+      },
+      logout(){
+        alert('need to implement trainer.api module');
+        alert(this.actuallyAuthenticated);
+      }
+    }
   };
 </script>
 <style lang="scss" scoped>
