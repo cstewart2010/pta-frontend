@@ -21,14 +21,11 @@
         <router-link to="/" class="navbar-item">Landing</router-link>
         <router-link to="/about" class="navbar-item">About</router-link>
       </div>
-      <div class="navbar-end" v-if="isAuthenticated">
+      <div class="navbar-end">
         <div class="navbar-item">
           <div class="buttons">
             <a class="button is-dark" @click="toGames">
               <strong>Search for Game</strong>
-            </a>
-            <a class="button is-dark" @click="toGM">
-              <strong>Create a New Game</strong>
             </a>
             <a class="button is-dark" @click="toGM">
               <strong>Start Session</strong>
@@ -36,7 +33,7 @@
           </div>
         </div>
       </div>
-      <div class="navbar-end" v-else>
+      <div class="navbar-end" hidden>
         <div class="navbar-item">
           <div class="buttons">
             <a class="button is-dark" @click="logout">
@@ -49,16 +46,15 @@
   </nav>
 </template>
 <script>
-  import {checkStorage} from '../../utils/localStorage'
   export default {
     name: 'Nav',
-    data (){
-      return {
-        isAuthenticated: false
-      }
+    props: {
+        isAuthenticated: {
+            default: false
+        }
     },
-    mounted:function(){
-      this.isAuthenticated = checkStorage().needsToAuthenticate;
+    beforeMount:function(){
+      
     },
     methods: {
       toGM(){
@@ -71,6 +67,10 @@
       },
       toGames(){
         this.$router.push('Games');
+      },
+      logout(){
+        alert('need to implement trainer.api module');
+        alert(this.actuallyAuthenticated);
       }
     }
   };

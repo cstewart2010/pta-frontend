@@ -35,6 +35,15 @@
                 const response = await findGameById(gameId);
                 if (response){
                     alert(JSON.stringify(response.data));
+                    this.$router.push({
+                        name: 'Registration',
+                        params: {
+                            isGM: false
+                        },
+                        query: {
+                            gameId
+                        }
+                    })
                 }
             },
             async getGamesByNickname(){

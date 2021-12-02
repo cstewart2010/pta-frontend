@@ -9,12 +9,11 @@ export default {
     name: 'TrainerPortal',
     props: {
         trainerId: null,
-        gameId: null,
         ptaActivityToken: null,
         ptaSessionAuth: null,
     },
     mounted:function(){
-        if (!(this.trainerId && this.gameId && this.ptaActivityToken && this.ptaSessionAuth)){
+        if (!(this.trainerId && this.ptaActivityToken && this.ptaSessionAuth)){
             const result = checkStorage();
             if (!result.needsToAuthenticate){
                 // validate trainer credentials

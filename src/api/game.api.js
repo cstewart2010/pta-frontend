@@ -117,7 +117,7 @@ export async function createWildPokemon(gameMasterId, pokemon, nature, gender, s
 /**
  * Add a new player to an extant game session
  * @param {String} gameId the session id to search with
- * @param {String} trainerName the trainer's username
+ * @param {String} username the trainer's username
  * @param {String} password the trainer's password
  * @param {Number} attack the trainer's attack stat
  * @param {Number} defense the trainer's defense stat
@@ -126,18 +126,13 @@ export async function createWildPokemon(gameMasterId, pokemon, nature, gender, s
  * @param {Number} speed the trainer's speed stat
  * @returns the trainer data
  */
-export async function addPlayerToGame(gameId, trainerName, password, attack, defense, specialAttack, specialDefense, speed){
+export async function addPlayerToGame(gameId, username, password){
     nullChecker(gameId, 'gameId');
-    nullChecker(trainerName, 'trainerName');
+    nullChecker(username, 'username');
     nullChecker(password, 'password');
-    nullChecker(attack, 'attack');
-    nullChecker(defense, 'defense');
-    nullChecker(specialAttack, 'specialAttack');
-    nullChecker(specialDefense, 'specialDefense');
-    nullChecker(speed, 'speed');
 
-    const endpoint = `${GAME_RESOURCE}/${gameId}/new?trainerName=${trainerName}&password=${password}&attack=${attack}&defense=${defense}&specialAttack=${specialAttack}&specialDefense=${specialDefense}&speed=${speed}`
-    return await requestHandler(endpoint, METHODS.PUT);
+    const endpoint = `${GAME_RESOURCE}/${gameId}/new?username=${username}&password=${password}`
+    return await requestHandler(endpoint, METHODS.POST);
 }
 
 /**

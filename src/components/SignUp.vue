@@ -5,24 +5,24 @@
             <div>
                 <label for="trainerName" v-if="isGM==='true'">Game Master Name: </label>
                 <label for="trainerName" v-else>Trainer Name: </label>
-                <input type="text" name="trainerName" id="signUpName">
+                <input type="text" name="trainerName" v-model="signUpName">
             </div>
             <div>
                 <label for="signUpPassword">Password: </label>
-                <input type="password" name="signUpPassword" id="signUpPassword">
+                <input type="password" name="signUpPassword" v-model="signUpPassword">
             </div>
             <div>
                 <label for="confirmUserPassword">Confirm Password: </label>
-                <input type="password" name="confirmUserPassword" id="confirmUserPassword">
+                <input type="password" name="confirmUserPassword" v-model="confirmUserPassword">
             </div>
             <div v-if="isGM==='true'">
                 <div>
                     <label for="gamePassword">Game Session Password: </label>
-                    <input type="password" name="gamePassword" id="gamePassword">
+                    <input type="password" name="gamePassword" v-model="gamePassword">
                 </div>
                 <div>
                     <label for="confirmGamePassword">Confirm Password: </label>
-                    <input type="password" name="confirmGamePassword" id="confirmGamePassword">
+                    <input type="password" name="confirmGamePassword" v-model="confirmGamePassword">
                 </div>
             </div>
             <div>
@@ -33,7 +33,8 @@
 </template>
 
 <script>
-import { addToStorage } from '../utils/localStorage';
+import { addPlayerToGame, createNewGame } from '../api/game.api';
+import { areGameSignupCredentialsValid, areTrainerSignupCredentialsValid } from '../utils/credentials'
 
 export default {
     name: 'SignUp',
@@ -42,40 +43,72 @@ export default {
             default: false
         }
     },
+    data(){
+        return {
+            gameId: null,
+            signUpName: '',
+            signUpPassword: '',
+            confirmUserPassword: '',
+            gamePassword: '',
+            confirmGamePassword: '',
+        }
+    },
     mounted:function(){
+        this.gameId = this.$route.query.gameId;
     },
     methods: {
-        signUp(){
-            const trainerName = document.getElementById("signUpName").value;
-            const password = document.getElementById("signUpPassword").value;
-            const confirm = document.getElementById("confirmUserPassword").value;
-            if (!(trainerName && password && confirm)){
-                alert("Please fill out all fields");
+        async signUp(){
+            if (!areTrainerSignupCredentialsValid(this.signUpName, this.signUpPassword, this.confirmUserPassword)){
+                return;
             }
-
-            else if (password != confirm){
-                alert("Passwords do not match");
+            
+            let response = {}
+            if (this.isGM === 'true'){
+                if (!areGameSignupCredentialsValid(this.gamePassword, this.confirmGamePassword)){
+                    return;
+                }
+                
+                response = await this.gmSignup()
             }
-
-            else if (trainerName.length < 6 || password.length < 6){
-                alert("Trainer name and password must be at least 6 characters long");
-            }            
             else {
-                // handle login for new character
-                alert("Success!");
-                const params = {
-                    trainerId: trainerName,
-                    gameId: password,
-                    ptaActivityToken: "test",
-                    ptaSessionAuth: "test",
+                response = await this.trainerSignup()
+            }
+
+            const options = {
+                name: response.portal,
+                params: {
+                    trainerId: response.trainer.trainerId,
+                    ptaActivityToken: response.headers['pta-activity-token'],
+                    ptaSessionAuth: response.headers['pta-session-auth'],
+                    isAuthenticated: true
+                },
+                query: {
+                    gameId: response.gameId
                 }
-                addToStorage(params)
-                const folder = this.isGM ? 'GM' : 'Trainer'
-                const options = {
-                    name: `${folder}/Index`,
-                    params
-                }
-                this.$router.push(options);
+            }
+
+            this.$router.push(options);
+        },
+        async gmSignup(){
+            const response = await createNewGame(this.signUpName, this.signUpPassword, this.gamePassword).catch(alert);
+            if (response.status == 200){
+                return {
+                    portal: 'GM/Index',
+                    trainer: response.data.gameMaster,
+                    headers: response.headers,
+                    gameId: response.data.gameId
+                };
+            }
+        },
+        async trainerSignup(){
+            const response = await addPlayerToGame(this.gameId, this.signUpName, this.signUpPassword).catch(alert);
+            if (response.status == 200){
+                return {
+                    portal: 'Trainer/Index',
+                    trainer: response.data.trainer,
+                    headers: response.headers,
+                    gameId: this.gameId
+                };
             }
         }
     }
