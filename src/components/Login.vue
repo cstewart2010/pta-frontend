@@ -25,6 +25,7 @@
 <script>
 import { startGame } from '../api/game.api';
 import { areTrainerCredentialsValid, isGamePasswordValid } from '../utils/credentials';
+import { addToStorage } from '../utils/localStorage';
 
 export default {
     name: 'Login',
@@ -76,6 +77,13 @@ export default {
                 }
             }
 
+            addToStorage({
+                trainerId: response.trainer.trainerId,
+                ptaActivityToken: response.headers['pta-activity-token'],
+                ptaSessionAuth: response.headers['pta-session-auth'],
+                isAuthenticated: true,
+                gameId: response.gameId
+            });
             this.$router.push(options);
         },
         async gmLogin(){

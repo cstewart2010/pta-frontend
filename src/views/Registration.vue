@@ -16,7 +16,7 @@
 <script>
 import Login from '../components/Login.vue';
 import SignUp from '../components/SignUp.vue';
-import { checkStorage } from '../utils/localStorage';
+import { getDataFromStorage } from '../utils/localStorage';
 
 export default {
     name: 'Registration',
@@ -30,7 +30,7 @@ export default {
       SignUp
     },
     mounted:function(){
-        const result = checkStorage();
+        const result = getDataFromStorage();
         if (!result.needsToAuthenticate){
             // validate trainer credentials
 

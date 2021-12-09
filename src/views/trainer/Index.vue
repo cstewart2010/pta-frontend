@@ -1,9 +1,9 @@
 <template>
-    {{trainerId}}
+    {{trainer}}
 </template>
 
 <script>
-import {checkStorage} from '../../utils/localStorage'
+import {getDataFromStorage} from '../../utils/localStorage'
 
 export default {
     name: 'TrainerPortal',
@@ -12,11 +12,17 @@ export default {
         ptaActivityToken: null,
         ptaSessionAuth: null,
     },
+    data(){
+        return {
+            trainer: null
+        }
+    },
     mounted:function(){
         if (!(this.trainerId && this.ptaActivityToken && this.ptaSessionAuth)){
-            const result = checkStorage();
+            const result = getDataFromStorage();
             if (!result.needsToAuthenticate){
                 // validate trainer credentials
+                this.trainer = result.trainerId;
                 return
             }
             const options = {
@@ -28,6 +34,7 @@ export default {
             this.$router.push(options);
         }
         
+        this.trainer = this.trainerId;
         // validate trainer credentials
     },
 }
