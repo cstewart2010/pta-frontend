@@ -1,7 +1,6 @@
 import { BASE_URL } from './api.config.json'
 import { METHODS } from './enums.json'
 import { requestHandler, nullChecker } from './axiosHandler';
-import { getPokemon } from './pokedex.api';
 const POKEMON_RESOURCE = `${BASE_URL}/api/v1/pokemon`
 
 /**
@@ -9,7 +8,7 @@ const POKEMON_RESOURCE = `${BASE_URL}/api/v1/pokemon`
  * @param {String} pokemonId The Pokemon's UUID
  * @returns a Pokemon
  */
-export async function getPokemon(pokemonId){
+export async function getGamePokemon(pokemonId){
     nullChecker(pokemonId, 'pokemonId');
 
     return await requestHandler(`${POKEMON_RESOURCE}/${pokemonId}`, METHODS.GET);
@@ -20,15 +19,19 @@ export async function getPokemon(pokemonId){
  * @param {String} gmId The game master's UUID
  * @param {String} leftPokemonId The left trainer's Pokemon UUID
  * @param {String} rightPokemonId The right trainer's Pokemon UUID
+ * @param {String} activityToken the user's pta-activity-token
+ * @param {String} sessionAuth the user's pta-session-auth
  * @returns the updated Pokemon
  */
-export async function tradePokemon(gmId,leftPokemonId,rightPokemonId){
+export async function tradePokemon(gmId, leftPokemonId, rightPokemonId, activityToken, sessionAuth){
     nullChecker(gmId, 'gmId');
     nullChecker(leftPokemonId, 'leftPokemonId');
     nullChecker(rightPokemonId, 'rightPokemonId');
+    nullChecker(activityToken, 'activityToken');
+    nullChecker(sessionAuth, 'sessionAuth');
 
     const endpoint = `${POKEMON_RESOURCE}/trade?gameMasterId${gmId}&leftPokemonId=${leftPokemonId}&rightPokemonId=${rightPokemonId}`;
-    return await requestHandler(endpoint, METHODS.PUT);
+    return await requestHandler(endpoint, METHODS.PUT, {activityToken, sessionAuth});
 }
 
 /**
@@ -36,26 +39,34 @@ export async function tradePokemon(gmId,leftPokemonId,rightPokemonId){
  * @param {String} pokemonId The Pokemon's UUID
  * @param {String} trainerId The trainer's UUID
  * @param {String} nextForm The Pokemon's evolved form
+ * @param {String} activityToken the user's pta-activity-token
+ * @param {String} sessionAuth the user's pta-session-auth
  * @returns the updated Pokemon
  */
-export async function evolvePokemon(pokemonId,trainerId,nextForm){
+export async function evolvePokemon(pokemonId, trainerId, nextForm, activityToken, sessionAuth){
     nullChecker(pokemonId, 'pokemonId');
     nullChecker(trainerId, 'trainerId');
     nullChecker(nextForm, 'nextForm');
+    nullChecker(activityToken, 'activityToken');
+    nullChecker(sessionAuth, 'sessionAuth');
 
     const endpoint = `${POKEMON_RESOURCE}/${pokemonId}/evolve?trainerId${trainerId}&nextForm=${nextForm}`;
-    return await requestHandler(endpoint, METHODS.PUT);
+    return await requestHandler(endpoint, METHODS.PUT, {activityToken, sessionAuth});
 }
 
 /**
  * Deletes a pokemon from the database
  * @param {String} pokemonId The Pokemon's UUID
  * @param {String} gmId The game master's UUID
+ * @param {String} activityToken the user's pta-activity-token
+ * @param {String} sessionAuth the user's pta-session-auth
  * @returns A generic message
  */
-export async function deletePokemon(pokemonId,gmId){
+export async function deletePokemon(pokemonId, gmId, activityToken, sessionAuth){
     nullChecker(pokemonId, 'pokemonId');
     nullChecker(gmId, 'gmId');
+    nullChecker(activityToken, 'activityToken');
+    nullChecker(sessionAuth, 'sessionAuth');
 
-    return await requestHandler(`${POKEMON_RESOURCE}/${id}?gameMasterId=${gmId}`, METHODS.DELETE);
+    return await requestHandler(`${POKEMON_RESOURCE}/${pokemonId}?gameMasterId=${gmId}`, METHODS.DELETE, {activityToken, sessionAuth});
 }
