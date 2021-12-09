@@ -108,10 +108,10 @@ export async function createWildPokemon(gameMasterId, pokemon, nature, gender, s
 
     let endpoint = `${GAME_RESOURCE}/${gameMasterId}/wild?pokemon=${pokemon}&nature=${nature}&gender=${gender}&status=${status}`;    
     if (nickname){
-        endpoint = `${endpoint}&nickname=${nickname}`
+        endpoint = `${endpoint}&nickname=${nickname}`;
     }
 
-    return await requestHandler(endpoint, METHODS.POST, {activityToken, sessionAuth})
+    return await requestHandler(endpoint, METHODS.POST, {activityToken, sessionAuth});
 }
 
 /**
