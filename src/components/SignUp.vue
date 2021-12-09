@@ -35,6 +35,7 @@
 <script>
 import { addPlayerToGame, createNewGame } from '../api/game.api';
 import { areGameSignupCredentialsValid, areTrainerSignupCredentialsValid } from '../utils/credentials'
+import { addToStorage } from '../utils/localStorage'
 
 export default {
     name: 'SignUp',
@@ -86,6 +87,14 @@ export default {
                     gameId: response.gameId
                 }
             }
+
+            addToStorage({
+                trainerId: response.trainer.trainerId,
+                ptaActivityToken: response.headers['pta-activity-token'],
+                ptaSessionAuth: response.headers['pta-session-auth'],
+                isAuthenticated: true,
+                gameId: response.gameId
+            });
 
             this.$router.push(options);
         },

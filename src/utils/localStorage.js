@@ -1,6 +1,6 @@
 const AUTH_STRING = "ptaAuthString";
 
-export function checkStorage(){
+export function getDataFromStorage(){
     const authString = localStorage.getItem(AUTH_STRING);
     if (!authString){
         return {
@@ -13,14 +13,7 @@ export function checkStorage(){
     }
 
     try {
-        const auth = JSON.parse(authString);
-        return {
-            ptaActivityToken: auth.ptaActivityToken,
-            ptaSessionAuth: auth.ptaSessionAuth,
-            trainerId: auth.trainerId,
-            gameId: auth.gameId,
-            needsToAuthenticate: auth.needsToAuthenticate
-        };
+        return JSON.parse(authString);
     }
     catch {
         return {
@@ -37,6 +30,6 @@ export function addToStorage(options){
     localStorage.removeItem(AUTH_STRING);
     if (options){
         options["needsToAuthenticate"] = false;
-        localStorage.setItem(AUTH_STRING, options);
+        localStorage.setItem(AUTH_STRING, JSON.stringify(options));
     }
 }
