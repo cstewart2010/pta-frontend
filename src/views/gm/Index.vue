@@ -3,39 +3,26 @@
 </template>
 
 <script>
-import {getDataFromStorage} from '../../utils/localStorage'
+import { getIsAuthenticate, getPTAActivityToken, getSessionAuth, getTrainerId } from '../../utils/localStorage';
 
 export default {
     name: 'GMPortal',
-    props: {
-        trainerId: null,
-        ptaActivityToken: null,
-        ptaSessionAuth: null,
-    },
     data(){
         return {
-            gm: null
+            gm: null,
+            ptaActivityToken: null,
+            ptaSessionAuth: null,
         }
     },
     mounted:function(){
-        if (!(this.trainerId && this.ptaActivityToken && this.ptaSessionAuth)){
-            const result = getDataFromStorage();
-            if (!result.needsToAuthenticate){
-                // validate trainer credentials
-                this.gm = result.trainerId
-                return
-            }
-            const options = {
-                name: `Registration`,
-                params: {
-                    isGM: true
-                }
-            }
-            this.$router.push(options);
+        if (!getIsAuthenticate()){
+            this.$router.push('/');
+            return
         }
-        
-        this.gm = this.trainerId
         // validate trainer credentials
+        this.gm = getTrainerId();
+        this.ptaActivityToken = getPTAActivityToken();
+        this.ptaSessionAuth = getSessionAuth();
     },
 }
 </script>
