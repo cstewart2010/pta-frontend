@@ -16,7 +16,7 @@
 <script>
 import Login from '../components/Login.vue';
 import SignUp from '../components/SignUp.vue';
-import { getDataFromStorage } from '../utils/localStorage';
+import { getIsAuthenticate } from '../utils/localStorage';
 
 export default {
     name: 'Registration',
@@ -30,17 +30,10 @@ export default {
       SignUp
     },
     mounted:function(){
-        const result = getDataFromStorage();
-        if (!result.needsToAuthenticate){
+        if (getIsAuthenticate()){
             // validate trainer credentials
-
-            alert(JSON.stringify(result));
-            const folder = this.isGM ? 'GM' : 'Trainer'
-            const options = {
-                name: `${folder}/Index`,
-                params: result
-            }
-            this.$router.push(options);
+            const folder = this.isGM ? 'gm' : 'trainer'
+            this.$router.push(`/${folder}`);
         }
     }
 }

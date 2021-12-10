@@ -27,7 +27,7 @@ export default {
                 })
             }
             else {
-                this.$router.push('Games')
+                this.$router.push('/games')
             }
         }
     }

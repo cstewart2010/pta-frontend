@@ -35,7 +35,7 @@
 <script>
 import { addPlayerToGame, createNewGame } from '../api/game.api';
 import { areGameSignupCredentialsValid, areTrainerSignupCredentialsValid } from '../utils/credentials'
-import { addToStorage } from '../utils/localStorage'
+import { setGameId, setIsAuthenticate, setIsGM, setPTAActivityToken, setSessionAuth, setTrainerId } from '../utils/localStorage';
 
 export default {
     name: 'SignUp',
@@ -77,26 +77,20 @@ export default {
 
             const options = {
                 name: response.portal,
-                params: {
-                    trainerId: response.trainer.trainerId,
-                    ptaActivityToken: response.headers['pta-activity-token'],
-                    ptaSessionAuth: response.headers['pta-session-auth'],
-                    isAuthenticated: true
-                },
                 query: {
                     gameId: response.gameId
                 }
             }
 
-            addToStorage({
-                trainerId: response.trainer.trainerId,
-                ptaActivityToken: response.headers['pta-activity-token'],
-                ptaSessionAuth: response.headers['pta-session-auth'],
-                isAuthenticated: true,
-                gameId: response.gameId
-            });
+            setTrainerId(response.trainer.trainerId);
+            setPTAActivityToken(response.headers['pta-activity-token']);
+            setSessionAuth(response.headers['pta-session-auth']);
+            setIsAuthenticate(true);
+            setGameId(response.gameId);
+            setIsGM(this.isGM);
 
             this.$router.push(options);
+            this.$router.go();
         },
         async gmSignup(){
             const response = await createNewGame(this.signUpName, this.signUpPassword, this.gamePassword).catch(alert);

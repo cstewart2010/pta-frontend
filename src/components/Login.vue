@@ -13,7 +13,9 @@
             </div>
             <div v-if="isGM==='true'">
                 <label for="gameSessionPassword" v-if="isGM==='true'">Game Session Password: </label>
-                <input type="text" name="gameSessionPassword" v-model="gamePassword">
+                <input type="password" name="gameSessionPassword" v-model="gamePassword">
+                <label for="gameSessionPassword" v-if="isGM==='true'">Game ID: </label>
+                <input type="text" name="gameSessionPassword" v-model="gameId">
             </div>
             <div>
                 <button class="btn btn-primary" @click="login">Sign in</button>
@@ -25,7 +27,7 @@
 <script>
 import { startGame } from '../api/game.api';
 import { areTrainerCredentialsValid, isGamePasswordValid } from '../utils/credentials';
-import { addToStorage } from '../utils/localStorage';
+import { setGameId, setIsAuthenticate, setIsGM, setPTAActivityToken, setSessionAuth, setTrainerId } from '../utils/localStorage';
 
 export default {
     name: 'Login',
@@ -52,46 +54,44 @@ export default {
             }
 
             let response = {}
-            
+            let trainerId = ''            
             if (this.isGM){
                 if (!isGamePasswordValid(this.gamePassword)){
                     return
                 }
                 
                 response = await this.gmLogin()
+                trainerId = response.trainers.filter(trainer => trainer.trainerName == this.trainerName)[0].trainerId
             }
             else {
                 response = await this.trainerLogin()
+                trainerId = response.trainer.trainerId
             }
 
             const options = {
                 name: response.portal,
-                params: {
-                    trainerId: response.trainer.trainerId,
-                    ptaActivityToken: response.headers['pta-activity-token'],
-                    ptaSessionAuth: response.headers['pta-session-auth'],
-                    isAuthenticated: true
-                },
                 query: {
                     gameId: response.gameId
                 }
             }
 
-            addToStorage({
-                trainerId: response.trainer.trainerId,
-                ptaActivityToken: response.headers['pta-activity-token'],
-                ptaSessionAuth: response.headers['pta-session-auth'],
-                isAuthenticated: true,
-                gameId: response.gameId
-            });
+            setTrainerId(trainerId);
+            setPTAActivityToken(response.headers['pta-activity-token']);
+            setSessionAuth(response.headers['pta-session-auth']);
+            setIsAuthenticate(true);
+            setGameId(response.gameId);
+            setIsGM(this.isGM);
+
             this.$router.push(options);
+            this.$router.go();
         },
         async gmLogin(){
             const response = await startGame(this.gameId, this.trainerName, this.password, this.gamePassword).catch(alert);
             if (response && response.status == 200){
+                alert(JSON.stringify(response.data))
                 return {
                     portal: 'GM/Index',
-                    trainer: response.data.gameMaster,
+                    trainers: response.data.trainers,
                     headers: response.headers,
                     gameId: response.data.gameId
                 };

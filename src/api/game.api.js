@@ -2,6 +2,7 @@ import { BASE_URL } from './api.config.json'
 import { METHODS } from './enums.json'
 import { requestHandler, nullChecker, natureChecker, statusChecker, genderChecker } from './axiosHandler';
 import { getPokemon } from './dex.api';
+import { getGameId, getUserCredentials } from '../utils/localStorage';
 const GAME_RESOURCE = `${BASE_URL}/api/v1/game`
 
 /**
@@ -35,7 +36,7 @@ export async function findGameById(gameId) {
 /**
  * Searches for a trainer using their id
  * @param {String} gameId the session id to search with
- * @param {String} trainerId 
+ * @param {String} trainerId the trainer id to search with
  * @returns 
  */
 export async function findTrainerInGame(gameId, trainerId) {
@@ -81,17 +82,15 @@ export async function importGame(importFile){
 
 /**
  * Generates a wild pokemon and assigns it to the game master
- * @param {String} gameMasterId the game master's id
  * @param {String} pokemon the pokemon's name in the pokedex
  * @param {String} nature the pokemon's nature
  * @param {String} gender the pokemon's gender
  * @param {String} status the pokemon's status
- * @param {String} activityToken the user's pta-activity-token
- * @param {String} sessionAuth the user's pta-session-auth
  * @param {String} nickname the pokemon's nickname
  * @returns 
  */
-export async function createWildPokemon(gameMasterId, pokemon, nature, gender, status, activityToken, sessionAuth, nickname){
+export async function createWildPokemon(pokemon, nature, gender, status, nickname){
+    const [gameMasterId, activityToken, sessionAuth] = getUserCredentials();
     nullChecker(gameMasterId, 'gameMasterId');
     nullChecker(pokemon, 'pokemon');
     nullChecker(activityToken, 'activityToken');
@@ -119,11 +118,6 @@ export async function createWildPokemon(gameMasterId, pokemon, nature, gender, s
  * @param {String} gameId the session id to search with
  * @param {String} username the trainer's username
  * @param {String} password the trainer's password
- * @param {Number} attack the trainer's attack stat
- * @param {Number} defense the trainer's defense stat
- * @param {Number} specialAttack the trainer's special attack stat
- * @param {Number} specialDefense the trainer's special defense stat
- * @param {Number} speed the trainer's speed stat
  * @returns the trainer data
  */
 export async function addPlayerToGame(gameId, username, password){
@@ -155,13 +149,11 @@ export async function startGame(gameId, gmUsername, gmPassword, gameSessionPassw
 
 /**
  * Sets a game sessions status to Offline
- * @param {String} gameId the session id to search with
- * @param {String} gameMasterId the game master's id
- * @param {String} activityToken the user's pta-activity-token
- * @param {String} sessionAuth the user's pta-session-auth
  * @returns A 200 status code if successful
  */
-export async function endGame(gameId, gameMasterId, activityToken, sessionAuth){
+export async function endGame(){
+    const [gameMasterId, activityToken, sessionAuth] = getUserCredentials();
+    const gameId = getGameId();
     nullChecker(gameId, 'gameId');
     nullChecker(gameMasterId, 'gameMasterId');
     nullChecker(activityToken, 'activityToken');
@@ -172,36 +164,34 @@ export async function endGame(gameId, gameMasterId, activityToken, sessionAuth){
 
 /**
  * Adds a set of npcs to a game session using the npcs' ids
- * @param {String} gameId the session id to search with
  * @param {String} npcList the npcs to add to the game
- * @param {String} activityToken the user's pta-activity-token
- * @param {String} sessionAuth the user's pta-session-auth
  * @returns A 200 status code if successful
  */
-export async function addNpcs(gameId, npcList, activityToken, sessionAuth){
+export async function addNpcs(npcList){
+    const [gameMasterId, activityToken, sessionAuth] = getUserCredentials();
+    const gameId = getGameId();
     nullChecker(gameId, 'gameId');
     nullChecker(npcList, 'npcList');
     nullChecker(activityToken, 'activityToken');
     nullChecker(sessionAuth, 'sessionAuth');
 
-    return await requestHandler(`${GAME_RESOURCE}/${gameId}/addNpcs?npcList=${npcList}`, METHODS.PUT, {activityToken, sessionAuth});
+    return await requestHandler(`${GAME_RESOURCE}/${gameId}/addNpcs?npcList=${npcList}&gameMasterId=${gameMasterId}`, METHODS.PUT, {activityToken, sessionAuth});
 }
 
 /**
  * Removes a set of npcs to a game session using the npcs' ids
- * @param {String} gameId the session id to search with
  * @param {String} npcList the npcs to remove from the game
- * @param {String} activityToken the user's pta-activity-token
- * @param {String} sessionAuth the user's pta-session-auth
  * @returns A 200 status code if successful
  */
-export async function removeNpcs(gameId, npcList, activityToken, sessionAuth){
+export async function removeNpcs(npcList){
+    const [gameMasterId, activityToken, sessionAuth] = getUserCredentials();
+    const gameId = getGameId();
     nullChecker(gameId, 'gameId');
     nullChecker(npcList, 'npcList');
     nullChecker(activityToken, 'activityToken');
     nullChecker(sessionAuth, 'sessionAuth');
 
-    return await requestHandler(`${GAME_RESOURCE}/${gameId}/removeNpcs?npcList=${npcList}`, METHODS.PUT, {activityToken, sessionAuth});
+    return await requestHandler(`${GAME_RESOURCE}/${gameId}/removeNpcs?npcList=${npcList}&gameMasterId=${gameMasterId}`, METHODS.PUT, {activityToken, sessionAuth});
 }
 
 /**
@@ -220,18 +210,13 @@ export async function resetPassword(trainerId, password){
 /**
  * Export the game session from the server and deletes it
  * @param {String} gameId the session id to search with
- * @param {String} gameMasterId the game master's id
  * @param {String} gameSessionPassword the game session's password
- * @param {String} activityToken the user's pta-activity-token
- * @param {String} sessionAuth the user's pta-session-auth
  * @returns A json file matching the exported game
  */
-export async function exportGame(gameId, gameMasterId, gameSessionPassword, activityToken, sessionAuth){
+export async function exportGame(gameId, gameSessionPassword){
+    const [gameMasterId, activityToken, sessionAuth] = getUserCredentials();
     nullChecker(gameId, 'gameId');
-    nullChecker(gameMasterId, 'gameMasterId');
     nullChecker(gameSessionPassword, 'gameSessionPassword');
-    nullChecker(activityToken, 'activityToken');
-    nullChecker(sessionAuth, 'sessionAuth');
     
     const endpoint = `${GAME_RESOURCE}/${gameId}/export?gameMasterId=${gameMasterId}&gameSessionPassword=${gameSessionPassword}`;
     return await requestHandler(endpoint, METHODS.DELETE, {activityToken, sessionAuth});

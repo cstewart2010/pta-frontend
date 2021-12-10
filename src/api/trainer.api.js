@@ -1,7 +1,8 @@
 import { BASE_URL } from './api.config.json'
 import { METHODS } from './enums.json'
 import { requestHandler, nullChecker, natureChecker, statusChecker, genderChecker } from './axiosHandler';
-import { getPokemon } from './pokedex.api';
+import { getPokemon } from './dex.api';
+import { getUserCredentials } from '../utils/localStorage';
 const TRAINER_RESOURCE = `${BASE_URL}/api/v1/trainer`
 
 /**
@@ -20,17 +21,15 @@ export async function getTrainerMon(trainerId, pokemonId){
 /**
  * Adds a new pokemon to a trainer's catalog
  * @param {String} trainerId The trainer's UUID
- * @param {String} gmId The game master's UUID
  * @param {String} pokemon the pokemon's name in the pokedex
  * @param {String} nature the pokemon's nature
  * @param {String} gender the pokemon's gender
  * @param {String} status the pokemon's status
- * @param {String} activityToken the user's pta-activity-token
- * @param {String} sessionAuth the user's pta-session-auth
  * @param {String} nickname the pokemon's nickname
  * @returns a Pokemon
  */
-export async function addPokemon(trainerId, gmId, pokemon, nature, gender, status, activityToken, sessionAuth, nickname){
+export async function addPokemon(trainerId, pokemon, nature, gender, status, nickname){
+    const [gmId, activityToken, sessionAuth] = getUserCredentials();
     nullChecker(trainerId, 'trainerId');
     nullChecker(gmId, 'gmId');
     nullChecker(pokemon, 'pokemon');
@@ -70,13 +69,11 @@ export async function userLogin(gameId, username, password){
 }
 
 /**
- * Assigns a trainer's IsOnline status to true
- * @param {String} trainerId The trainer's UUID
- * @param {String} activityToken the user's pta-activity-token
- * @param {String} sessionAuth the user's pta-session-auth
+ * Assigns a trainer's IsOnline status to false
  * @returns the trainer and their tokens
  */
-export async function userLogout(trainerId, activityToken, sessionAuth){
+export async function userLogout(){
+    const [trainerId, activityToken, sessionAuth] = getUserCredentials();
     nullChecker(trainerId, 'trainerId');
     nullChecker(activityToken, 'activityToken');
     nullChecker(sessionAuth, 'sessionAuth');
@@ -85,14 +82,12 @@ export async function userLogout(trainerId, activityToken, sessionAuth){
 }
 
 /**
- * 
+ * Add items to a trainer's bag
  * @param {String} trainerId The trainer's UUID
- * @param {String} gmId The game master's UUID
  * @param {any} itemPairs The key/value pairs for the items
- * @param {String} activityToken the user's pta-activity-token
- * @param {String} sessionAuth the user's pta-session-auth
  */
-export async function addItems(trainerId, gmId, itemPairs, activityToken, sessionAuth){
+export async function addItems(trainerId, itemPairs){
+    const [gmId, activityToken, sessionAuth] = getUserCredentials();
     nullChecker(trainerId, 'trainerId');
     nullChecker(gmId, 'gmId');
     nullChecker(itemPairs, 'itemPairs');
@@ -103,13 +98,11 @@ export async function addItems(trainerId, gmId, itemPairs, activityToken, sessio
 }
 
 /**
- * 
- * @param {String} trainerId The trainer's UUID
+ * Removes items from a trainer's bag
  * @param {any} itemPairs The key/value pairs for the items
- * @param {String} activityToken the user's pta-activity-token
- * @param {String} sessionAuth the user's pta-session-auth
  */
-export async function removeItems(trainerId, itemPairs, activityToken, sessionAuth){
+export async function removeItems(itemPairs){
+    const [trainerId, activityToken, sessionAuth] = getUserCredentials();
     nullChecker(trainerId, 'trainerId');
     nullChecker(itemPairs, 'itemPairs');
     nullChecker(activityToken, 'activityToken');
@@ -121,12 +114,10 @@ export async function removeItems(trainerId, itemPairs, activityToken, sessionAu
 /**
  * Deletes a pokemon from the database
  * @param {String} trainerId The trainer's UUID
- * @param {String} gmId The game master's UUID
- * @param {String} activityToken the user's pta-activity-token
- * @param {String} sessionAuth the user's pta-session-auth
  * @returns A generic message
  */
-export async function deletePokemon(trainerId, gmId, activityToken, sessionAuth){
+export async function deletePokemon(trainerId){
+    const [gmId, activityToken, sessionAuth] = getUserCredentials();
     nullChecker(trainerId, 'trainerId');
     nullChecker(gmId, 'gmId');
     nullChecker(activityToken, 'activityToken');
