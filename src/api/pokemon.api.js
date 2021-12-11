@@ -52,6 +52,24 @@ export async function evolvePokemon(pokemonId, nextForm){
 }
 
 /**
+ * Updates a 
+ * @param {String} trainerId The trainer's UUID
+ * @param {Number} dexNo 
+ * @returns 
+ */
+export async function seePokemon(trainerId, dexNo){
+    const [gmId, activityToken, sessionAuth] = getUserCredentials();
+    nullChecker(gmId, 'gmId');
+    nullChecker(trainerId, 'trainerId');
+    nullChecker(dexNo, 'dexNo');
+    nullChecker(activityToken, 'activityToken');
+    nullChecker(sessionAuth, 'sessionAuth');
+
+    const endpoint = `${POKEMON_RESOURCE}/${trainerId}/saw?gameMasterId=${gmId}&dexNo=${dexNo}`;
+    return await requestHandler(endpoint, METHODS.PUT, {activityToken, sessionAuth});
+}
+
+/**
  * Deletes a pokemon from the database
  * @param {String} pokemonId The Pokemon's UUID
  * @returns A generic message

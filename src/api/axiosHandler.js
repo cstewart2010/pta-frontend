@@ -119,5 +119,22 @@ const dataUpdater = response => {
  * @param {any} error 
  */
 const errorHandler = error => {
-    alert(JSON.stringify(error));
+    switch (error.response.status){
+        case 401:
+            alert('This action was not authorized');
+            break;
+        case 404:
+            alert('This page was not found');
+            break
+        case 400:
+            alert('You made a malformed request');
+            break;
+        case 500:
+            alert('Congrats, you broke it');
+            break;
+        default:
+            alert('PTA Servers are down.');
+            break
+    }
+    console.log(JSON.stringify(error));
 }

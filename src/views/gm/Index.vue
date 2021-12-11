@@ -1,28 +1,46 @@
-<template>
-    {{gm}}
+<template>    
+    <div v-for="trainer in trainers" :key="trainer.TrainerId">
+        {{trainer}}
+    </div>
 </template>
 
 <script>
-import { getIsAuthenticate, getPTAActivityToken, getSessionAuth, getTrainerId } from '../../utils/localStorage';
+import { refreshGM } from '../../api/trainer.api';
+import { getIsAuthenticate, getTrainers, setTrainers, removeFromStorage, setPTAActivityToken, setIsGM, getIsGM } from '../../utils/localStorage';
 
 export default {
     name: 'GMPortal',
     data(){
         return {
-            gm: null,
+            trainers: [],
             ptaActivityToken: null,
             ptaSessionAuth: null,
         }
     },
-    mounted:function(){
+    beforeMount:async function(){
         if (!getIsAuthenticate()){
             this.$router.push('/');
             return
         }
         // validate trainer credentials
-        this.gm = getTrainerId();
-        this.ptaActivityToken = getPTAActivityToken();
-        this.ptaSessionAuth = getSessionAuth();
+        
+        await refreshGM()
+        .then(response => {
+            var wasNotGM = !getIsGM();
+            setIsGM(true);
+            setTrainers(response.data.trainers)
+            setPTAActivityToken(response.headers['pta-activity-token']);
+            if (wasNotGM){
+                this.$router.go();
+            }
+            this.trainers = getTrainers();
+        })
+        .catch(error => {
+            alert(error);
+            removeFromStorage();
+            this.$router.push('/');
+            this.$router.go();
+        })
     },
 }
 </script>

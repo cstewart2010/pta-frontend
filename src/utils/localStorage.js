@@ -70,6 +70,21 @@ export function getTrainerId(){
 }
 
 /**
+ * Sets the users initial credentials on sign up or login
+ * @param {String} trainerId the trainer's id
+ * @param {import("axios").AxiosResponse<any,any>} response the response to build the initials credentials from
+ * @param {bool} isGM whether the user is a game master
+ */
+export function setInitialCredentials(trainerId, response, isGM){
+    setTrainerId(trainerId);
+    setPTAActivityToken(response.headers['pta-activity-token']);
+    setSessionAuth(response.headers['pta-session-auth']);
+    setIsAuthenticate(true);
+    setGameId(response.gameId);
+    setIsGM(isGM);
+}
+
+/**
  * Adds the user's activity token to local storage
  * @param {String} token 
  */
