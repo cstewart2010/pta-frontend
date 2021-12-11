@@ -3,6 +3,8 @@ const GAME_ID = "gameId";
 const IS_AUTHENTICATE = "isAuthenticated";
 const IS_GM = "isGM";
 const SESSION_AUTH = "ptaSessionAuth";
+const TRAINER = "trainer";
+const TRAINERS = "trainers";
 const TRAINER_ID = "trainerId";
 
 /**
@@ -50,6 +52,14 @@ export function getIsGM(){
  */
 export function getSessionAuth(){
     return localStorage.getItem(SESSION_AUTH);
+}
+
+export function getTrainer(){
+    return getParsedItem(TRAINER);
+}
+
+export function getTrainers(){
+    return getParsedItem(TRAINERS);
 }
 
 /**
@@ -105,6 +115,14 @@ export function setSessionAuth(sessionAuth){
  */
 export function setTrainerId(trainerId){
     localStorage.setItem(TRAINER_ID, trainerId);
+}
+
+export function setTrainer(trainer){
+    localStorage.setItem(TRAINER, JSON.stringify(trainer));
+}
+
+export function setTrainers(trainers){
+    localStorage.setItem(TRAINERS, JSON.stringify(trainers));
 }
 
 /**
