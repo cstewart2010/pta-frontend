@@ -35,7 +35,7 @@
 <script>
 import { addPlayerToGame, createNewGame } from '../api/game.api';
 import { areGameSignupCredentialsValid, areTrainerSignupCredentialsValid } from '../utils/credentials'
-import { setGameId, setIsAuthenticate, setIsGM, setPTAActivityToken, setSessionAuth, setTrainerId } from '../utils/localStorage';
+import { setGameId, setIsAuthenticate, setIsGM, setPTAActivityToken, setSessionAuth, setTrainer, setTrainerId } from '../utils/localStorage';
 
 export default {
     name: 'SignUp',
@@ -73,6 +73,7 @@ export default {
             }
             else {
                 response = await this.trainerSignup()
+                setTrainer(response.trainer);
             }
 
             const options = {

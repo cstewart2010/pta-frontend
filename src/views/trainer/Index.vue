@@ -3,7 +3,7 @@
 </template>
 
 <script>
-import { getIsAuthenticate, getPTAActivityToken, getSessionAuth, getTrainerId } from '../../utils/localStorage';
+import { getIsAuthenticate, getPTAActivityToken, getSessionAuth, getTrainer } from '../../utils/localStorage';
 
 export default {
     name: 'TrainerPortal',
@@ -20,7 +20,7 @@ export default {
             return
         }
         // validate trainer credentials
-        this.trainer = getTrainerId();
+        this.trainer = getTrainer();
         this.ptaActivityToken = getPTAActivityToken();
         this.ptaSessionAuth = getSessionAuth();
     },
