@@ -26,8 +26,9 @@
 
 <script>
 import { startGame } from '../api/game.api';
+import { userLogin } from '../api/trainer.api';
 import { areTrainerCredentialsValid, isGamePasswordValid } from '../utils/credentials';
-import { setGameId, setIsAuthenticate, setIsGM, setPTAActivityToken, setSessionAuth, setTrainerId } from '../utils/localStorage';
+import { setInitialCredentials } from '../utils/localStorage';
 
 export default {
     name: 'Login',
@@ -55,7 +56,7 @@ export default {
 
             let response = {}
             let trainerId = ''            
-            if (this.isGM){
+            if (this.isGM === true){
                 if (!isGamePasswordValid(this.gamePassword)){
                     return
                 }
@@ -75,40 +76,33 @@ export default {
                 }
             }
 
-            setTrainerId(trainerId);
-            setPTAActivityToken(response.headers['pta-activity-token']);
-            setSessionAuth(response.headers['pta-session-auth']);
-            setIsAuthenticate(true);
-            setGameId(response.gameId);
-            setIsGM(this.isGM);
-
+            setInitialCredentials(trainerId, response, this.isGM);
             this.$router.push(options);
-            this.$router.go();
+            return;
         },
         async gmLogin(){
-            const response = await startGame(this.gameId, this.trainerName, this.password, this.gamePassword).catch(alert);
-            if (response && response.status == 200){
-                alert(JSON.stringify(response.data))
+            return await startGame(this.gameId, this.trainerName, this.password, this.gamePassword)
+            .then(response => {
                 return {
                     portal: 'GM/Index',
                     trainers: response.data.trainers,
                     headers: response.headers,
                     gameId: response.data.gameId
-                };
-            }
+                }
+            }).catch(alert);
         },
         async trainerLogin(){
             // implement trainer.api module first
             // const response = await addPlayerToGame(this.gameId, username, password).catch(alert);
-            const response = {}
-            if (response && response.status == 200){
+            return await userLogin(this.gameId, this.trainerName, this.password)
+            .then(response => {
                 return {
                     portal: 'Trainer/Index',
                     trainer: response.data.trainer,
                     headers: response.headers,
                     gameId: this.gameId
-                };
-            }
+                }
+            }).catch(alert)
         }
     }
 }

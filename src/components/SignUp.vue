@@ -35,7 +35,7 @@
 <script>
 import { addPlayerToGame, createNewGame } from '../api/game.api';
 import { areGameSignupCredentialsValid, areTrainerSignupCredentialsValid } from '../utils/credentials'
-import { setGameId, setIsAuthenticate, setIsGM, setPTAActivityToken, setSessionAuth, setTrainer, setTrainerId } from '../utils/localStorage';
+import { setInitialCredentials, setTrainer } from '../utils/localStorage';
 
 export default {
     name: 'SignUp',
@@ -83,37 +83,31 @@ export default {
                 }
             }
 
-            setTrainerId(response.trainer.trainerId);
-            setPTAActivityToken(response.headers['pta-activity-token']);
-            setSessionAuth(response.headers['pta-session-auth']);
-            setIsAuthenticate(true);
-            setGameId(response.gameId);
-            setIsGM(this.isGM);
-
+            setInitialCredentials(response.trainer.trainerId, response, this.isGM);
             this.$router.push(options);
-            this.$router.go();
+            return;
         },
         async gmSignup(){
-            const response = await createNewGame(this.signUpName, this.signUpPassword, this.gamePassword).catch(alert);
-            if (response.status == 200){
+            return await createNewGame(this.signUpName, this.signUpPassword, this.gamePassword)
+            .then(response => {
                 return {
                     portal: 'GM/Index',
                     trainer: response.data.gameMaster,
                     headers: response.headers,
                     gameId: response.data.gameId
                 };
-            }
+            }).catch(alert);
         },
         async trainerSignup(){
-            const response = await addPlayerToGame(this.gameId, this.signUpName, this.signUpPassword).catch(alert);
-            if (response.status == 200){
+            return await addPlayerToGame(this.gameId, this.signUpName, this.signUpPassword)
+            .then(response => {
                 return {
                     portal: 'Trainer/Index',
                     trainer: response.data.trainer,
                     headers: response.headers,
                     gameId: this.gameId
                 };
-            }
+            }).catch(alert);
         }
     }
 }

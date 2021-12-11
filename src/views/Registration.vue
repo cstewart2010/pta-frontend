@@ -29,7 +29,7 @@ export default {
       Login,
       SignUp
     },
-    mounted:function(){
+    beforeMount:function(){
         if (getIsAuthenticate()){
             // validate trainer credentials
             const folder = this.isGM ? 'gm' : 'trainer'

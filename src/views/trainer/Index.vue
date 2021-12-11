@@ -3,26 +3,39 @@
 </template>
 
 <script>
-import { getIsAuthenticate, getPTAActivityToken, getSessionAuth, getTrainer } from '../../utils/localStorage';
+import { refreshTrainer } from '../../api/trainer.api';
+import { getIsAuthenticate, getTrainer, removeFromStorage, setTrainer, setPTAActivityToken } from '../../utils/localStorage';
 
 export default {
     name: 'TrainerPortal',
     data(){
         return {
-            trainer: null,
-            ptaActivityToken: null,
-            ptaSessionAuth: null,
+            trainer: null
         }
     },
-    beforeMount:function(){
+    beforeMount:async function(){
         if (!getIsAuthenticate()){
             this.$router.push('/');
             return
         }
         // validate trainer credentials
-        this.trainer = getTrainer();
-        this.ptaActivityToken = getPTAActivityToken();
-        this.ptaSessionAuth = getSessionAuth();
+        
+        await refreshTrainer()
+        .then(response => {
+            setPTAActivityToken(response.headers['pta-activity-token']);
+            if (response.data.trainer.isGM){
+                this.$router.push('/gm');
+                return;
+            }
+            setTrainer(response.data.trainer);
+            this.trainer = getTrainer();
+        })
+        .catch(error => {
+            alert(error);
+            removeFromStorage();
+            this.$router.push('/');
+            this.$router.go();
+        })
     },
 }
 </script>

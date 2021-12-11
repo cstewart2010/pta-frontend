@@ -58,7 +58,7 @@ import { userLogout } from '../../api/trainer.api';
         isGM: false,
       }
     },
-    beforeMount:function(){
+    mounted:function(){
       this.needsToAuthenticate = !getIsAuthenticate();
       this.isGM = getIsGM() === true;
     },
