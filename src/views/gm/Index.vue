@@ -7,6 +7,7 @@
 <script>
 import { refreshGM } from '../../api/trainer.api';
 import { getIsAuthenticate, getTrainers, setTrainers, removeFromStorage, setPTAActivityToken, setIsGM, getIsGM } from '../../utils/localStorage';
+import { generateNavigationModal } from '../../utils/modalUtil';
 
 export default {
     name: 'GMPortal',
@@ -36,10 +37,8 @@ export default {
             this.trainers = getTrainers();
         })
         .catch(error => {
-            alert(error);
             removeFromStorage();
-            this.$router.push('/');
-            this.$router.go();
+            generateNavigationModal(error.status, error.reason, '/');
         })
     },
 }

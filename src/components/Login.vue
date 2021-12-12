@@ -25,85 +25,94 @@
 </template>
 
 <script>
-import { startGame } from '../api/game.api';
-import { userLogin } from '../api/trainer.api';
-import { areTrainerCredentialsValid, isGamePasswordValid } from '../utils/credentials';
-import { setInitialCredentials } from '../utils/localStorage';
+    import { startGame } from '../api/game.api';
+    import { userLogin } from '../api/trainer.api';
+    import { areTrainerCredentialsValid, isGamePasswordValid } from '../utils/credentials';
+    import { setInitialCredentials } from '../utils/localStorage';
+    import { generateErrorModal } from "../utils/modalUtil"
 
-export default {
-    name: 'Login',
-    props: {
-        isGM: {
-            default: false
-        }
-    },
-    data(){
-        return {
-            gameId: null,
-            trainerName: '',
-            password: '',
-            gamePassword: '',
-        }
-    },
-    mounted:function(){
-        this.gameId = this.$route.query.gameId;
-    },
-    methods: {
-        async login(){
-            if (!areTrainerCredentialsValid(this.trainerName, this.password)){
-                return;
+    export default {
+        name: 'Login',
+        props: {
+            isGM: {
+                default: false
             }
-
-            let response = {}
-            let trainerId = ''            
-            if (this.isGM === true){
-                if (!isGamePasswordValid(this.gamePassword)){
-                    return
-                }
-                
-                response = await this.gmLogin()
-                trainerId = response.trainers.filter(trainer => trainer.trainerName == this.trainerName)[0].trainerId
-            }
-            else {
-                response = await this.trainerLogin()
-                trainerId = response.trainer.trainerId
-            }
-
-            const options = {
-                name: response.portal,
-                query: {
-                    gameId: response.gameId
-                }
-            }
-
-            setInitialCredentials(trainerId, response, this.isGM);
-            this.$router.push(options);
-            return;
         },
-        async gmLogin(){
-            return await startGame(this.gameId, this.trainerName, this.password, this.gamePassword)
-            .then(response => {
-                return {
-                    portal: 'GM/Index',
-                    trainers: response.data.trainers,
-                    headers: response.headers,
-                    gameId: response.data.gameId
-                }
-            }).catch(alert);
+        data(){
+            return {
+                gameId: null,
+                trainerName: '',
+                password: '',
+                gamePassword: '',
+            }
         },
-        async trainerLogin(){
-            // implement trainer.api module first
-            // const response = await addPlayerToGame(this.gameId, username, password).catch(alert);
-            return await userLogin(this.gameId, this.trainerName, this.password)
-            .then(response => {
-                return {
-                    portal: 'Trainer/Index',
-                    trainer: response.data.trainer,
-                    headers: response.headers,
-                    gameId: this.gameId
+        mounted:function(){
+            this.gameId = this.$route.query.gameId;
+        },
+        methods: {
+            async login(){
+                const trainerResult = await areTrainerCredentialsValid(this.trainerName, this.password)
+                    .catch(generateErrorModal);
+                if (!trainerResult){
+                    return;
                 }
-            }).catch(alert)
+
+                if (this.isGM === true){
+                    const gameResult = await isGamePasswordValid(this.gamePassword)
+                        .catch(generateErrorModal);
+                    if (!gameResult){
+                        return;
+                    }
+                    
+                    await this.gmLogin()
+                        .then(response => {
+                            const trainerId = response.trainers.filter(trainer => trainer.trainerName == this.trainerName)[0].trainerId;
+                            this.pushToNext(trainerId, response);
+                        })
+                        .catch(generateErrorModal);
+                }
+                else {
+                    await this.trainerLogin()
+                        .then(response => {
+                            const trainerId = response.trainer.trainerId
+                            this.pushToNext(trainerId, response);
+                        })
+                        .catch(generateErrorModal);
+                }
+            },
+            pushToNext(trainerId, response){
+                const options = {
+                    name: response.portal,
+                    query: {
+                        gameId: response.gameId
+                    }
+                }
+
+                setInitialCredentials(trainerId, response, this.isGM);
+                this.$router.push(options);
+            },
+            async gmLogin(){
+                return await startGame(this.gameId, this.trainerName, this.password, this.gamePassword)
+                    .then(response => {
+                        return {
+                            portal: 'GM/Index',
+                            trainers: response.data.trainers,
+                            headers: response.headers,
+                            gameId: response.data.gameId
+                        }
+                    });
+            },
+            async trainerLogin(){
+                return await userLogin(this.gameId, this.trainerName, this.password)
+                    .then(response => {
+                        return {
+                            portal: 'Trainer/Index',
+                            trainer: response.data.trainer,
+                            headers: response.headers,
+                            gameId: this.gameId
+                        }
+                    });
+            }
         }
     }
-}
 </script>

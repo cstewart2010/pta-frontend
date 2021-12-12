@@ -6,18 +6,23 @@
  * @param {String} confirm the password confirmation, should match the pass
  * @returns Returns true if all parameters are valid
  */
-export function areTrainerSignupCredentialsValid(username, password, confirm){
+export async function areTrainerSignupCredentialsValid(username, password, confirm){
+    let reason = ''
     if (!(username && password && confirm)){
-        alert("Please fill out all fields");
-        return false;
+        reason = "Please fill out all fields";
     }
     if (password != confirm){
-        alert("Passwords do not match");
-        return false;
+        reason = "Passwords do not match";
     }
     if (username.length < 6 || password.length < 6){
-        alert("Name and password must be at least 6 characters long");
-        return false;
+        reason = "Name and password must be at least 6 characters long";
+    }
+
+    if (reason.length > 1){
+        throw {
+            status: 'Invalid credentials field',
+            reason
+        }
     }
 
     return true;
@@ -29,18 +34,23 @@ export function areTrainerSignupCredentialsValid(username, password, confirm){
  * @param {String} confirm the password confirmation, should match the pass
  * @returns Returns true if all parameters are valid
  */
-export function areGameSignupCredentialsValid(password, confirm){
+export async function areGameSignupCredentialsValid(password, confirm){
+    let reason = ''
     if (!(password && confirm)){
-        alert("Please fill out all game credential fields");
-        return false;
+        reason = "Please fill out all game credential fields";
     }
     if (password != confirm){
-        alert("Passwords do not match");
-        return false;
+        reason = "Passwords do not match";
     }
     if (password.length < 6){
-        alert("Game password must be at least 6 characters long");
-        return false;
+        reason = "Game password must be at least 6 characters long";
+    }
+
+    if (reason.length > 1){
+        throw {
+            status: 'Invalid credentials field',
+            reason
+        }
     }
 
     return true;
@@ -53,15 +63,20 @@ export function areGameSignupCredentialsValid(password, confirm){
  * @param {String} password the trainers password
  * @returns Returns true if all parameters are valid
  */
-export function areTrainerCredentialsValid(username, password){
+export async function areTrainerCredentialsValid(username, password){
+    let reason = ''
     if (!(username && password)){
-        alert("Please fill out all fields");
-        return false;
+        reason = "Please fill out all fields";
+    }
+    if (username.length < 6 || password.length < 6){
+        reason = "Name and password must be at least 6 characters long";
     }
 
-    if (username.length < 6 || password.length < 6){
-        alert("Trainer name and password must be at least 6 characters long");
-        return false;
+    if (reason.length > 1){
+        throw {
+            status: 'Invalid credentials field',
+            reason
+        }
     }
 
     return true;
@@ -72,15 +87,20 @@ export function areTrainerCredentialsValid(username, password){
  * @param {String} password the trainers password
  * @returns Returns true if all parameters are valid
  */
-export function isGamePasswordValid(password){
+export async function isGamePasswordValid(password){
+    let reason = ''
     if (!password){
-        alert('Please fill out game password');
-        return false;
+        reason = "Please fill out game password";
+    }
+    if (password.length < 6){
+        reason = "Game password must be at least 6 characters long'";
     }
 
-    if (password.length < 6){
-        alert('Game password must be at least 6 characters long');
-        return false;
+    if (reason.length > 1){
+        throw {
+            status: 'Invalid credentials field',
+            reason
+        }
     }
 
     return true;

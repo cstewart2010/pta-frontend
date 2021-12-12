@@ -12,6 +12,7 @@
 
 <script>
     import { findGameById, findAllGames, findAllGamesByNickname } from "../api/game.api";
+    import { generateErrorModal } from "../utils/modalUtil"
     import NotificationModal from "./partials/NotificationModal.vue";
 
     export default {
@@ -33,42 +34,51 @@
         },
         mounted:async function(){
             if (this.nickname){
-                this.games = await this.getGamesByNickname();
+                await this.getGamesByNickname()
+                    .then(data => {
+                        this.games = data
+                    })
+                    .catch(generateErrorModal);
             }
             else {
-                this.games = await this.getGames();
+                await this.getGames()
+                    .then(data => {
+                        this.games = data
+                    })
+                    .catch(generateErrorModal);
             }
         },
         methods: {
             async getGame(gameId) {
                 await findGameById(gameId)
-                .then(response =>{
-                    this.title = response.data.message;
-                    this.body = response.data.trainers;
-                    this.gameId = gameId;
-                    this.modalOptions = {
-                        name: 'Registration',
-                        params: {
-                            isGM: false
-                        },
-                        query: {
-                            gameId: this.gameId
-                        }
-                    };
-                })
-                .catch(alert)
+                    .then(response =>{
+                        this.title = response.data.message;
+                        this.body = response.data.trainers;
+                        this.gameId = gameId;
+                        this.modalOptions = {
+                            name: 'Registration',
+                            params: {
+                                isGM: false
+                            },
+                            query: {
+                                gameId: this.gameId
+                            }
+                        };
+                    })
+                    .catch(generateErrorModal);
             },
             async getGamesByNickname(){
-                const response = await findAllGamesByNickname(this.nickname);
-                if (response){
-                    return response.data
-                }
+                return await findAllGamesByNickname(this.nickname)
+                    .then(response =>{
+                        return response.data
+                    })
+
             },
             async getGames(){
-                const response = await findAllGames();
-                if (response){
-                    return response.data
-                }
+                return await findAllGames()
+                    .then(response =>{
+                        return response.data
+                    })
             }
         }
     }

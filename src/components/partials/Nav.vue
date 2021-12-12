@@ -75,7 +75,7 @@ import { userLogout } from '../../api/trainer.api';
         this.$router.push('/games');
       },
       async logout(){
-        await userLogout().catch(alert);
+        await userLogout().catch(console.log);
         removeFromStorage();
         this.$router.go();
       }
