@@ -1,5 +1,5 @@
-import GenericVisibleModal from "../components/partials/GenericVisibleModal.vue";
-import VisibleNotificationModal from "../components/partials/VisibleNotificationModal.vue";
+import GenericVisibleModal from "../components/modals/GenericVisibleModal.vue";
+import VisibleNotificationModal from "../components/modals/VisibleNotificationModal.vue";
 import { createApp } from '@vue/runtime-dom';
 
 export function generateErrorModal(error){
