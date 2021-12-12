@@ -2,24 +2,33 @@
     <div>
         <h2>Game Control</h2>
         <div class="row">
-            <button class="col-md-4 btn btn-primary" v-for="(game, index) in games" v-bind:key="index" v-bind:id="game.gameId" @click="getGame(game.gameId)">
+            <button class="col-md-4 btn btn-primary" v-for="(game, index) in games" :key="index" :id="game.gameId" @click="getGame(game.gameId)" data-bs-toggle="modal" data-bs-target="#notificationModal">
                 {{JSON.stringify(game)}}
             </button>
+            <notification-modal :title="title" :body="body" :options="modalOptions" />
         </div>
     </div>
 </template>
 
 <script>
     import { findGameById, findAllGames, findAllGamesByNickname } from "../api/game.api";
+    import NotificationModal from "./partials/NotificationModal.vue";
 
     export default {
         name: "GameControl",
         props: {
             nickname: null
         },
+        components: {
+            NotificationModal
+        },
         data(){
             return {
-                games: null
+                games: null,
+                gameId: null,
+                title: 'Modal title',
+                body: '...',
+                modalOptions: null
             }
         },
         mounted:async function(){
@@ -32,19 +41,22 @@
         },
         methods: {
             async getGame(gameId) {
-                const response = await findGameById(gameId);
-                if (response){
-                    alert(JSON.stringify(response.data));
-                    this.$router.push({
+                await findGameById(gameId)
+                .then(response =>{
+                    this.title = response.data.message;
+                    this.body = response.data.trainers;
+                    this.gameId = gameId;
+                    this.modalOptions = {
                         name: 'Registration',
                         params: {
                             isGM: false
                         },
                         query: {
-                            gameId
+                            gameId: this.gameId
                         }
-                    })
-                }
+                    };
+                })
+                .catch(alert)
             },
             async getGamesByNickname(){
                 const response = await findAllGamesByNickname(this.nickname);
