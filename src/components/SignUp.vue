@@ -36,6 +36,7 @@
 import { addPlayerToGame, createNewGame } from '../api/game.api';
 import { areGameSignupCredentialsValid, areTrainerSignupCredentialsValid } from '../utils/credentials'
 import { setInitialCredentials, setTrainer } from '../utils/localStorage';
+import { generateErrorModal } from "../utils/modalUtil";
 
 export default {
     name: 'SignUp',
@@ -59,23 +60,33 @@ export default {
     },
     methods: {
         async signUp(){
-            if (!areTrainerSignupCredentialsValid(this.signUpName, this.signUpPassword, this.confirmUserPassword)){
-                return;
+            const trainerResult = await areTrainerSignupCredentialsValid(this.signUpName, this.signUpPassword, this.confirmUserPassword)
+                .catch(generateErrorModal);
+            if (!trainerResult){
+                return
             }
             
-            let response = {}
             if (this.isGM === 'true'){
-                if (!areGameSignupCredentialsValid(this.gamePassword, this.confirmGamePassword)){
-                    return;
+                const gameResult = await areGameSignupCredentialsValid(this.gamePassword, this.confirmGamePassword)
+                    .catch(generateErrorModal);
+                if (!gameResult){
+                    return
                 }
                 
-                response = await this.gmSignup()
+                await this.gmSignup()
+                    .then(this.pushToNext)
+                    .catch(generateErrorModal);
             }
             else {
-                response = await this.trainerSignup()
-                setTrainer(response.trainer);
+                await this.trainerSignup()
+                    .then(response => {
+                        setTrainer(response.trainer);
+                        this.pushToNext(response);
+                    })
+                    .catch(generateErrorModal);
             }
-
+        },
+        pushToNext(response){
             const options = {
                 name: response.portal,
                 query: {
@@ -85,29 +96,28 @@ export default {
 
             setInitialCredentials(response.trainer.trainerId, response, this.isGM);
             this.$router.push(options);
-            return;
         },
         async gmSignup(){
             return await createNewGame(this.signUpName, this.signUpPassword, this.gamePassword)
-            .then(response => {
-                return {
-                    portal: 'GM/Index',
-                    trainer: response.data.gameMaster,
-                    headers: response.headers,
-                    gameId: response.data.gameId
-                };
-            }).catch(alert);
+                .then(response => {
+                    return {
+                        portal: 'GM/Index',
+                        trainer: response.data.gameMaster,
+                        headers: response.headers,
+                        gameId: response.data.gameId
+                    };
+                });
         },
         async trainerSignup(){
             return await addPlayerToGame(this.gameId, this.signUpName, this.signUpPassword)
-            .then(response => {
-                return {
-                    portal: 'Trainer/Index',
-                    trainer: response.data.trainer,
-                    headers: response.headers,
-                    gameId: this.gameId
-                };
-            }).catch(alert);
+                .then(response => {
+                    return {
+                        portal: 'Trainer/Index',
+                        trainer: response.data.trainer,
+                        headers: response.headers,
+                        gameId: this.gameId
+                    };
+                });
         }
     }
 }

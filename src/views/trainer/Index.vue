@@ -5,6 +5,7 @@
 <script>
 import { refreshTrainer } from '../../api/trainer.api';
 import { getIsAuthenticate, getTrainer, removeFromStorage, setTrainer, setPTAActivityToken } from '../../utils/localStorage';
+import { generateNavigationModal } from '../../utils/modalUtil';
 
 export default {
     name: 'TrainerPortal',
@@ -18,7 +19,6 @@ export default {
             this.$router.push('/');
             return
         }
-        // validate trainer credentials
         
         await refreshTrainer()
         .then(response => {
@@ -31,10 +31,8 @@ export default {
             this.trainer = getTrainer();
         })
         .catch(error => {
-            alert(error);
             removeFromStorage();
-            this.$router.push('/');
-            this.$router.go();
+            generateNavigationModal(error.status, error.reason, '/');
         })
     },
 }

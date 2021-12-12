@@ -17,8 +17,6 @@ client.interceptors.response.use(dataUpdater);
  * @returns An array with null reference in the first position and the response in the second position
  */
  export async function requestHandler(endpoint, method, {activityToken, sessionAuth, data, contentType}={}) {
-    let parsedResponse = null;
-    
     let headers = {}
     if (activityToken){
         headers = {'pta-activity-token': activityToken, 'pta-session-auth': sessionAuth};
@@ -33,26 +31,16 @@ client.interceptors.response.use(dataUpdater);
     const config = {headers};
     switch (method.toUpperCase()){
         case "GET":
-            parsedResponse = await client.get(endpoint, config).catch(errorHandler);
-            break;
+            return await client.get(endpoint, config).catch(errorHandler);
         case "POST":
-            parsedResponse = await client.post(endpoint, data, config).catch(errorHandler);
-            break;
+            return await client.post(endpoint, data, config).catch(errorHandler);
         case "PUT":
-            parsedResponse = await client.put(endpoint, data, config).catch(errorHandler);
-            break;
+            return await client.put(endpoint, data, config).catch(errorHandler);
         case "DELETE":
-            parsedResponse = await client.delete(endpoint, config).catch(errorHandler);
-            break;
+            return await client.delete(endpoint, config).catch(errorHandler);
         default:
             throw `Argument was out of range: ${method}`
     }
-
-    if (!parsedResponse){
-        throw `Failed to make ${method} request at ${endpoint}`
-    }
-
-    return parsedResponse;
 }
 
 /**
@@ -62,7 +50,7 @@ client.interceptors.response.use(dataUpdater);
 export function natureChecker(nature){
     nullChecker(nature, 'nature');
     if (!NATURES.includes(nature.toUpperCase())){
-        throw `Invalid nature ${nature}`
+        throw debugThrow(`Invalid nature ${nature}`)
     }
 }
 
@@ -73,7 +61,7 @@ export function natureChecker(nature){
 export function genderChecker(gender){
     nullChecker(gender, 'gender');
     if (!GENDERS.includes(gender.toUpperCase())){
-        throw `Invalid gender ${gender}`
+        throw debugThrow(`Invalid gender ${gender}`)
     }
 }
 
@@ -84,7 +72,7 @@ export function genderChecker(gender){
 export function statusChecker(status){
     nullChecker(status, 'status');
     if (!STATUSES.includes(status.toUpperCase())){
-        throw `Invalid status ${status}`
+        throw debugThrow(`Invalid status ${status}`)
     }
 }
 
@@ -95,10 +83,21 @@ export function statusChecker(status){
  */
 export function nullChecker(argument, argumentName){
     if (argument === null){
-        throw `null argument ${argumentName}`
+        throw debugThrow(`null argument ${argumentName}`)
     }
     if (argument === undefined){
-        throw `undefined argument ${argumentName}`
+        throw debugThrow(`undefined argument ${argumentName}`)
+    }
+}
+
+/**
+ * @param {String} reason reason for the debug error
+ * @returns an object to add to an error modal
+ */
+const debugThrow = reason => {
+    return {
+        status: 'Debug',
+        reason
     }
 }
 
@@ -119,22 +118,35 @@ const dataUpdater = response => {
  * @param {any} error 
  */
 const errorHandler = error => {
-    switch (error.response.status){
-        case 401:
-            alert('This action was not authorized');
-            break;
-        case 404:
-            alert('This page was not found');
-            break
-        case 400:
-            alert('You made a malformed request');
-            break;
-        case 500:
-            alert('Congrats, you broke it');
-            break;
-        default:
-            alert('PTA Servers are down.');
-            break
+    if (error.response){
+        let reason = '';
+        switch (error.response.status){
+            case 401:
+                reason = 'This action was not authorized';
+                break;
+            case 404:
+                reason = 'This page was not found';
+                break;
+            case 400:
+                reason = 'You made a malformed request';
+                break;
+            case 500:
+                reason = 'Congrats, you broke it';
+                break;
+            default:
+                reason = 'PTA Servers are down.';
+                break;
+        }
+
+        throw {
+            status: error.response.status,
+            reason
+        };
     }
-    console.log(JSON.stringify(error));
+    else {
+        throw {
+            status: 'Null Status',
+            reason: 'PTA Servers are down.'
+        };
+    }
 }
