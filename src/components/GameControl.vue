@@ -13,7 +13,7 @@
 <script>
     import { findGameById, findAllGames, findAllGamesByNickname } from "../api/game.api";
     import { generateErrorModal } from "../utils/modalUtil"
-    import NotificationModal from "./partials/NotificationModal.vue";
+    import NotificationModal from "./modals/NotificationModal.vue";
 
     export default {
         name: "GameControl",
