@@ -8,21 +8,22 @@ export function generateErrorModal(error){
         body: error.reason
     });
 
-    const wrapper = document.createElement("div");
-    wrapper.id = 'modal-holder';
-    ComponentApp.mount(wrapper);
-    document.body.appendChild(wrapper);
+    mountApp(ComponentApp);
 }
 
 export function generateNavigationModal(title, body, options){
-    var ComponentApp = createApp(VisibleNotificationModal, {
+    const ComponentApp = createApp(VisibleNotificationModal, {
         title,
         body,
         options
     });
 
+    mountApp(ComponentApp);
+}
+
+const mountApp = app => {
     const wrapper = document.createElement("div");
     wrapper.id = 'modal-holder';
-    ComponentApp.mount(wrapper);
+    app.mount(wrapper);
     document.body.appendChild(wrapper);
 }
