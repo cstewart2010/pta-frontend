@@ -7,6 +7,7 @@ const FEATUREDEX_RESOURCE = `${BASE_URL}/api/v1/featuredex`
 const ITEMDEX_RESOURCE = `${BASE_URL}/api/v1/itemdex`
 const ORIGINDEX_RESOURCE = `${BASE_URL}/api/v1/origindex`
 const CLASSDEX_RESOURCE = `${BASE_URL}/api/v1/classdex`
+const MOVEDEX_RESOURCE = `${BASE_URL}/api/v1/movedex`
 
 /**
  * @returns All Pokemon in the pokedex
@@ -97,6 +98,13 @@ export async function getAllOrigins(){
  */
 export async function getAllTrainerClasses(){
     return await requestHandler(`${CLASSDEX_RESOURCE}?limit=2000`, METHODS.GET);
+}
+
+/**
+ * @returns All moves in the classdex
+ */
+export async function getAllMoves(){
+    return await requestHandler(`${MOVEDEX_RESOURCE}?limit=2000`, METHODS.GET);
 }
 
 /**
@@ -227,4 +235,14 @@ export async function getTrainerClass(trainerClass){
     nullChecker(trainerClass, 'trainerClass');
 
     return await requestHandler(`${CLASSDEX_RESOURCE}/${trainerClass}`, METHODS.GET);
+}
+
+/**
+ * @param {String} move The name of the move to search for
+ * @returns The move matching the name supplied
+ */
+export async function getMove(move){
+    nullChecker(move, 'move');
+
+    return await requestHandler(`${MOVEDEX_RESOURCE}/${move}`, METHODS.GET);
 }

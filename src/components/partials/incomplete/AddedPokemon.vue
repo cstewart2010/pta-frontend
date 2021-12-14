@@ -8,12 +8,12 @@
     </div>
     <div class="col-md-1 text-center" :id="'species-'+position">{{pokemonData.name}}</div>
     <div class="col-md-2 text-center" :id="'current-hp-'+position">{{pokemonData.pokemonStats.hp}}</div>
-    <div class="col-md-4 text-center" :id="'notes-'+position">Original Trainer</div>
+    <div class="col-md-4 text-center" :id="'notes-'+position">Original Trainer <br> {{this.pokemonData.rarity}}</div>
 </template>
 
 <script>
-import { getPokemon } from '../../api/dex.api'
-import { generateErrorModal } from '../../utils/modalUtil'
+import { getPokemon } from '../../../api/dex.api'
+import { generateErrorModal } from '../../../utils/modalUtil'
 
 export default {
     name: 'AddedPokemon',
