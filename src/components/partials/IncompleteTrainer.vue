@@ -8,19 +8,29 @@
     <div v-else-if="sheet=='moves'">
         <trainer-moves />
     </div>
+    <div v-else-if="sheet=='team'">
+        <pokemon-team />
+    </div>
+    <div v-else-if="sheet=='home'">
+        <pokemon-home />
+    </div>
 </template>
 
 <script>
 import TrainerSheet from './incomplete/TrainerSheet.vue';
 import ClassFeatures from './ClassFeatures.vue';
 import TrainerMoves from './TrainerMoves.vue';
+import PokemonTeam from './PokemonTeam.vue';
+import PokemonHome from './PokemonHome.vue';
 
 export default {
-    name: "Incomplete Trainer",
+    name: "IncompleteTrainer",
     components: {
         TrainerSheet,
         ClassFeatures,
-        TrainerMoves
+        TrainerMoves,
+        PokemonTeam,
+        PokemonHome,
     },
     props: {
         sheet: {

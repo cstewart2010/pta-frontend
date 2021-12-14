@@ -151,6 +151,9 @@
                                 <div v-if="selectedOrigin.feature">
                                     <p>Origin Feature: {{selectedOrigin.feature.name}}</p>
                                     <p>{{selectedOrigin.feature.effects}}</p>
+                                    <p>
+                                        Starting Savings: {{trainer.money}}¥
+                                    </p>
                                 </div>
                             </div>
                         </div>
@@ -197,57 +200,19 @@
         </div>
     </div>
     <hr>
-    <div class="row">
-        <div class="col-md-1 text-center">Number</div>
-        <div class="col-md-1 text-center">Icon</div>
-        <div class="col-md-2 text-center">Nickname</div>
-        <div class="col-md-1 text-center">Species</div>
-        <div class="col-md-2 text-center">Current HP</div>
-        <div class="col-md-4 text-center">Notes</div>
-        <div class="col-md-1 text-center">Delete</div>
-    </div>
-    <div id="addedPokemon" class="my-1">
-        <div v-for="(pokemon, index) in pokemonTeam" :key="pokemon">
-            <div class="row d-flex align-items-center" :id="'pokemon-'+index">
-                <added-pokemon :pokemon="pokemon" :position="index + 1" />
-                <div class="col-md-1 text-center">
-                    <button class="btn-close" @click="remove(index)" />
-                </div>
-            </div>
-            <hr/>
-        </div>
-    </div>
-    <div class="row">
-        <div class="col-md-3">
-            <select class="form-select text-center my-1" name="pokemon" v-model="addedPokemon">
-                <option v-for="(pokemon, index) in pokemonCol" :key="index" :id="pokemon" :value="index + 1">
-                    {{pokemon}}
-                </option>
-            </select>
-            <button class="btn btn-primary my-1" @click="addPokemon">Add this pokemon</button>
-        </div>
-    </div>
 </template>
 
 <script>
-import { getAllOrigins, getAllPokemon, getAllTrainerClasses, getOrigin, getTrainerClass } from '../../../api/dex.api'
+import { getAllOrigins, getAllTrainerClasses, getOrigin, getTrainerClass } from '../../../api/dex.api'
 import { getTrainer, setTrainer } from '../../../utils/localStorage';
 import { generateErrorModal } from '../../../utils/modalUtil'
-import AddedPokemon from './AddedPokemon.vue';
 
 export default {
     name: "TrainerSheet",
-    components: {
-        AddedPokemon
-    },
     data(){
         return {
             origins: [],
             trainerClasses: [],
-            pokemonCol: [],
-            pokemonTeam: [],
-            pokemonHome: [],
-            addedPokemon: '',
             species: '',
             trainer: getTrainer(),
             selectedOrigin: 'Academic',
@@ -264,12 +229,6 @@ export default {
         await getAllTrainerClasses()
             .then(response => {
                 this.trainerClasses = response.data.results.map(item => item.name)
-            })
-            .catch(generateErrorModal);
-        
-        await getAllPokemon()
-            .then(response => {
-                this.pokemonCol = response.data.results.map(item => item.name)
             })
             .catch(generateErrorModal);
 
@@ -293,21 +252,11 @@ export default {
                 await getOrigin(this.trainer.origin)
                     .then(response => {
                         this.selectedOrigin = response.data
+                        this.trainer.money = this.selectedOrigin.savings
                         this.updateTrainer();
                     })
                     .catch(generateErrorModal);
             }
-        },
-        addPokemon(){
-            if (this.pokemonTeam.length == 6){
-                this.pokemonHome.push(this.addedPokemon);
-            }
-            else{
-                this.pokemonTeam.push(this.addedPokemon);
-            }
-        },
-        remove(index){
-            this.pokemonTeam = this.pokemonTeam.filter((pokemon, entryIndex) => entryIndex != index)
         },
         updateTalent1(index){
             this.trainer.trainerSkills[index].talent1 = !this.trainer.trainerSkills[index].talent1

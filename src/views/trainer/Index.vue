@@ -24,6 +24,9 @@
                         <button class="btn btn-dark" @click="switchSheet('moves')">Trainer Moves</button>
                     </li>
                     <li class="nav-item">
+                        <button class="btn btn-dark" @click="switchSheet('items')">Inventory</button>
+                    </li>
+                    <li class="nav-item">
                         <button class="btn btn-dark" @click="switchSheet('pokedex')">Pokedex and Honors</button>
                     </li>
                     <li class="nav-item">

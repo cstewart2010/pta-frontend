@@ -48,6 +48,7 @@
 
 <script>
 import { getAllMoves } from '../../api/dex.api'
+import { getMoves, setMoves } from '../../utils/localStorage';
 import { generateErrorModal } from '../../utils/modalUtil'
 import AddedMove from './incomplete/AddedMove.vue';
 
@@ -67,15 +68,24 @@ export default {
         await getAllMoves()
             .then(response => {
                 this.moves = response.data.results.map(result => result.name)
+                const moves = getMoves();
+                if (moves){
+                    this.trainerMoves = moves;
+                }
             })
             .catch(generateErrorModal);
     },
     methods:{
         addMove(){
             this.trainerMoves.push(this.addedMove);
+            this.updateMoves();
         },
         remove(index){
             this.trainerMoves = this.trainerMoves.filter((move, entryIndex) => entryIndex != index)
+            this.updateMoves();
+        },
+        updateMoves(){
+            setMoves(this.trainerMoves)
         }
     }
 }
