@@ -6,6 +6,9 @@ const SESSION_AUTH = "ptaSessionAuth";
 const TRAINER = "trainer";
 const TRAINERS = "trainers";
 const TRAINER_ID = "trainerId";
+const MOVES = "moves"
+const POKEMON_TEAM = "pokemonTeam"
+const POKEMON_HOME = "pokemonHome"
 
 /**
  * Gets a logged in user's credentials
@@ -60,6 +63,18 @@ export function getTrainer(){
 
 export function getTrainers(){
     return getParsedItem(TRAINERS);
+}
+
+export function getMoves(){
+    return getParsedItem(MOVES);
+}
+
+export function getPokemonTeam(){
+    return getParsedItem(POKEMON_TEAM);
+}
+
+export function getPokemonHome(){
+    return getParsedItem(POKEMON_HOME);
 }
 
 /**
@@ -138,6 +153,18 @@ export function setTrainer(trainer){
 
 export function setTrainers(trainers){
     localStorage.setItem(TRAINERS, JSON.stringify(trainers));
+}
+
+export function setMoves(moves){
+    localStorage.setItem(MOVES, JSON.stringify(moves));
+}
+
+export function setPokemonTeam(team){
+    localStorage.setItem(POKEMON_TEAM, JSON.stringify(team));
+}
+
+export function setPokemonHome(home){
+    localStorage.setItem(POKEMON_HOME, JSON.stringify(home));
 }
 
 /**

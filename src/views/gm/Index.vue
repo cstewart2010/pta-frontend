@@ -1,4 +1,4 @@
-<template>    
+<template>
     <div v-for="trainer in trainers" :key="trainer.TrainerId">
         {{trainer}}
     </div>
