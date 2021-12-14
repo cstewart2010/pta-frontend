@@ -122,9 +122,10 @@
                     <div class="row">
                         <div class="col-md-6">
                             <div class="row d-flex align-items-center">
-                                <div class="col-md-4">Skill Name</div>
-                                <div class="col-md-4">Talent 1</div>
-                                <div class="col-md-4">Talent 2</div>
+                                <div class="col-md-3">Skill Name</div>
+                                <div class="col-md-3">Talent 1</div>
+                                <div class="col-md-3">Talent 2</div>
+                                <div class="col-md-3">Modifier</div>
                             </div>
                         </div>
                         <div class="col-md-6">
@@ -135,12 +136,23 @@
                     <div class="row">
                         <div class="col-md-6">
                             <div class="row d-flex align-items-center" v-for="(trainerSkill, index) in trainer.trainerSkills" :key="index">
-                                <div class="col-md-4 pl-2 text-truncate" data-bs-toggle="tooltip" :title="trainerSkill">{{trainerSkill.name}}</div>
-                                <div class="col-md-4" style="text-align:center;">
-                                    <input type="checkbox" :name="trainerSkill.name+'-talent-1'" :id="trainerSkill.name+'-talent-1'" :checked="this.trainer.trainerSkills[index].talent1" @change="updateTalent1(index)">
+                                <div class="col-md-3 pl-2 text-truncate" data-bs-toggle="tooltip" :title="trainerSkill">{{trainerSkill.name}}</div>
+                                <div class="col-md-3" style="text-align:center;">
+                                    <input type="checkbox" :name="trainerSkill.name+'-talent-1'" :id="trainerSkill.name+'-talent-1'" :checked="trainer.trainerSkills[index].talent1" @change="updateTalent1(index)">
                                 </div>
-                                <div class="col-md-4" style="text-align:center;">
-                                    <input type="checkbox" :name="trainerSkill.name+'-talent-2'" :id="trainerSkill.name+'-talent-2'" :checked="this.trainer.trainerSkills[index].talent2" @change="updateTalent2(index)">
+                                <div class="col-md-3" style="text-align:center;">
+                                    <input type="checkbox" :name="trainerSkill.name+'-talent-2'" :id="trainerSkill.name+'-talent-2'" :checked="trainer.trainerSkills[index].talent2" @change="updateTalent2(index)">
+                                </div>
+                                <div class="col-md-3" style="text-align:center;">
+                                    <div v-if="trainer.trainerSkills[index].talent1 ^ trainer.trainerSkills[index].talent2">
+                                        +{{Math.floor(trainer.trainerStats[trainerSkill.modifierStat]/2) + 2}}
+                                    </div>
+                                    <div v-else-if="trainer.trainerSkills[index].talent1">
+                                        +{{Math.floor(trainer.trainerStats[trainerSkill.modifierStat]/2) + 5}}
+                                    </div>
+                                    <div v-else-if="trainer.trainerStats[trainerSkill.modifierStat] > 1">
+                                        +{{Math.floor(trainer.trainerStats[trainerSkill.modifierStat]/2)}}
+                                    </div>
                                 </div>
                             </div>
                         </div>
