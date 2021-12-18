@@ -82,10 +82,7 @@
             },
             pushToNext(trainerId, response){
                 const options = {
-                    name: response.portal,
-                    query: {
-                        gameId: response.gameId
-                    }
+                    name: response.portal
                 }
 
                 setInitialCredentials(trainerId, response, this.isGM);

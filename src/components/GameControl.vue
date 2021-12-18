@@ -53,7 +53,7 @@
                 await findGameById(gameId)
                     .then(response =>{
                         this.title = response.data.message;
-                        this.body = response.data.trainers;
+                        this.body = response.data.trainers.map(trainer => trainer.trainerName);
                         this.gameId = gameId;
                         this.modalOptions = {
                             name: 'Registration',

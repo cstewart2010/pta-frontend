@@ -9,6 +9,8 @@ const TRAINER_ID = "trainerId";
 const MOVES = "moves"
 const POKEMON_TEAM = "pokemonTeam"
 const POKEMON_HOME = "pokemonHome"
+const POKEMON_NEW_TEAM = "pokemonNewTeam"
+const POKEMON_NEW_HOME = "pokemonNewHome"
 
 /**
  * Gets a logged in user's credentials
@@ -57,24 +59,53 @@ export function getSessionAuth(){
     return localStorage.getItem(SESSION_AUTH);
 }
 
+/**
+ * @returns the selected trainer
+ */
 export function getTrainer(){
     return getParsedItem(TRAINER);
 }
 
+/**
+ * @returns all trainers for the gm
+ */
 export function getTrainers(){
     return getParsedItem(TRAINERS);
 }
 
+/**
+ * @returns selected trainer moves
+ */
 export function getMoves(){
     return getParsedItem(MOVES);
 }
 
+/**
+ * @returns current pokemon team
+ */
 export function getPokemonTeam(){
     return getParsedItem(POKEMON_TEAM);
 }
 
+/**
+ * @returns current pokemon home
+ */
 export function getPokemonHome(){
     return getParsedItem(POKEMON_HOME);
+}
+
+/**
+ * @returns new pokemon team
+ */
+export function getPokemonNewTeam(){
+    return getParsedItem(POKEMON_NEW_TEAM);
+}
+
+/**
+ * @returns new pokemon home
+ */
+export function getPokemonNewHome(){
+    return getParsedItem(POKEMON_NEW_HOME);
 }
 
 /**
@@ -147,24 +178,60 @@ export function setTrainerId(trainerId){
     localStorage.setItem(TRAINER_ID, trainerId);
 }
 
+/**
+ * Adds the current trainer to local storage
+ * @param {any} trainer the current trainer to set
+ */
 export function setTrainer(trainer){
     localStorage.setItem(TRAINER, JSON.stringify(trainer));
 }
 
+/**
+ * Adds the all of the trainers to local storage
+ * @param {any[]} trainers all of the trainer in watch by the gm
+ */
 export function setTrainers(trainers){
     localStorage.setItem(TRAINERS, JSON.stringify(trainers));
 }
 
+/**
+ * Adds the current trainer's moves to local storage
+ * @param {any[]} moves the current trainer's moves
+ */
 export function setMoves(moves){
     localStorage.setItem(MOVES, JSON.stringify(moves));
 }
 
+/**
+ * Adds the current trainer's team to local storage
+ * @param {any[]} team the current trainer's team
+ */
 export function setPokemonTeam(team){
     localStorage.setItem(POKEMON_TEAM, JSON.stringify(team));
 }
 
+/**
+ * Adds the current trainer's home to local storage
+ * @param {any[]} home the current trainer's home
+ */
 export function setPokemonHome(home){
     localStorage.setItem(POKEMON_HOME, JSON.stringify(home));
+}
+
+/**
+ * Adds the current trainer's new team to local storage
+ * @param {any[]} team the current trainer's new team
+ */
+export function setPokemonNewTeam(team){
+    localStorage.setItem(POKEMON_NEW_TEAM, JSON.stringify(team));
+}
+
+/**
+ * Adds the current trainer's new home to local storage
+ * @param {any[]} home the current trainer's new home
+ */
+export function setPokemonNewHome(home){
+    localStorage.setItem(POKEMON_NEW_HOME, JSON.stringify(home));
 }
 
 /**

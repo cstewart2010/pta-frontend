@@ -3,6 +3,7 @@
         <div class="col-md-11">
             <div class="row">
                 <div class="col-md-8">
+                    <!-- Trainer genenral -->
                     <div class="row">
                         <div class="col-md-2">
                             <div class="text-center">Name</div>
@@ -49,6 +50,7 @@
                         </div>
                     </div>
                     <hr>
+                    <!-- Trainer stats -->
                     <div class="row">
                         <div class="col-md-10 my-auto">
                             <div class="text-center">Stats</div>
@@ -63,8 +65,8 @@
                             <div class="row d-flex align-items-center">
                                 <div class="col-md-2">
                                     <div class="text-center">Current HP</div>
-                                    <div class="text-center">20</div>
-                                    <div class="text-center">Max HP: 20</div>
+                                    <input class="w-100" type="number" :min="-trainer.trainerStats.hp" :max="trainer.trainerStats.hp" v-model="hp" @change="updateTrainer">
+                                    <div class="text-center">Max HP: {{trainer.trainerStats.hp}}</div>
                                 </div>
                                 <div class="col-md-2 text-center">
                                     <div>Attack</div>
@@ -94,18 +96,30 @@
                             </div>
                         </div>
                         <div class="col-md-2 my-auto">
-                            <div class="row d-flex align-items-center">
-                                <div class="text-center">
-                                    <select class="form-select" name="trainerClass"  v-model="trainer.trainerClasses[0]" @change="updateClass">
-                                        <option v-for="(trainerClass, index) in trainerClasses" :key="index" :id="trainerClass" :value="trainerClass.replace('/', '_')">
-                                            {{trainerClass}}
-                                        </option>
-                                    </select>
-                                </div>
-                            </div>
+                            <select class="form-select" v-model="trainer.trainerClasses[0]" @change="updateClass">
+                                <option v-for="(trainerClass, index) in trainerClasses" :key="index" :id="trainerClass" :value="trainerClass.replace('/', '_')">
+                                    {{trainerClass}}
+                                </option>
+                            </select>
+                            <select class="form-select" v-model="trainer.trainerClasses[1]" @change="updateClass">
+                                <option v-for="(trainerClass, index) in trainerClasses" :key="index" :id="trainerClass" :value="trainerClass.replace('/', '_')">
+                                    {{trainerClass}}
+                                </option>
+                            </select>
+                            <select class="form-select" v-model="trainer.trainerClasses[2]" @change="updateClass">
+                                <option v-for="(trainerClass, index) in trainerClasses" :key="index" :id="trainerClass" :value="trainerClass.replace('/', '_')">
+                                    {{trainerClass}}
+                                </option>
+                            </select>
+                            <select class="form-select" v-model="trainer.trainerClasses[3]" @change="updateClass">
+                                <option v-for="(trainerClass, index) in trainerClasses" :key="index" :id="trainerClass" :value="trainerClass.replace('/', '_')">
+                                    {{trainerClass}}
+                                </option>
+                            </select>
                         </div>
                     </div>
                     <hr>
+                    <!-- Trainer specialties -->
                     <div class="row">
                         <div class="col-md-6">
                             <div class="text-center">Skills</div>
@@ -172,6 +186,7 @@
                     </div>
                 </div>
                 <div class="col-md-4">
+                    <!-- Trainer level -->
                     <div class="row">
                         <div class="col-md-6">
                             <div class="text-center">Honors</div>
@@ -181,22 +196,25 @@
                             <div class="text-center">Level</div>
                             <div class="text-center">{{trainer.level}}</div>
                         </div>
+                        <hr>
                     </div>
-                    <hr>
+                    <!-- Trainer image -->
                     <div class="row">
                         <div class="text-center">Portrait</div>
+                        <hr>
+                        <img class="rounded mx-auto d-block" src="https://64.media.tumblr.com/335d9c582288054a4746c5515c748fbe/tumblr_pnm47d3ndK1w7c1ka_1280.jpg" alt="">
                     </div>
-                    <hr>
-                    <img class="rounded mx-auto d-block" src="https://64.media.tumblr.com/335d9c582288054a4746c5515c748fbe/tumblr_pnm47d3ndK1w7c1ka_1280.jpg" alt="">
                 </div>
             </div>
         </div>
+        <!-- Trainer wishlist -->
         <div class="col-md-1 text-center">
             Wishlist
             <input v-for="n in 20" :key="n" type="text" class="wishlist">
         </div>
     </div>
     <hr>
+    <!-- Trainer description -->
     <div class="row">
         <div class="col-md-6">
             <div class="text-center">Physical Description</div>
@@ -215,9 +233,9 @@
 </template>
 
 <script>
-import { getAllOrigins, getAllTrainerClasses, getOrigin, getTrainerClass } from '../../../api/dex.api'
-import { getTrainer, setTrainer } from '../../../utils/localStorage';
-import { generateErrorModal } from '../../../utils/modalUtil'
+import { getAllOrigins, getAllTrainerClasses, getOrigin, getTrainerClass } from '../../api/dex.api'
+import { getTrainer, setTrainer } from '../../utils/localStorage';
+import { generateErrorModal } from '../../utils/modalUtil'
 
 export default {
     name: "TrainerSheet",
@@ -226,12 +244,20 @@ export default {
             origins: [],
             trainerClasses: [],
             species: '',
-            trainer: getTrainer(),
+            trainer: {
+                trainerName: "",
+                origin: "",
+                trainerStats: {},
+                trainerClasses: [],
+                trainerSkills: [],
+                honors: []
+            },
             selectedOrigin: 'Academic',
-            selectedClass: 'Ace Trainer'
+            selectedClass: 'Ace Trainer',
+            hp: 0
         }
     },
-    mounted:async function(){
+    beforeMount:async function(){
         await getAllOrigins()
             .then(response => {
                 this.origins = response.data.results.map(item => item.name)
@@ -244,7 +270,8 @@ export default {
             })
             .catch(generateErrorModal);
 
-        // this.trainer = getTrainer();
+        this.trainer = getTrainer();
+        this.hp = this.trainer.trainerStats.hp
         await this.updateClass();
         await this.updateOrigin();
     },

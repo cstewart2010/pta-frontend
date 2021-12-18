@@ -10,11 +10,43 @@
             <div class="col-md-2">Current HP</div>
             <div class="col-md-4">Notes</div>
             <div class="col-md-1">Delete</div>
+        </div>        
+        <!-- Pokemon team -->
+        <div id="pokemonTeam" class="my-1">
+            <div v-for="(pokemon, index) in actualTeam" :key="pokemon">
+                <div class="row d-flex align-items-center" :id="'pokemon-'+index">
+                    <actual-pokemon :pokemonId="pokemon.pokemonId" :trainerId="trainer.trainerId" :position="index + 1" />
+                    <div class="col-md-1">
+                        <button class="btn-close" @click="removeActual(index)" />
+                    </div>
+                </div>
+                <div class="row d-flex align-items-center" :id="'stats-'+index">
+                    <div class="col-md-2">
+                        HP<br>{{pokemon.pokemonStats.hp}}
+                    </div>
+                    <div class="col-md-2">
+                        Attack<br>{{pokemon.pokemonStats.attack}}
+                    </div>
+                    <div class="col-md-2">
+                        Defense<br>{{pokemon.pokemonStats.defense}}
+                    </div>
+                    <div class="col-md-2">
+                        Special Attack<br>{{pokemon.pokemonStats.specialAttack}}
+                    </div>
+                    <div class="col-md-2">
+                        Special Defense<br>{{pokemon.pokemonStats.specialDefense}}
+                    </div>
+                    <div class="col-md-2">
+                        Speed<br>{{pokemon.pokemonStats.speed}}
+                    </div>
+                </div>
+                <hr/>
+            </div>
         </div>
         <div id="addedPokemon" class="my-1">
             <div v-for="(pokemon, index) in pokemonTeam" :key="pokemon">
                 <div class="row d-flex align-items-center" :id="'pokemon-'+index">
-                    <added-pokemon :pokemon="pokemon" :position="index + 1" />
+                    <added-pokemon :pokemon="pokemon" :isOnActiveTeam="true" :position="index + 1" />
                     <div class="col-md-1">
                         <button class="btn-close" @click="remove(index)" />
                     </div>
@@ -37,32 +69,46 @@
 
 <script>
 import { getAllPokemon } from '../../api/dex.api'
-import { getPokemonTeam, setPokemonTeam, getPokemonHome, setPokemonHome } from '../../utils/localStorage';
+import { deletePokemon, getGamePokemon } from '../../api/pokemon.api'
+import { getPokemonNewTeam, setPokemonNewTeam, getPokemonNewHome, setPokemonNewHome, getTrainer, setPTAActivityToken } from '../../utils/localStorage';
 import { generateErrorModal } from '../../utils/modalUtil'
 import AddedPokemon from './incomplete/AddedPokemon.vue';
+import ActualPokemon from './incomplete/ActualPokemon.vue';
 
 export default {
     name: 'PokemonTeam',
     data(){
         return {
+            trainer: getTrainer(),
             pokemonCol: [],
+            actualTeam: [],
             pokemonTeam: [],
+            actualHome: [],
             pokemonHome: [],
-            addedPokemon: '',
+            addedPokemon: ''
         }
     },
     components:{
-        AddedPokemon
+        AddedPokemon,
+        ActualPokemon
     },
     beforeMount:async function(){        
         await getAllPokemon()
             .then(response => {
                 this.pokemonCol = response.data.results.map(item => item.name)
-                const pokemonTeam = getPokemonTeam();
+                this.trainer.pokemonTeam
+                    .map(async pokemon => await getGamePokemon(pokemon.pokemonId).then(response => {
+                        this.actualTeam.push(response.data)
+                    }) )
+                this.trainer.pokemonHome
+                    .map(async pokemon => await getGamePokemon(pokemon.pokemonId).then(response => {
+                        this.actualHome.push(response.data)
+                    }) )
+                const pokemonTeam = getPokemonNewTeam();
                 if (pokemonTeam){
                     this.pokemonTeam = pokemonTeam;
                 }
-                const pokemonHome = getPokemonHome();
+                const pokemonHome = getPokemonNewHome();
                 if (pokemonHome){
                     this.pokemonHome = pokemonHome;
                 }
@@ -71,12 +117,20 @@ export default {
     },
     methods:{
         addPokemon(){
-            if (this.pokemonTeam.length == 6){
-                this.pokemonHome.push(this.addedPokemon);
+            if ((this.pokemonTeam.length + this.actualTeam.length) > 5){
+                this.pokemonHome.push({
+                    speciesName: this.pokemonCol[this.addedPokemon - 1],
+                    nickname: this.pokemonCol[this.addedPokemon - 1],
+                    isOnActiveTeam: false
+                });
                 this.updateHome();
             }
             else {
-                this.pokemonTeam.push(this.addedPokemon);
+                this.pokemonTeam.push({
+                    speciesName: this.pokemonCol[this.addedPokemon - 1],
+                    nickname: this.pokemonCol[this.addedPokemon - 1],
+                    isOnActiveTeam: true
+                });
                 this.updateTeam();
             }
         },
@@ -84,11 +138,20 @@ export default {
             this.pokemonTeam = this.pokemonTeam.filter((pokemon, entryIndex) => entryIndex != index)
             this.updateTeam();
         },
+        async removeActual(index){
+            const pokemon = this.actualTeam[index];
+            await deletePokemon(pokemon.pokemonId)
+                .then(response => {
+                    this.actualTeam = this.actualTeam.filter((pokemon, entryIndex) => entryIndex != index)
+                    setPTAActivityToken(response.headers['pta-activity-token']);
+                })
+                .catch(generateErrorModal);
+        },
         updateTeam(){
-            setPokemonTeam(this.pokemonTeam)
+            setPokemonNewTeam(this.pokemonTeam)
         },
         updateHome(){
-            setPokemonHome(this.pokemonHome)
+            setPokemonNewHome(this.pokemonHome)
         }
     }
 }

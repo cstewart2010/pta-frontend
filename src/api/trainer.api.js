@@ -168,7 +168,7 @@ export async function removeItems(itemPairs){
  * @param {String} trainerId The trainer's UUID
  * @returns A generic message
  */
-export async function deletePokemon(trainerId){
+export async function deleteTrainer(trainerId){
     const [gmId, activityToken, sessionAuth] = getUserCredentials();
     nullChecker(trainerId, 'trainerId');
     nullChecker(gmId, 'gmId');
