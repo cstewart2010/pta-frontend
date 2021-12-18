@@ -6,7 +6,7 @@
             <div class="d-flex flex-wrap flex-row justify-content-evenly">
                 <div v-for="(pokemon, index) in pokemonHome" :key="pokemon">
                     <div class="row align-items-center" :id="'pokemon-'+index">
-                        <added-pokemon :pokemon="pokemon" :position="index + 1" />
+                        <added-pokemon :pokemon="pokemon" :isOnActiveTeam="false" :position="index + 1" />
                         <div class="col-md-1">
                             <button class="btn-close" @click="remove(index)" />
                         </div>
@@ -30,7 +30,7 @@
 
 <script>
 import { getAllPokemon } from '../../api/dex.api'
-import { getPokemonHome, setPokemonHome } from '../../utils/localStorage';
+import { getPokemonNewHome, setPokemonNewHome } from '../../utils/localStorage';
 import { generateErrorModal } from '../../utils/modalUtil'
 import AddedPokemon from './incomplete/AddedPokemon.vue';
 
@@ -50,7 +50,7 @@ export default {
         await getAllPokemon()
             .then(response => {
                 this.pokemonCol = response.data.results.map(item => item.name)
-                const pokemonHome = getPokemonHome();
+                const pokemonHome = getPokemonNewHome();
                 if (pokemonHome){
                     this.pokemonHome = pokemonHome;
                 }
@@ -59,15 +59,19 @@ export default {
     },
     methods:{
         addPokemon(){
-            this.pokemonHome.push(this.addedPokemon);
+            this.pokemonHome.push({
+                    speciesName: this.pokemonCol[this.addedPokemon - 1],
+                    nickname: this.pokemonCol[this.addedPokemon - 1],
+                    isOnActiveTeam: false
+                });
             this.updateHome();
         },
         remove(index){
             this.pokemonHome = this.pokemonHome.filter((pokemon, entryIndex) => entryIndex != index)
-            this.pokemonHome();
+            this.updateHome();
         },
         updateHome(){
-            setPokemonHome(this.pokemonHome)
+            setPokemonNewHome(this.pokemonHome)
         }
     }
 }

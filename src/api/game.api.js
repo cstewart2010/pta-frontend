@@ -2,7 +2,7 @@ import { BASE_URL } from './api.config.json'
 import { METHODS } from './enums.json'
 import { requestHandler, nullChecker, natureChecker, statusChecker, genderChecker } from './axiosHandler';
 import { getPokemon } from './dex.api';
-import { getGameId, getUserCredentials } from '../utils/localStorage';
+import { getGameId, getTrainerId, getUserCredentials } from '../utils/localStorage';
 const GAME_RESOURCE = `${BASE_URL}/api/v1/game`
 
 /**
@@ -130,6 +130,22 @@ export async function addPlayerToGame(gameId, username, password){
 }
 
 /**
+ * Adds changes to trainer to the database
+ * @param {any} trainer the partial updated trainer data
+ * @returns the completed updated trainer data
+ */
+export async function completeTrainer(trainer){
+    const [trainerId, activityToken, sessionAuth] = getUserCredentials();
+    nullChecker(trainerId, 'trainerId');
+    nullChecker(trainer, 'trainer');
+    nullChecker(activityToken, 'activityToken');
+    nullChecker(sessionAuth, 'sessionAuth');
+    
+    const endpoint = `${GAME_RESOURCE}/${trainerId}/addStats`
+    return await requestHandler(endpoint, METHODS.PUT, {activityToken, sessionAuth, data: trainer});
+}
+
+/**
  * Sets a game sessions status to Online
  * @param {String} gameId the session id to search with
  * @param {String} gmUsername the username for the game session's game master
@@ -224,12 +240,12 @@ export async function exportGame(gameId, gameSessionPassword){
 
 /**
  * Delete the game session from the server
- * @param {String} gameId the session id to search with
- * @param {String} gameMasterId the game master's id
  * @param {String} gameSessionPassword the game session's password
  * @returns A 200 status code if successful
  */
-export async function deleteGame(gameId, gameMasterId, gameSessionPassword){
+export async function deleteGame(gameSessionPassword){
+    const gameId = getGameId();
+    const gameMasterId = getTrainerId()
     nullChecker(gameId, 'gameId');
     nullChecker(gameMasterId, 'gameMasterId');
     nullChecker(gameSessionPassword, 'gameSessionPassword');

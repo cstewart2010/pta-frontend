@@ -18,68 +18,73 @@ import { AgGridVue } from "ag-grid-vue3";
 
 export default {
     name: "ClassFeatures",
+    components:{
+        AgGridVue
+    },
     data(){
-        return {
-            trainer: getTrainer(),
+        return{
             featureData: [],
             columnDefs: []
         }
     },
-    components:{
-        AgGridVue
-    },
     beforeMount:async function(){
         let current = {};
-        const temp = [];
-        let levelComparer = this.trainer.level
+        const trainer = getTrainer();
+        const temp = []
+        const temp2 = []
+        for (let i = 0; i < trainer.level + 2; i++){
+            temp2[i] = {}
+        }
+        let levelComparer = trainer.level
         let nextComparer = -1
-        for (const trainerClass of this.trainer.trainerClasses){
+        for (const trainerClass of trainer.trainerClasses){
             if (levelComparer < 0){
                 break;
             }
             await getTrainerClass(trainerClass)
                 .then(response => {
-                    this.columnDefs.push({
+                    temp.push({
                         headerName: trainerClass,
                         field: trainerClass,
                         autoHeight: true,
                         wrapText: true,
                         maxWidth: 150
                     })
-                    this.columnDefs.push({
+                    temp.push({
                         headerName: 'Effect',
                         field: `${trainerClass}effect`,
                         autoHeight: true,
                         wrapText: true,
                         resizable: true,
-                        cellStyle: {
-                            'line-height': 2
-                        }
+                        minWidth: 400
                     })
-                    const starting = {};
-                    starting[trainerClass] = 'Starting'
-                    starting[`${trainerClass}effect`] = response.data.skills
-                    temp.push(starting);
+                    temp2[0][trainerClass] = 'Starting'
+                    temp2[0][`${trainerClass}effect`] = response.data.skills
                     current = {
                         name: response.data.name,
                         feats: response.data.feats.filter(feat => feat.levelLearned <= levelComparer)
                     }
                     nextComparer++;
-                    levelComparer = levelComparer - 2 - (4 * nextComparer);
+                    if (nextComparer == 0){
+                        levelComparer = levelComparer - 2
+                    }
+                    levelComparer = levelComparer - (4 * nextComparer);
                 })
                 .catch(generateErrorModal)
+            let thing = 1
             for (const feature of current.feats){
                 await getGeneralFeature(feature.name)
                     .then(response => {
-                        const thing = {}
-                        thing[trainerClass] = response.data.name
-                        thing[`${trainerClass}effect`] = response.data.effects
-                        temp.push(thing);
+                        temp2[thing][trainerClass] = response.data.name
+                        temp2[thing][`${trainerClass}effect`] = response.data.effects
+                        thing++;
                     })
-                    .catch(generateErrorModal)
+                    .catch(alert)
             }
-            this.featureData = temp;
         }
+
+        this.columnDefs = temp;
+        this.featureData = temp2;
     }
 }
 </script>

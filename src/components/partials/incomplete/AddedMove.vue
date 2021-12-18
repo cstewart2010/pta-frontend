@@ -64,7 +64,6 @@ export default {
         }
     },
     beforeMount:async function(){
-        console.log(this.move);
         await getMove(this.move)
             .then(response => {
                 this.moveData = response.data
