@@ -5,7 +5,7 @@
     </div>
     <div class="col-md-3 text-center" :id="'nickname-'+position">{{pokemonData.nickname}} ({{pokemonData.speciesName}})</div>
     <div class="col-md-2 text-center" :id="'current-hp-'+position">
-        <input type="number" v-model="hp" :max="pokemonData.pokemonStats.hp" @change="updateHP">
+        <input type="number" v-model="hp" :min="-pokemonData.pokemonStats.hp" :max="pokemonData.pokemonStats.hp" @change="updateHP">
     </div>
     <div class="col-md-4 text-center" :id="'notes-'+position" v-if="trainerId == pokemonData.trainerId">
         <span v-if="trainerId == pokemonData.originalTrainerId">Original Trainer<br></span>
