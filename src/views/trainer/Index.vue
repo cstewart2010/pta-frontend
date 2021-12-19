@@ -14,7 +14,7 @@ export default {
     name: 'TrainerPortal',
     data(){
         return {
-            trainer: null,
+            trainer: {},
             isComplete: false
         }
     },

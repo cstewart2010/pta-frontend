@@ -11,6 +11,7 @@ const POKEMON_TEAM = "pokemonTeam"
 const POKEMON_HOME = "pokemonHome"
 const POKEMON_NEW_TEAM = "pokemonNewTeam"
 const POKEMON_NEW_HOME = "pokemonNewHome"
+const CURRENT_HP = "currentHP"
 
 /**
  * Gets a logged in user's credentials
@@ -113,6 +114,13 @@ export function getPokemonNewHome(){
  */
 export function getTrainerId(){
     return localStorage.getItem(TRAINER_ID);
+}
+
+/**
+ * @returns trainer's current hp
+ */
+export function getCurrentHP(){
+    return getParsedItem(CURRENT_HP);
 }
 
 /**
@@ -232,6 +240,14 @@ export function setPokemonNewTeam(team){
  */
 export function setPokemonNewHome(home){
     localStorage.setItem(POKEMON_NEW_HOME, JSON.stringify(home));
+}
+
+/**
+ * Adds the current trainer's hp to local storage
+ * @param {Number} hp the current trainer's hp
+ */
+export function setCurrentHP(hp){
+    localStorage.setItem(CURRENT_HP, JSON.stringify(hp));
 }
 
 /**

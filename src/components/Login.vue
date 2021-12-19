@@ -28,7 +28,7 @@
     import { startGame } from '../api/game.api';
     import { userLogin } from '../api/trainer.api';
     import { areTrainerCredentialsValid, isGamePasswordValid } from '../utils/credentials';
-    import { setInitialCredentials } from '../utils/localStorage';
+    import { setInitialCredentials, setTrainer } from '../utils/localStorage';
     import { generateErrorModal } from "../utils/modalUtil"
 
     export default {
@@ -74,6 +74,7 @@
                 else {
                     await this.trainerLogin()
                         .then(response => {
+                            setTrainer(response.trainer);
                             const trainerId = response.trainer.trainerId
                             this.pushToNext(trainerId, response);
                         })
@@ -86,7 +87,7 @@
                 }
 
                 setInitialCredentials(trainerId, response, this.isGM);
-                this.$router.push(options);
+                this.$router.go(options);
             },
             async gmLogin(){
                 return await startGame(this.gameId, this.trainerName, this.password, this.gamePassword)

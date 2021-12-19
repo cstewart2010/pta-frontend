@@ -75,9 +75,13 @@ import { userLogout } from '../../api/trainer.api';
         this.$router.push('/games');
       },
       async logout(){
-        await userLogout().catch(console.log);
-        removeFromStorage();
-        this.$router.go();
+        await userLogout()
+          .then(() => {
+            removeFromStorage();
+            this.$router.push('/');
+            this.$router.go('/');
+          })
+          .catch(console.log);
       }
     }
   };
