@@ -14,12 +14,6 @@ const routes = [
     props: true
   },
   {
-    path: '/games-redirect',
-    name: 'GamesRedirect',
-    component: () => import('../views/GamesRedirect.vue'),
-    props: true
-  },
-  {
     path: '/about',
     name: 'About',
     component: () => import('../views/About.vue')

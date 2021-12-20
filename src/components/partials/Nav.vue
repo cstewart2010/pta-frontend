@@ -77,9 +77,9 @@ import { userLogout } from '../../api/trainer.api';
       async logout(){
         await userLogout()
           .then(() => {
-            removeFromStorage();
             this.$router.push('/');
-            this.$router.go('/');
+            removeFromStorage();
+            this.needsToAuthenticate = true
           })
           .catch(console.log);
       }

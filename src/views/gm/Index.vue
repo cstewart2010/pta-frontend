@@ -48,7 +48,6 @@ export default {
             this.$router.push('/');
             return
         }
-        // validate trainer credentials
         
         await refreshGM()
         .then(response => {

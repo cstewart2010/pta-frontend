@@ -1,5 +1,6 @@
 <template>
     <div class="pb-5 mb-5">
+        {{refreshTrainer()}}
         <incomplete-trainer />
     </div>
 </template>
@@ -26,8 +27,6 @@ export default {
             this.$router.push('/');
             return
         }
-        
-        await this.refreshTrainer();
     },
     methods: {
         async refreshTrainer(){

@@ -24,6 +24,10 @@
                     <label for="confirmGamePassword">Confirm Password: </label>
                     <input type="password" name="confirmGamePassword" v-model="confirmGamePassword">
                 </div>
+                <div>
+                    <label for="gameNickname">Game Nickname (optional): </label>
+                    <input type="text" name="gameNickname" v-model="gameNickname">
+                </div>
             </div>
             <div>
                 <button class="btn btn-primary" @click="signUp">Sign up</button>
@@ -53,6 +57,7 @@ export default {
             confirmUserPassword: '',
             gamePassword: '',
             confirmGamePassword: '',
+            gameNickname: '',
         }
     },
     mounted:function(){
@@ -98,7 +103,7 @@ export default {
             this.$router.push(options);
         },
         async gmSignup(){
-            return await createNewGame(this.signUpName, this.signUpPassword, this.gamePassword)
+            return await createNewGame(this.signUpName, this.signUpPassword, this.gamePassword, this.gameNickname)
                 .then(response => {
                     return {
                         portal: 'GM/Index',
