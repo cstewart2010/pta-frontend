@@ -4,13 +4,16 @@
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title" id="notificationModalLabel">{{title}}</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" @click="goTo()"></button>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" />
                 </div>
-                <div class="modal-body">
-                    {{body}}
+                <div class="modal-body row">
+                    Participants
+                    <div v-for="(participant, index) in participants" :key="index">
+                        {{participant.isGM ? "GM" : "Trainer"}} - {{participant.trainerName.toUpperCase()}}
+                    </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" @click="goTo()">Close</button>
+                    <button type="button" class="btn btn-dark" data-bs-dismiss="modal" @click="goTo()">To Registration</button>
                 </div>
             </div>
         </div>
@@ -25,17 +28,25 @@ export default {
         title: {
             default: 'Modal title'
         },
-        body: {
-            default: '...'
+        participants: {
+            default: []
         },
-        options: {
-            default: '/'
+        gameId: {
+            default: null
         }
     },
     methods: {
         goTo(){
-            if (this.options){
-                this.$router.push(this.options)
+            if (this.gameId){
+                this.$router.push({
+                    name: 'Registration',
+                    params: {
+                        isGM: false
+                    },
+                    query: {
+                        gameId: this.gameId
+                    }
+                })
             }
         }
     }
