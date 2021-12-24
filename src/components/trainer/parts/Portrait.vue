@@ -27,7 +27,9 @@ export default {
     name: 'Portrait',
     data() {
         return {
-            trainer: getTrainer()
+            trainer: getTrainer() || {
+                honors: 0
+            }
         }
     }
 }

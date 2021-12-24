@@ -31,10 +31,12 @@ export default {
     },
     beforeMount: function(){
         const trainer = getTrainer();
-        this.description = trainer.description;
-        this.personality = trainer.personality;
-        this.background = trainer.background;
-        this.goals = trainer.goals;
+        if (trainer){
+            this.description = trainer.description;
+            this.personality = trainer.personality;
+            this.background = trainer.background;
+            this.goals = trainer.goals;
+        }
     },
     methods:{
         updateTrainer(section, value){

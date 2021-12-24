@@ -1,6 +1,6 @@
 <template>    
-    <div class="modal fade" id="trainerModal" tabindex="-1" aria-labelledby="notificationModalLabel" style="display: none;" aria-hidden="true">
-        <div class="modal-dialog modal-fullscreen">
+    <div class="modal fade" :id="'trainerModal'+trainerId" tabindex="-1" aria-labelledby="notificationModalLabel" style="display: none;" aria-hidden="true">
+        <div class="modal-dialog modal-xl">
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title" id="notificationModalLabel" v-if="isComplete">Trainer</h5>
@@ -16,7 +16,7 @@
 </template>
 
 <script>
-import IncompleteTrainer from "../partials/IncompleteTrainer.vue"
+import IncompleteTrainer from "../trainer/IncompleteTrainer.vue"
 
 export default {
     name: "TrainerModal",

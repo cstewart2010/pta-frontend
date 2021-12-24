@@ -1,4 +1,9 @@
 <template>
+    <div class="row d-flex align-items-right">
+        <div class="col-md-2">
+            <button class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#gameConfirmationModal">Delete Game</button>
+        </div>
+    </div>
     <div class="modal fade" id="gameConfirmationModal" tabindex="-1" aria-labelledby="gameConfirmationModalLabel" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
@@ -10,7 +15,7 @@
                     Are you sure you want to delete this game?
                 </div>
                 <div class="modal-footer">
-                    <button class="btn btn-danger" data-bs-target="#confirmationModal" @click="deleteThisGame" data-bs-dismiss="modal">Delete game</button>
+                    <button class="btn btn-danger" data-bs-target="#gameConfirmationModal" @click="deleteThisGame" data-bs-dismiss="modal">Delete game</button>
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
                 </div>
             </div>
@@ -26,7 +31,7 @@ export default {
     name: 'DeleteGame',
     props: {
         gameSessionPassword: {
-            default: null
+            default: ''
         }
     },
     methods: {
@@ -34,7 +39,7 @@ export default {
             await deleteGame(this.gameSessionPassword)
                 .then(() => {
                     removeFromStorage();
-                    this.$router.go("/");
+                    window.location.href = '/'
                 })
                 .catch(generateErrorModal);
         }

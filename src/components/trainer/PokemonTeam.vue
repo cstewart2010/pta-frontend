@@ -4,40 +4,18 @@
         <hr/>
         <div class="row">
             <div class="col-md-1">Number</div>
-            <div class="col-md-1">Icon</div>
-            <div class="col-md-2">Nickname</div>
-            <div class="col-md-1">Species</div>
-            <div class="col-md-2">Current HP</div>
-            <div class="col-md-4">Notes</div>
+            <div class="col-md-3">Icon</div>
+            <div class="col-md-2 text-center">Nickname</div>
+            <div class="col-md-1 text-center">Species</div>
+            <div class="col-md-3">Notes</div>
             <div class="col-md-1">Delete</div>
-        </div>        
-        <!-- Pokemon team -->
+        </div>
         <div id="pokemonTeam" class="my-1">
             <div v-for="(pokemon, index) in actualTeam" :key="pokemon">
                 <div class="row d-flex align-items-center" :id="'pokemon-'+index">
                     <actual-pokemon :pokemonId="pokemon.pokemonId" :trainerId="trainer.trainerId" :position="index + 1" />
                     <div class="col-md-1">
                         <button class="btn-close" @click="removeActual(index)" />
-                    </div>
-                </div>
-                <div class="row d-flex align-items-center" :id="'stats-'+index">
-                    <div class="col-md-2">
-                        HP<br>{{pokemon.pokemonStats.hp}}
-                    </div>
-                    <div class="col-md-2">
-                        Attack<br>{{pokemon.pokemonStats.attack}}
-                    </div>
-                    <div class="col-md-2">
-                        Defense<br>{{pokemon.pokemonStats.defense}}
-                    </div>
-                    <div class="col-md-2">
-                        Special Attack<br>{{pokemon.pokemonStats.specialAttack}}
-                    </div>
-                    <div class="col-md-2">
-                        Special Defense<br>{{pokemon.pokemonStats.specialDefense}}
-                    </div>
-                    <div class="col-md-2">
-                        Speed<br>{{pokemon.pokemonStats.speed}}
                     </div>
                 </div>
                 <hr/>
@@ -72,8 +50,8 @@ import { getAllPokemon } from '../../api/dex.api'
 import { deletePokemon, getGamePokemon } from '../../api/pokemon.api'
 import { getPokemonNewTeam, setPokemonNewTeam, getPokemonNewHome, setPokemonNewHome, getTrainer, setPTAActivityToken } from '../../utils/localStorage';
 import { generateErrorModal } from '../../utils/modalUtil'
-import AddedPokemon from './incomplete/AddedPokemon.vue';
-import ActualPokemon from './incomplete/ActualPokemon.vue';
+import AddedPokemon from './parts/AddedPokemon.vue';
+import ActualPokemon from './parts/ActualPokemon.vue';
 
 export default {
     name: 'PokemonTeam',

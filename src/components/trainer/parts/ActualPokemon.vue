@@ -1,22 +1,21 @@
 <template>
     <div class="col-md-1 text-center" :id="'position-'+position">{{position}}</div>
-    <div class="col-md-1 text-center" :id="'icon-'+position">
+    <div class="col-md-3 text-center" :id="'icon-'+position">
         <img :src="url" :alt="pokemonData.name">
     </div>
-    <div class="col-md-3 text-center" :id="'nickname-'+position">{{pokemonData.nickname}} ({{pokemonData.speciesName}})</div>
-    <div class="col-md-2 text-center" :id="'current-hp-'+position">
-        <input type="number" v-model="hp" :min="-pokemonData.pokemonStats.hp" :max="pokemonData.pokemonStats.hp" @change="updateHP">
-    </div>
-    <div class="col-md-4 text-center" :id="'notes-'+position" v-if="trainerId == pokemonData.trainerId">
+    <button class="col-md-3 text-center btn btn-info" :id="'nickname-'+position" data-bs-toggle="modal" :data-bs-target="'#pokemonModal'+pokemonId">{{pokemonData.nickname}} ({{pokemonData.speciesName}})</button>
+    <div class="col-md-3 text-center" :id="'notes-'+position" v-if="trainerId == pokemonData.trainerId">
         <span v-if="trainerId == pokemonData.originalTrainerId">Original Trainer<br></span>
         {{this.pokemonData.rarity}}
         <span v-if="pokemonData.isShiny"><br>Shiny</span>
-        </div>
+    </div>
+    <pokemon-modal :pokemon="pokemonData" :position="position" />
 </template>
 
 <script>
 import { getGamePokemon } from '../../../api/pokemon.api'
 import { generateErrorModal } from '../../../utils/modalUtil'
+import PokemonModal from '../../modals/PokemonModal.vue';
 
 export default {
     name: 'ActualPokemon',
@@ -31,11 +30,18 @@ export default {
             default: null
         }
     },
+    components: {
+        PokemonModal
+    },
     data(){
         return {
             pokemonData: {
                 name: '',
-                pokemonStats: ''
+                pokemonStats: '',
+                eggGroups: [],
+                proficiencies: [],
+                passives: [],
+                skills: []
             },
             url: 'https://raw.githubusercontent.com/msikma/pokesprite/master/pokemon-gen8/regular/pikachu.png',
             hp: 1

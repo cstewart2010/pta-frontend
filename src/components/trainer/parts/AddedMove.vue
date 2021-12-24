@@ -52,34 +52,37 @@ export default {
             default: {
                 name: 'Struggle'
             }
+        },
+        stats: {
+            default: (getTrainer()||{}).trainerStats
         }
     },
     data(){
         return {
             moveData: {},
-            trainerStats: getTrainer().trainerStats,
             toHit: '--',
             damageBase: '--',
             damageAdditional: '--'
         }
     },
     beforeMount:async function(){
+        console.log(this)
         await getMove(this.move)
             .then(response => {
                 this.moveData = response.data
                 switch (this.moveData.stat){
                     case 'Attack':
-                        this.toHit = Math.floor(this.trainerStats.attack/2);
+                        this.toHit = Math.floor(this.stats.attack/2);
                         this.damageBase = this.moveData.diceRoll;
                         this.damageAdditional = this.toHit
                         break;
                     case 'Special':
-                        this.toHit = Math.floor(this.trainerStats.specialAttack/2);
+                        this.toHit = Math.floor(this.stats.specialAttack/2);
                         this.damageBase = this.moveData.diceRoll;
                         this.damageAdditional = this.toHit
                         break;
                     case 'Effect':
-                        this.toHit = Math.floor(this.trainerStats.speed/2);
+                        this.toHit = Math.floor(this.stats.speed/2);
                         break;
                 }
             })

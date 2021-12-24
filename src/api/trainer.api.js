@@ -97,27 +97,39 @@ export async function addPokemon(trainerId, pokemon, nature, gender, status, nic
             }
         })
 
-    let endpoint = `${TRAINER_RESOURCE}/${trainerId}?pokemon=${pokemon}&nature=${nature}&gender=${gender}&status=${status}&gameMaster=${gmId}`;    
+    let endpoint = `${TRAINER_RESOURCE}/${trainerId}?gameMaster=${gmId}`;    
     if (nickname){
         endpoint = `${endpoint}&nickname=${nickname}`;
     }
 
-    return await requestHandler(endpoint, METHODS.POST, {activityToken, sessionAuth});
+    const data = {
+        pokemon,
+        nature,
+        gender,
+        status
+    }
+
+    return await requestHandler(endpoint, METHODS.POST, {activityToken, sessionAuth, data});
 }
 
 /**
  * Assigns a trainer's IsOnline status to true
  * @param {String} gameId The game session's UUID
- * @param {String} username The trainer's username
+ * @param {String} trainerName The trainer's username
  * @param {String} password The trainer's password
  * @returns the trainer and their tokens
  */
-export async function userLogin(gameId, username, password){
+export async function userLogin(gameId, trainerName, password){
     nullChecker(gameId, 'gameId');
-    nullChecker(username, 'username');
+    nullChecker(trainerName, 'trainerName');
     nullChecker(password, 'password');
 
-    return await requestHandler(`${TRAINER_RESOURCE}/login?gameId=${gameId}&trainerName=${username}&password=${password}`, METHODS.PUT);
+    const data = {
+        trainerName,
+        password,
+    }
+
+    return await requestHandler(`${TRAINER_RESOURCE}/login?gameId=${gameId}`, METHODS.PUT, {data});
 }
 
 /**

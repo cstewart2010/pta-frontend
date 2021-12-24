@@ -37,10 +37,10 @@
 </template>
 
 <script>
-import { addPlayerToGame, createNewGame } from '../api/game.api';
-import { areGameSignupCredentialsValid, areTrainerSignupCredentialsValid } from '../utils/credentials'
-import { setInitialCredentials, setTrainer } from '../utils/localStorage';
-import { generateErrorModal } from "../utils/modalUtil";
+import { addPlayerToGame, createNewGame } from '../../api/game.api';
+import { areGameSignupCredentialsValid, areTrainerSignupCredentialsValid } from '../../utils/credentials'
+import { setInitialCredentials, setTrainer } from '../../utils/localStorage';
+import { generateErrorModal } from "../../utils/modalUtil";
 
 export default {
     name: 'SignUp',
@@ -92,21 +92,14 @@ export default {
             }
         },
         pushToNext(response){
-            const options = {
-                name: response.portal,
-                query: {
-                    gameId: response.gameId
-                }
-            }
-
-            setInitialCredentials(response.trainer.trainerId, response, this.isGM);
-            this.$router.push(options);
+            setInitialCredentials(response.trainer.trainerId, response, this.isGM === 'true');
+            window.location.href = response.portal
         },
         async gmSignup(){
             return await createNewGame(this.signUpName, this.signUpPassword, this.gamePassword, this.gameNickname)
                 .then(response => {
                     return {
-                        portal: 'GM/Index',
+                        portal: '/gm',
                         trainer: response.data.gameMaster,
                         headers: response.headers,
                         gameId: response.data.gameId
@@ -117,7 +110,7 @@ export default {
             return await addPlayerToGame(this.gameId, this.signUpName, this.signUpPassword)
                 .then(response => {
                     return {
-                        portal: 'Trainer/Index',
+                        portal: '/trainer',
                         trainer: response.data.trainer,
                         headers: response.headers,
                         gameId: this.gameId
