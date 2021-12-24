@@ -50,7 +50,7 @@
 import { getAllMoves } from '../../api/dex.api'
 import { getMoves, setMoves } from '../../utils/localStorage';
 import { generateErrorModal } from '../../utils/modalUtil'
-import AddedMove from './incomplete/AddedMove.vue';
+import AddedMove from './parts/AddedMove.vue';
 
 export default {
     name: 'Trainer Moves',

@@ -25,11 +25,11 @@
 </template>
 
 <script>
-    import { startGame } from '../api/game.api';
-    import { userLogin } from '../api/trainer.api';
-    import { areTrainerCredentialsValid, isGamePasswordValid } from '../utils/credentials';
-    import { setInitialCredentials, setTrainer } from '../utils/localStorage';
-    import { generateErrorModal } from "../utils/modalUtil"
+    import { startGame } from '../../api/game.api';
+    import { userLogin } from '../../api/trainer.api';
+    import { areTrainerCredentialsValid, isGamePasswordValid } from '../../utils/credentials';
+    import { setInitialCredentials, setTrainer } from '../../utils/localStorage';
+    import { generateErrorModal } from "../../utils/modalUtil"
 
     export default {
         name: 'Login',

@@ -59,12 +59,16 @@ export async function createNewGame(gmUsername, gmPassword, gameSessionPassword,
     nullChecker(gmPassword, 'gmPassword');
     nullChecker(gameSessionPassword, 'gameSessionPassword');
 
-    let endpoint = `${GAME_RESOURCE}/new?gmUsername=${gmUsername}&gmPassword=${gmPassword}&gameSessionPassword=${gameSessionPassword}`;
+    let endpoint = `${GAME_RESOURCE}/new?gameSessionPassword=${gameSessionPassword}`;
     if (nickname){
         endpoint = `${endpoint}&nickname=${nickname}`;
     }
 
-    return await requestHandler(endpoint, METHODS.POST);
+    const data = {
+        gmUsername,
+        gmPassword
+    }
+    return await requestHandler(endpoint, METHODS.POST, {data});
 }
 
 /**
@@ -99,18 +103,19 @@ export async function createWildPokemon(pokemon, nature, gender, status, nicknam
     genderChecker(gender);
     statusChecker(status);
     await getPokemon(pokemon)
-        .then(response => {
-            if (response.status != 200){
+        .catch(() => {
                 throw `Invalid pokemon ${pokemon}`
-            }
-        })
+            })
 
-    let endpoint = `${GAME_RESOURCE}/${gameMasterId}/wild?pokemon=${pokemon}&nature=${nature}&gender=${gender}&status=${status}`;    
-    if (nickname){
-        endpoint = `${endpoint}&nickname=${nickname}`;
+
+    const data = {
+        pokemon,
+        nature,
+        gender,
+        status,
+        nickname
     }
-
-    return await requestHandler(endpoint, METHODS.POST, {activityToken, sessionAuth});
+    return await requestHandler(`${GAME_RESOURCE}/${gameMasterId}/wild`, METHODS.POST, {activityToken, sessionAuth, data});
 }
 
 /**
@@ -125,8 +130,12 @@ export async function addPlayerToGame(gameId, username, password){
     nullChecker(username, 'username');
     nullChecker(password, 'password');
 
-    const endpoint = `${GAME_RESOURCE}/${gameId}/new?username=${username}&password=${password}`
-    return await requestHandler(endpoint, METHODS.POST);
+    const data = {
+        username,
+        password
+    }
+
+    return await requestHandler(`${GAME_RESOURCE}/${gameId}/new`, METHODS.POST, {data});
 }
 
 /**
@@ -159,8 +168,13 @@ export async function startGame(gameId, gmUsername, gmPassword, gameSessionPassw
     nullChecker(gmPassword, 'gmPassword');
     nullChecker(gameSessionPassword, 'gameSessionPassword');
 
-    const endpoint = `${GAME_RESOURCE}/${gameId}/start?gmUsername=${gmUsername}&gmPassword=${gmPassword}&gameSessionPassword=${gameSessionPassword}`;
-    return await requestHandler(endpoint, METHODS.PUT);
+    const data = {
+        gmUsername,
+        gmPassword,
+        gameSessionPassword
+    }
+
+    return await requestHandler(`${GAME_RESOURCE}/${gameId}/start`, METHODS.PUT, {data});
 }
 
 /**
@@ -225,12 +239,12 @@ export async function resetPassword(trainerId, password){
 
 /**
  * Export the game session from the server and deletes it
- * @param {String} gameId the session id to search with
  * @param {String} gameSessionPassword the game session's password
  * @returns A json file matching the exported game
  */
-export async function exportGame(gameId, gameSessionPassword){
+export async function exportGame(gameSessionPassword){
     const [gameMasterId, activityToken, sessionAuth] = getUserCredentials();
+    const gameId = getGameId();
     nullChecker(gameId, 'gameId');
     nullChecker(gameSessionPassword, 'gameSessionPassword');
     

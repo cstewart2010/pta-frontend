@@ -1,5 +1,5 @@
 <template>
-    <div class="modal fade" id="trainerConfirmationModal" tabindex="-1" aria-labelledby="trainerConfirmationModalLabel" aria-hidden="true">
+    <div class="modal fade" :id="'trainerConfirmationModal'+trainerId" tabindex="-1" aria-labelledby="trainerConfirmationModalLabel" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">

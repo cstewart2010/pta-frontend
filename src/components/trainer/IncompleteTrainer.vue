@@ -79,8 +79,8 @@ import ClassFeatures from './ClassFeatures.vue';
 import TrainerMoves from './TrainerMoves.vue';
 import PokemonTeam from './PokemonTeam.vue';
 import PokemonHome from './PokemonHome.vue';
-import Honors from './Honors.vue'
-import { getGameId, getPokemonNewHome, getPokemonNewTeam, getTrainer, removeFromStorage, setPTAActivityToken, setTrainer } from '../../utils/localStorage';
+import Honors from './Honors.vue';
+import { getGameId, getPokemonNewHome, getPokemonNewTeam, getTrainer, removeFromStorage, setPokemonNewHome, setPokemonNewTeam, setPTAActivityToken, setTrainer } from '../../utils/localStorage';
 import { generateErrorModal, generateNavigationModal } from '../../utils/modalUtil';
 import { completeTrainer, findTrainerInGame } from '../../api/game.api';
 import { refreshTrainer } from '../../api/trainer.api';
@@ -128,6 +128,8 @@ export default {
             await completeTrainer(trainer)
                 .then(async () => {
                     await this.refreshTrainer();
+                    setPokemonNewTeam([])
+                    setPokemonNewHome([])
                     this.$router.go();
                 })
                 .catch(generateErrorModal)

@@ -127,7 +127,7 @@ export function getCurrentHP(){
  * Sets the users initial credentials on sign up or login
  * @param {String} trainerId the trainer's id
  * @param {import("axios").AxiosResponse<any,any>} response the response to build the initials credentials from
- * @param {bool} isGM whether the user is a game master
+ * @param {Boolean} isGM whether the user is a game master
  */
 export function setInitialCredentials(trainerId, response, isGM){
     setTrainerId(trainerId);

@@ -12,8 +12,8 @@
 </template>
 
 <script>
-import Left from './incomplete/Left.vue'
-import Bottom from './incomplete/Bottom.vue'
+import Left from './parts/Left.vue'
+import Bottom from './parts/Bottom.vue'
 
 export default {
     name: "TrainerSheet",

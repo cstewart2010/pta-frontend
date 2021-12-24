@@ -2,17 +2,28 @@
     <div class="text-center">
         <h3>Pokemon Home</h3>
         <hr/>
-        <div id="addedPokemon" class="my-1 ">
+        <div id="pokemonTeam" class="my-1">
             <div class="d-flex flex-wrap flex-row justify-content-evenly">
-                <div v-for="(pokemon, index) in pokemonHome" :key="pokemon">
-                    <div class="row align-items-center" :id="'pokemon-'+index">
-                        <added-pokemon :pokemon="pokemon" :isOnActiveTeam="false" :position="index + 1" />
+                <div v-for="(pokemon, index) in actualHome" :key="pokemon">
+                    <div class="row d-flex align-items-center" :id="'pokemon-'+index">
+                        <actual-pokemon :pokemonId="pokemon.pokemonId" :trainerId="trainer.trainerId" :position="index + 1" />
                         <div class="col-md-1">
-                            <button class="btn-close" @click="remove(index)" />
+                            <button class="btn-close" @click="removeActual(index)" />
                         </div>
                     </div>
                     <hr/>
                 </div>
+            </div>
+        </div>
+        <div id="addedPokemon" class="my-1 ">
+            <div class="d-flex flex-wrap flex-row justify-content-evenly">
+                <div class="row align-items-center" :id="'pokemon-'+index" v-for="(pokemon, index) in pokemonHome" :key="pokemon">
+                    <added-pokemon :pokemon="pokemon" :isOnActiveTeam="false" :position="index + 1" />
+                    <div class="col-md-1">
+                        <button class="btn-close" @click="remove(index)" />
+                    </div>
+                </div>
+                <hr/>
             </div>
         </div>
         <div class="row">
@@ -30,21 +41,26 @@
 
 <script>
 import { getAllPokemon } from '../../api/dex.api'
-import { getPokemonNewHome, setPokemonNewHome } from '../../utils/localStorage';
+import { getGamePokemon } from '../../api/pokemon.api';
+import { getPokemonNewHome, getTrainer, setPokemonNewHome } from '../../utils/localStorage';
 import { generateErrorModal } from '../../utils/modalUtil'
-import AddedPokemon from './incomplete/AddedPokemon.vue';
+import AddedPokemon from './parts/AddedPokemon.vue';
+import ActualPokemon from './parts/ActualPokemon.vue';
 
 export default {
     name: 'PokemonHome',
     data(){
         return {
+            trainer: getTrainer(),
             pokemonCol: [],
             pokemonHome: [],
+            actualHome: [],
             addedPokemon: '',
         }
     },
     components:{
-        AddedPokemon
+        AddedPokemon,
+        ActualPokemon
     },
     beforeMount:async function(){        
         await getAllPokemon()
@@ -56,6 +72,10 @@ export default {
                 }
             })
             .catch(generateErrorModal);
+        this.trainer.pokemonHome
+            .map(async pokemon => await getGamePokemon(pokemon.pokemonId).then(response => {
+                this.actualHome.push(response.data)
+            }) )
     },
     methods:{
         addPokemon(){

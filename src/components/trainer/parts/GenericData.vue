@@ -81,9 +81,11 @@ export default {
     methods: {
         updateTrainer(section, value){
             const trainer = getTrainer()
-            this.origin = trainer.origin;
-            trainer[section] = value;
-            setTrainer(trainer);
+            if (trainer){
+                this.origin = trainer.origin;
+                trainer[section] = value;
+                setTrainer(trainer);
+            }
         }
     }
 }

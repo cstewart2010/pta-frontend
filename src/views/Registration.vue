@@ -14,8 +14,8 @@
 </template>
 
 <script>
-import Login from '../components/Login.vue';
-import SignUp from '../components/SignUp.vue';
+import Login from '../components/registration/Login.vue';
+import SignUp from '../components/registration/SignUp.vue';
 import { getIsAuthenticate } from '../utils/localStorage';
 
 export default {
