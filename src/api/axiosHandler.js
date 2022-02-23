@@ -50,7 +50,7 @@ client.interceptors.response.use(dataUpdater);
 export function natureChecker(nature){
     nullChecker(nature, 'nature');
     if (!NATURES.includes(nature.toUpperCase())){
-        throw debugThrow(`Invalid nature ${nature}`)
+        throw debugError(`Invalid nature ${nature}`)
     }
 }
 
@@ -61,7 +61,7 @@ export function natureChecker(nature){
 export function genderChecker(gender){
     nullChecker(gender, 'gender');
     if (!GENDERS.includes(gender.toUpperCase())){
-        throw debugThrow(`Invalid gender ${gender}`)
+        throw debugError(`Invalid gender ${gender}`)
     }
 }
 
@@ -72,7 +72,7 @@ export function genderChecker(gender){
 export function statusChecker(status){
     nullChecker(status, 'status');
     if (!STATUSES.includes(status.toUpperCase())){
-        throw debugThrow(`Invalid status ${status}`)
+        throw debugError(`Invalid status ${status}`)
     }
 }
 
@@ -83,10 +83,10 @@ export function statusChecker(status){
  */
 export function nullChecker(argument, argumentName){
     if (argument === null){
-        throw debugThrow(`null argument ${argumentName}`)
+        throw debugError(`null argument ${argumentName}`)
     }
     if (argument === undefined){
-        throw debugThrow(`undefined argument ${argumentName}`)
+        throw debugError(`undefined argument ${argumentName}`)
     }
 }
 
@@ -94,7 +94,7 @@ export function nullChecker(argument, argumentName){
  * @param {String} reason reason for the debug error
  * @returns an object to add to an error modal
  */
-const debugThrow = reason => {
+const debugError = reason => {
     return {
         status: 'Debug',
         reason
