@@ -45,7 +45,7 @@ export default {
                     link.download = 'export.json'
                     link.click()
                     URL.revokeObjectURL(link.href)
-                    window.location.href = '/pta'
+                    window.location.href = '/'
                 })
                 .catch(generateErrorModal);
         }

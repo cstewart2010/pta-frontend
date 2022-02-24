@@ -99,7 +99,7 @@ export default {
             return await createNewGame(this.signUpName, this.signUpPassword, this.gamePassword, this.gameNickname)
                 .then(response => {
                     return {
-                        portal: '/pta/gm',
+                        portal: '/gm',
                         trainer: response.data.gameMaster,
                         headers: response.headers,
                         gameId: response.data.gameId
@@ -110,7 +110,7 @@ export default {
             return await addPlayerToGame(this.gameId, this.signUpName, this.signUpPassword)
                 .then(response => {
                     return {
-                        portal: '/pta/trainer',
+                        portal: '/trainer',
                         trainer: response.data.trainer,
                         headers: response.headers,
                         gameId: this.gameId

@@ -3,35 +3,35 @@ import Index from '../views/Index.vue'
 
 const routes = [
   {
-    path: '/pta',
+    path: '/',
     name: 'Index',
     component: Index
   },
   {
-    path: '/pta/games',
+    path: '/games',
     name: 'Games',
     component: () => import('../views/Games.vue'),
     props: true
   },
   {
-    path: '/pta/about',
+    path: '/about',
     name: 'About',
     component: () => import('../views/About.vue')
   },
   {
-    path: '/pta/registration',
+    path: '/registration',
     name: 'Registration',
     component: () => import('../views/Registration.vue'),
     props: true
   },
   {
-    path: '/pta/gm',
+    path: '/gm',
     name: 'GM/Index',
     component: () => import('../views/gm/Index.vue'),
     props: true
   },
   {
-    path: '/pta/trainer',
+    path: '/trainer',
     name: 'Trainer/Index',
     component: () => import('../views/trainer/Index.vue'),
     props: true
