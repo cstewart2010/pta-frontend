@@ -27,13 +27,13 @@ export default {
             default: '...'
         },
         options: {
-            default: '/pta'
+            default: '/'
         }
     },
     methods: {
         goTo(){
             if (this.options){
-                window.location.href = '/pta'
+                window.location.href = '/'
             }
         }
     }

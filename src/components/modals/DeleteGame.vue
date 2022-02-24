@@ -39,7 +39,7 @@ export default {
             await deleteGame(this.gameSessionPassword)
                 .then(() => {
                     removeFromStorage();
-                    window.location.href = '/pta'
+                    window.location.href = '/'
                 })
                 .catch(generateErrorModal);
         }
