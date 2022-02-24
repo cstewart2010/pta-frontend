@@ -1,7 +1,8 @@
+import { BASE_URL } from './api.config.json'
 import { METHODS } from './enums.json'
 import { requestHandler, nullChecker } from './axiosHandler';
 import { getUserCredentials } from '../utils/localStorage';
-const POKEMON_RESOURCE = `${process.env.BACKEND_URL}/api/v1/pokemon`
+const POKEMON_RESOURCE = `${BASE_URL}/api/v1/pokemon`
 
 /**
  * Queries the Pokemon collection using the id
