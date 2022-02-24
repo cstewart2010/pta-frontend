@@ -1,13 +1,12 @@
-import { BASE_URL } from './api.config.json'
 import { METHODS } from './enums.json'
 import { requestHandler, nullChecker } from './axiosHandler';
-const POKEDEX_RESOURCE = `${BASE_URL}/api/v1/pokedex`
-const BERRYDEX_RESOURCE = `${BASE_URL}/api/v1/berrydex`
-const FEATUREDEX_RESOURCE = `${BASE_URL}/api/v1/featuredex`
-const ITEMDEX_RESOURCE = `${BASE_URL}/api/v1/itemdex`
-const ORIGINDEX_RESOURCE = `${BASE_URL}/api/v1/origindex`
-const CLASSDEX_RESOURCE = `${BASE_URL}/api/v1/classdex`
-const MOVEDEX_RESOURCE = `${BASE_URL}/api/v1/movedex`
+const POKEDEX_RESOURCE = `${process.env.BACKEND_URL}/api/v1/pokedex`
+const BERRYDEX_RESOURCE = `${process.env.BACKEND_URL}/api/v1/berrydex`
+const FEATUREDEX_RESOURCE = `${process.env.BACKEND_URL}/api/v1/featuredex`
+const ITEMDEX_RESOURCE = `${process.env.BACKEND_URL}/api/v1/itemdex`
+const ORIGINDEX_RESOURCE = `${process.env.BACKEND_URL}/api/v1/origindex`
+const CLASSDEX_RESOURCE = `${process.env.BACKEND_URL}/api/v1/classdex`
+const MOVEDEX_RESOURCE = `${process.env.BACKEND_URL}/api/v1/movedex`
 
 /**
  * @returns All Pokemon in the pokedex

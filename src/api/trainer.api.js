@@ -1,9 +1,8 @@
-import { BASE_URL } from './api.config.json'
 import { METHODS } from './enums.json'
 import { requestHandler, nullChecker, natureChecker, statusChecker, genderChecker } from './axiosHandler';
 import { getPokemon } from './dex.api';
 import { getGameId, getUserCredentials } from '../utils/localStorage';
-const TRAINER_RESOURCE = `${BASE_URL}/api/v1/trainer`
+const TRAINER_RESOURCE = `${process.env.BACKEND_URL}/api/v1/trainer`
 
 /**
  * Refreshes the game master's tokens
