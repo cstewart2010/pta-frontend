@@ -46,7 +46,7 @@ export default {
     },
     beforeMount:async function(){
         if (!getIsAuthenticate()){
-            window.location.href = '/'
+            window.location.href = '/pta'
             return
         }
         
@@ -57,13 +57,13 @@ export default {
             setTrainers(response.data.trainers)
             setPTAActivityToken(response.headers['pta-activity-token']);
             if (wasNotGM){
-                window.location.href = '/gm'
+                window.location.href = '/pta/trainer'
             }
             this.trainers = getTrainers();
         })
         .catch(error => {
             removeFromStorage();
-            generateNavigationModal(error.status, error.reason, '/');
+            generateNavigationModal(error.status, error.reason, '/pta');
         })
     }
 }

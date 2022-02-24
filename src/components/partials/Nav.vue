@@ -1,7 +1,7 @@
 <template>
   <nav class="navbar container" role="navigation" aria-label="main navigation">
     <div class="navbar-brand">
-      <a class="navbar-item" href="/">
+      <a class="navbar-item" href="/pta">
         <strong class="is-size-4">Pokemon Tabletop Adventures 3</strong>
       </a>
       <a
@@ -18,10 +18,10 @@
     </div>
     <div id="navbar" class="navbar-menu">
       <div class="navbar-start">
-        <router-link to="/" class="navbar-item">Landing</router-link>
-        <router-link to="/about" class="navbar-item">About</router-link>
-        <router-link to="/gm" class="navbar-item" v-if="isGM==true && needsToAuthenticate==false">Game Master</router-link>
-        <router-link to="/trainer" class="navbar-item" v-else-if="isGM==false && needsToAuthenticate==false">Trainer</router-link>
+        <router-link to="/pta" class="navbar-item">Landing</router-link>
+        <router-link to="/pta/about" class="navbar-item">About</router-link>
+        <router-link to="/pta/gm" class="navbar-item" v-if="isGM==true && needsToAuthenticate==false">Game Master</router-link>
+        <router-link to="/pta/trainer" class="navbar-item" v-else-if="isGM==false && needsToAuthenticate==false">Trainer</router-link>
       </div>
       <div class="navbar-end" v-if="needsToAuthenticate==true">
         <div class="navbar-item">
@@ -72,12 +72,12 @@ import { userLogout } from '../../api/trainer.api';
         });
       },
       toGames(){
-        this.$router.push('/games');
+        this.$router.push('/pta/games');
       },
       async logout(){
         await userLogout()
           .then(() => {
-            this.$router.push('/');
+            this.$router.push('/pta');
             removeFromStorage();
             this.needsToAuthenticate = true
           })

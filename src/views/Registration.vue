@@ -33,7 +33,7 @@ export default {
         if (getIsAuthenticate()){
             // validate trainer credentials
             const folder = this.isGM ? 'gm' : 'trainer'
-            this.$router.push(`/${folder}`);
+            this.$router.push(`/pta/${folder}`);
         }
     }
 }
