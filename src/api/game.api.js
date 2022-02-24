@@ -1,9 +1,8 @@
-import { BASE_URL } from './api.config.json'
 import { METHODS } from './enums.json'
 import { requestHandler, nullChecker, natureChecker, statusChecker, genderChecker } from './axiosHandler';
 import { getPokemon } from './dex.api';
 import { getGameId, getTrainerId, getUserCredentials } from '../utils/localStorage';
-const GAME_RESOURCE = `${BASE_URL}/api/v1/game`
+const GAME_RESOURCE = `${process.env.BACKEND_URL}/api/v1/game`
 
 /**
  * @returns The last 20 game sessions generated
