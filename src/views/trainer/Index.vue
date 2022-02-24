@@ -23,7 +23,7 @@ export default {
     },
     beforeMount:async function(){
         if (!getIsAuthenticate()){
-            this.$router.push('/');
+            this.$router.push('/pta');
             return
         }
 
@@ -32,7 +32,7 @@ export default {
             this.isComplete = response.data.trainer.isComplete
             setPTAActivityToken(response.headers['pta-activity-token']);
             if (response.data.trainer.isGM){
-                this.$router.push('/gm');
+                this.$router.push('/pta/gm');
                 return;
             }
             setTrainer(response.data.trainer);
@@ -40,7 +40,7 @@ export default {
         })
         .catch(error => {
             removeFromStorage();
-            generateNavigationModal(error.status, error.reason, '/');
+            generateNavigationModal(error.status, error.reason, '/pta');
         })
     }
 }

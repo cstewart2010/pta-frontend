@@ -72,12 +72,12 @@ import { userLogout } from '../../api/trainer.api';
         });
       },
       toGames(){
-        this.$router.push('/games');
+        this.$router.push('/pta/games');
       },
       async logout(){
         await userLogout()
           .then(() => {
-            this.$router.push('/');
+            this.$router.push('/pta');
             removeFromStorage();
             this.needsToAuthenticate = true
           })
