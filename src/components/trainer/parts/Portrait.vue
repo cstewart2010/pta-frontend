@@ -16,7 +16,7 @@
         <div class="row">
             <div class="text-center">Portrait</div>
             <hr>
-            <img class="rounded mx-auto d-block" src="https://64.media.tumblr.com/335d9c582288054a4746c5515c748fbe/tumblr_pnm47d3ndK1w7c1ka_1280.jpg" alt="">
+            <img class="img-fluid" src="https://64.media.tumblr.com/335d9c582288054a4746c5515c748fbe/tumblr_pnm47d3ndK1w7c1ka_1280.jpg" alt="">
         </div>
     </div>
 </template>
