@@ -63,7 +63,7 @@
                 <div class="col-md-2">
                     {{pokemon.nickname}}
                     <hr>
-                    <img src="https://raw.githubusercontent.com/HybridShivam/Pokemon/master/assets/imagesHQ/001.png" :alt="pokemon.nickname">
+                    <img class="img-fluid" src="https://raw.githubusercontent.com/HybridShivam/Pokemon/master/assets/imagesHQ/001.png" :alt="pokemon.nickname">
                 </div>
             </div>
         </div>
