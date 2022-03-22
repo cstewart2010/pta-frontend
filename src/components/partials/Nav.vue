@@ -1,51 +1,37 @@
 <template>
-  <nav class="navbar container" role="navigation" aria-label="main navigation">
-    <div class="navbar-brand">
-      <a class="navbar-item" href="/">
-        <strong class="is-size-4">Pokemon Tabletop Adventures 3</strong>
-      </a>
-      <a
-        role="button"
-        class="navbar-burger burger"
-        aria-label="menu"
-        aria-expanded="false"
-        data-target="navbarBasicExample"
-      >
-        <span aria-hidden="true"></span>
-        <span aria-hidden="true"></span>
-        <span aria-hidden="true"></span>
-      </a>
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+  <div class="container">
+    <div class="navbar-brand">Pokemon Tabletop Adventures 3</div>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarNav">
+      <ul class="navbar-nav">
+        <li class="nav-item">
+          <router-link to="/" class="nav-link">Landing</router-link>
+        </li>
+        <li class="nav-item">
+          <router-link to="/about" class="nav-link">About</router-link>
+        </li>
+        <li class="nav-item" v-if="isGM==true && needsToAuthenticate==false">
+          <router-link to="/gm" class="nav-link">Game Master</router-link>
+        </li>
+        <li class="nav-item" v-else-if="isGM==false && needsToAuthenticate==false">
+          <router-link to="/trainer" class="nav-link">Trainer</router-link>
+        </li>
+        <li class="nav-item" v-if="needsToAuthenticate==true">
+          <button class="btn nav-link" @click="toGames">Search for Game</button>
+        </li>
+        <li class="nav-item" v-if="needsToAuthenticate==true">
+          <button class="btn nav-link" @click="toGM">Start Session</button>
+        </li>
+        <li class="nav-item" v-if="needsToAuthenticate==false">
+          <a class="nav-link" @click="logout">Log out</a>
+        </li>
+      </ul>
     </div>
-    <div id="navbar" class="navbar-menu">
-      <div class="navbar-start">
-        <router-link to="/" class="navbar-item">Landing</router-link>
-        <router-link to="/about" class="navbar-item">About</router-link>
-        <router-link to="/gm" class="navbar-item" v-if="isGM==true && needsToAuthenticate==false">Game Master</router-link>
-        <router-link to="/trainer" class="navbar-item" v-else-if="isGM==false && needsToAuthenticate==false">Trainer</router-link>
-      </div>
-      <div class="navbar-end" v-if="needsToAuthenticate==true">
-        <div class="navbar-item">
-          <div class="buttons">
-            <a class="button is-dark" @click="toGames">
-              <strong>Search for Game</strong>
-            </a>
-            <a class="button is-dark" @click="toGM">
-              <strong>Start Session</strong>
-            </a>
-          </div>
-        </div>
-      </div>
-      <div class="navbar-end" v-else>
-        <div class="navbar-item">
-          <div class="buttons">
-            <a class="button is-dark" @click="logout">
-              <strong>Log out</strong>
-            </a>
-          </div>
-        </div>
-      </div>
-    </div>
-  </nav>
+  </div>
+</nav>
 </template>
 <script>
 import { getIsAuthenticate, getIsGM, removeFromStorage } from '../../utils/localStorage';
@@ -88,14 +74,11 @@ import { userLogout } from '../../api/trainer.api';
 </script>
 <style lang="scss" scoped>
   nav {
-    margin-top: 25px;
-    margin-bottom: 30px;
+    padding-top: 25px;
+    padding-bottom: 30px;
     a {
       font-weight: bold;
       color: #2c3e50;
-      &.router-link-exact-active {
-        color: #d88d00;
-      }
     }
   }
 </style>

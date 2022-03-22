@@ -1,7 +1,7 @@
 <template>
     <div class="row">
-        <h2 v-if="isGM==='true'" class="d-flex justify-content-end">Game Master Portal</h2>
-        <h2 v-else class="justify-content-end">Trainer Portal</h2>
+        <h2 v-if="isGM==='true'">Game Master Portal</h2>
+        <h2 v-else>Trainer Portal</h2>
         <div class="row">
             <div class="row col-6">
                 <Login v-bind:isGM="isGM" />
