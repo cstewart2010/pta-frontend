@@ -20,13 +20,13 @@
           <router-link to="/trainer" class="nav-link">Trainer</router-link>
         </li>
         <li class="nav-item" v-if="needsToAuthenticate==true">
-          <button class="btn nav-link" @click="toGames">Search for Game</button>
+          <router-link to="/games" class="nav-link">Search for Game</router-link>
         </li>
         <li class="nav-item" v-if="needsToAuthenticate==true">
-          <button class="btn nav-link" @click="toGM">Start Session</button>
+          <router-link :to="{name: 'Registration', params: { isGM: true }}" class="nav-link">Start Session</router-link>
         </li>
         <li class="nav-item" v-if="needsToAuthenticate==false">
-          <a class="nav-link" @click="logout">Log out</a>
+          <router-link to="/" class="nav-link" @click="logout">Log out</router-link>
         </li>
       </ul>
     </div>
@@ -49,21 +49,9 @@ import { userLogout } from '../../api/trainer.api';
       this.isGM = getIsGM() === true;
     },
     methods: {
-      toGM(){
-        this.$router.push({
-          name: 'Registration',
-          params: {
-            isGM: true
-          }
-        });
-      },
-      toGames(){
-        this.$router.push('/games');
-      },
       async logout(){
         await userLogout()
           .then(() => {
-            this.$router.push('/');
             removeFromStorage();
             this.needsToAuthenticate = true
           })
