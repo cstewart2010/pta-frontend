@@ -2,22 +2,26 @@
     <h3>Log in</h3>
     <div class="row">
         <div class="col-md-6">
-            <div>
+            <div class="container">
                 <label for="trainerName" v-if="isGM==='true'">Game Master Name: </label>
                 <label for="trainerName" v-else>Trainer Name: </label>
                 <input type="text" name="trainerName" v-model="trainerName">
             </div>
-            <div>
+            <div class="container">
                 <label for="password">Password: </label>
                 <input type="password" name="password" v-model="password">
             </div>
             <div v-if="isGM==='true'">
-                <label for="gameSessionPassword" v-if="isGM==='true'">Game Session Password: </label>
-                <input type="password" name="gameSessionPassword" v-model="gamePassword">
-                <label for="gameSessionPassword" v-if="isGM==='true'">Game ID: </label>
-                <input type="text" name="gameSessionPassword" v-model="gameId">
+                <div class="container">
+                    <label for="gameSessionPassword" v-if="isGM==='true'">Game Session Password: </label>
+                    <input type="password" name="gameSessionPassword" v-model="gamePassword">
+                </div>
+                <div class="container">
+                    <label for="gameId" v-if="isGM==='true'">Game ID: </label>
+                    <input type="text" name="gameId" v-model="gameId">
+                </div>
             </div>
-            <div>
+            <div class="container my-2">
                 <button class="btn btn-primary" @click="login">Sign in</button>
             </div>
         </div>
