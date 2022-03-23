@@ -26,7 +26,7 @@
           <button class="btn nav-link" @click="toGM">Start Session</button>
         </li>
         <li class="nav-item" v-if="needsToAuthenticate==false">
-          <a class="nav-link" @click="logout">Log out</a>
+          <button class="nav-link" @click="logout">Log out</button>
         </li>
       </ul>
     </div>
