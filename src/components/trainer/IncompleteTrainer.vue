@@ -118,10 +118,12 @@ export default {
                 })
                 .catch(generateErrorModal)
         }
+        this.sheet = localStorage.getItem('savedSheet') || 'main';
     },
     methods: {        
         switchSheet(sheet){
             this.sheet = sheet;
+            localStorage.setItem('savedSheet', sheet);
         },
         async saveChange(){
             const trainer = getTrainer();

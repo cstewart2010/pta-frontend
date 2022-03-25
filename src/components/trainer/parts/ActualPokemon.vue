@@ -52,7 +52,7 @@ export default {
             .then(response => {
                 this.pokemonData = response.data
                 this.url = 'https://raw.githubusercontent.com/msikma/pokesprite/master/pokemon-gen8/regular/'+response.data.speciesName.toLowerCase().replace(' ', '-')+'.png'
-                this.hp = JSON.parse(localStorage.getItem(`${this.pokemonId}hp`)) || response.data.pokemonStats.hp
+                this.hp = JSON.parse(localStorage.getItem(`${this.pokemonId}hp`) || response.data.pokemonStats.hp)
             })
             .catch(generateErrorModal)
     },
