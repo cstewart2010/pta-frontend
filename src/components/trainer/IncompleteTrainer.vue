@@ -12,6 +12,9 @@
         <div v-else-if="sheet=='team'">
             <pokemon-team />
         </div>
+        <div v-else-if="sheet=='items'">
+            <inventory />
+        </div>
         <div v-else-if="sheet=='home'">
             <pokemon-home />
         </div>
@@ -80,6 +83,7 @@ import TrainerMoves from './TrainerMoves.vue';
 import PokemonTeam from './PokemonTeam.vue';
 import PokemonHome from './PokemonHome.vue';
 import Honors from './Honors.vue';
+import Inventory from './Inventory.vue';
 import { getGameId, getPokemonNewHome, getPokemonNewTeam, getTrainer, removeFromStorage, setPokemonNewHome, setPokemonNewTeam, setPTAActivityToken, setTrainer } from '../../utils/localStorage';
 import { generateErrorModal, generateNavigationModal } from '../../utils/modalUtil';
 import { completeTrainer, findTrainerInGame } from '../../api/game.api';
@@ -94,6 +98,7 @@ export default {
         PokemonTeam,
         PokemonHome,
         Honors,
+        Inventory
     },
     data(){
         return {

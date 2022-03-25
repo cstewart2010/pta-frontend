@@ -62,7 +62,7 @@ export default {
         AddedPokemon,
         ActualPokemon
     },
-    beforeMount:async function(){        
+    beforeMount:async function(){
         await getAllPokemon()
             .then(response => {
                 this.pokemonCol = response.data.results.map(item => item.name)

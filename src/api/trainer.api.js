@@ -147,18 +147,16 @@ export async function userLogout(){
 
 /**
  * Add items to a trainer's bag
- * @param {String} trainerId The trainer's UUID
  * @param {any} itemPairs The key/value pairs for the items
  */
-export async function addItems(trainerId, itemPairs){
-    const [gmId, activityToken, sessionAuth] = getUserCredentials();
+export async function addItems(itemPairs){
+    const [trainerId, activityToken, sessionAuth] = getUserCredentials();
     nullChecker(trainerId, 'trainerId');
-    nullChecker(gmId, 'gmId');
     nullChecker(itemPairs, 'itemPairs');
     nullChecker(activityToken, 'activityToken');
     nullChecker(sessionAuth, 'sessionAuth');
 
-    return await requestHandler(`${TRAINER_RESOURCE}/${trainerId}/addItems?gameMaster=${gmId}&${getGroceries(itemPairs)}`, METHODS.PUT, {activityToken, sessionAuth});
+    return await requestHandler(`${TRAINER_RESOURCE}/${trainerId}/addItems`, METHODS.PUT, {activityToken, data: itemPairs, sessionAuth});
 }
 
 /**
@@ -172,7 +170,7 @@ export async function removeItems(itemPairs){
     nullChecker(activityToken, 'activityToken');
     nullChecker(sessionAuth, 'sessionAuth');
 
-    return await requestHandler(`${TRAINER_RESOURCE}/${trainerId}/removeItems?${getGroceries(itemPairs)}`, METHODS.PUT, {activityToken, sessionAuth});
+    return await requestHandler(`${TRAINER_RESOURCE}/${trainerId}/removeItems`, METHODS.PUT, {activityToken, data: itemPairs, sessionAuth});
 }
 
 /**
@@ -188,14 +186,4 @@ export async function deleteTrainer(trainerId){
     nullChecker(sessionAuth, 'sessionAuth');
 
     return await requestHandler(`${TRAINER_RESOURCE}/${trainerId}?gameMasterId=${gmId}`, METHODS.DELETE, {activityToken, sessionAuth});
-}
-
-
-const getGroceries = (itemPairs) => {
-    let groceries = [];
-    for (const itemPair in itemPairs){
-        groceries.push(`${itemPair}=${itemPairs[itemPair]}`);
-    }
-
-    return groceries.join('&')
 }
