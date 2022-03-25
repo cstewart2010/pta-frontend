@@ -158,7 +158,7 @@ export default {
             .then(response => {
                 this.items = response.data.results.map(item => item.name)
             })
-        
+        this.hp = this.pokemon.pokemonStats.hp;
         this.updateCatchRate();
     },
     methods: {

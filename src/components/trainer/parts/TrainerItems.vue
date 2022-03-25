@@ -20,7 +20,7 @@
             <div class="col-3 border-bottom border-start">
                 {{item.name}}
             </div>
-            <button class="col-1 btn btn-primary bg-gradient border-bottom border-start" @click="setUseItem(item)"  data-bs-toggle="modal" data-bs-target="#useItemModal-trainer">
+            <button class="col-1 btn btn-primary text-dark bg-gradient border-bottom border-start" @click="setUseItem(item)"  data-bs-toggle="modal" data-bs-target="#useItemModal-trainer">
                 {{item.amount}}
             </button>
             <div class="col-8 border-bottom border-start">
@@ -85,6 +85,7 @@ export default {
                 await addItems([item])
                 .then(response => {
                     setPTAActivityToken(response.headers['pta-activity-token']);
+                    location.reload();
                 })
             })
             .catch(generateErrorModal);

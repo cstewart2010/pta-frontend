@@ -3,11 +3,8 @@
         <div class="col-6">
             <div class="text-center">Skills</div>
         </div>
-        <div class="col-6" v-if="isComplete">
-            {{selectedOrigin}}
-        </div>
-        <div class="col-6" v-else>
-            <select class="form-select text-center" name="origin" v-model="selectedOrigin" @change="updateOrigin">
+        <div class="col-6">
+            <select class="form-select text-center" name="origin" v-model="selectedOrigin" @change="updateOrigin" :disabled="isComplete">
                 <option v-for="(origin, index) in origins" :key="index" :id="origin" :value="origin.replace('/', '_')">
                     {{origin}}
                 </option>
