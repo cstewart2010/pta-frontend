@@ -7,7 +7,7 @@
                 <div v-for="(pokemon, index) in actualHome" :key="pokemon">
                     <div class="row d-flex align-items-center" :id="'pokemon-'+index">
                         <actual-pokemon :pokemonId="pokemon.pokemonId" :trainerId="trainer.trainerId" :position="index + 1" />
-                        <div class="col-md-1">
+                        <div class="col-1">
                             <button class="btn-close" @click="removeActual(index)" />
                         </div>
                     </div>
@@ -19,7 +19,7 @@
             <div class="d-flex flex-wrap flex-row justify-content-evenly">
                 <div class="row align-items-center" :id="'pokemon-'+index" v-for="(pokemon, index) in pokemonHome" :key="pokemon">
                     <added-pokemon :pokemon="pokemon" :isOnActiveTeam="false" :position="index + 1" />
-                    <div class="col-md-1">
+                    <div class="col-1">
                         <button class="btn-close" @click="remove(index)" />
                     </div>
                 </div>
@@ -27,7 +27,7 @@
             </div>
         </div>
         <div class="row">
-            <div class="col-md-3">
+            <div class="col-3">
                 <select class="form-select my-1" name="pokemon" v-model="addedPokemon">
                     <option v-for="(pokemon, index) in pokemonCol" :key="index" :id="pokemon" :value="index + 1">
                         {{pokemon}}

@@ -85,38 +85,38 @@
     </div>
     <hr/>
     <div class="row">
-        <div class="col-md-11">
+        <div class="col-11">
             <div class="row">
-                <div class="col-md-2">HP</div>
-                <div class="col-md-2">Attack</div>
-                <div class="col-md-2">Defense</div>
-                <div class="col-md-2">Special Attack</div>
-                <div class="col-md-2">Special Defense</div>
-                <div class="col-md-2">Speed</div>
+                <div class="col-2">HP</div>
+                <div class="col-2">Attack</div>
+                <div class="col-2">Defense</div>
+                <div class="col-2">Special Attack</div>
+                <div class="col-2">Special Defense</div>
+                <div class="col-2">Speed</div>
             </div>
             <hr>
             <div class="row">
-                <div class="col-md-2">{{pokemon.pokemonStats.hp}}</div>
-                <div class="col-md-2">{{pokemon.pokemonStats.attack}}</div>
-                <div class="col-md-2">{{pokemon.pokemonStats.defense}}</div>
-                <div class="col-md-2">{{pokemon.pokemonStats.specialAttack}}</div>
-                <div class="col-md-2">{{pokemon.pokemonStats.specialDefense}}</div>
-                <div class="col-md-2">{{pokemon.pokemonStats.speed}}</div>
+                <div class="col-2">{{pokemon.pokemonStats.hp}}</div>
+                <div class="col-2">{{pokemon.pokemonStats.attack}}</div>
+                <div class="col-2">{{pokemon.pokemonStats.defense}}</div>
+                <div class="col-2">{{pokemon.pokemonStats.specialAttack}}</div>
+                <div class="col-2">{{pokemon.pokemonStats.specialDefense}}</div>
+                <div class="col-2">{{pokemon.pokemonStats.speed}}</div>
             </div>
         </div>
     </div>
     <hr>
     <div class="row">
-        <div class="col-md-1">Name</div>
-        <div class="col-md-2">
+        <div class="col-1">Name</div>
+        <div class="col-2">
             <halved-row-slot left="Uses" right="Frequency" />
         </div>
-        <div class="col-md-2">
+        <div class="col-2">
             <halved-row-slot left="Range" right="To Hit" />
         </div>
-        <div class="col-md-2">Damage Roll</div>
-        <div class="col-md-2">Type</div>
-        <div class="col-md-2">Effect</div>
+        <div class="col-2">Damage Roll</div>
+        <div class="col-2">Type</div>
+        <div class="col-2">Effect</div>
     </div>
     <div class="row" v-for="(move, index) in pokemon.moves" :key="index">
         <hr class="my-2"/>

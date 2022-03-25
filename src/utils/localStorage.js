@@ -251,6 +251,13 @@ export function setCurrentHP(hp){
 }
 
 /**
+ * Removes trainer data from local storage
+ */
+export function removeTrainer(){
+    localStorage.removeItem(TRAINER)
+}
+
+/**
  * Removes all pta data from local storage
  */
 export function removeFromStorage(){

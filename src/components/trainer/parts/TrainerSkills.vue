@@ -1,12 +1,12 @@
 <template>
     <div class="row">
-        <div class="col-md-6">
+        <div class="col-6">
             <div class="text-center">Skills</div>
         </div>
-        <div class="col-md-6" v-if="isComplete">
+        <div class="col-6" v-if="isComplete">
             {{selectedOrigin}}
         </div>
-        <div class="col-md-6" v-else>
+        <div class="col-6" v-else>
             <select class="form-select text-center" name="origin" v-model="selectedOrigin" @change="updateOrigin">
                 <option v-for="(origin, index) in origins" :key="index" :id="origin" :value="origin.replace('/', '_')">
                     {{origin}}
@@ -16,30 +16,22 @@
     </div>
     <hr>
     <div class="row">
-        <div class="col-md-6">
+        <div class="col-12 col-6">
             <div class="row d-flex align-items-center">
-                <div class="col-md-3">Skill Name</div>
-                <div class="col-md-3">Talent 1</div>
-                <div class="col-md-3">Talent 2</div>
-                <div class="col-md-3">Modifier</div>
+                <div class="col text-center">Skill Name</div>
+                <div class="col text-center">Talent 1</div>
+                <div class="col text-center">Talent 2</div>
+                <div class="col text-center">Modifier</div>
             </div>
-        </div>
-        <div class="col-md-6">
-            <div class="text-center">{{selectedOrigin}} Specialty</div>
-        </div>
-    </div>
-    <hr>
-    <div class="row">
-        <div class="col-md-6">
             <div class="row d-flex align-items-center" v-for="(trainerSkill, index) in trainerSkills" :key="index">
-                <div class="col-md-3 pl-2 text-truncate" data-bs-toggle="tooltip" :title="trainerSkill.name">{{trainerSkill.name}}</div>
-                <div class="col-md-3" style="text-align:center;">
+                <div class="col col-3 pl-2 text-truncate" data-bs-toggle="tooltip" :title="trainerSkill.name">{{trainerSkill.name}}</div>
+                <div class="col col-3" style="text-align:center;">
                     <input type="checkbox" :name="trainerSkill.name+'-talent-1'" :id="trainerSkill.name+'-talent-1'" :checked="trainerSkills[index].talent1" @change="updateTalent1(index)">
                 </div>
-                <div class="col-md-3" style="text-align:center;">
+                <div class="col col-3" style="text-align:center;">
                     <input type="checkbox" :name="trainerSkill.name+'-talent-2'" :id="trainerSkill.name+'-talent-2'" :checked="trainerSkills[index].talent2" @change="updateTalent2(index)">
                 </div>
-                <div class="col-md-3" style="text-align:center;">
+                <div class="col col-3" style="text-align:center;">
                     <div v-if="trainerSkills[index].talent1 ^ trainerSkills[index].talent2">
                         +{{Math.floor(trainerStats[trainerSkill.modifierStat]/2) + 2}}
                     </div>
@@ -52,7 +44,9 @@
                 </div>
             </div>
         </div>
-        <div class="col-md-6 my-auto">
+        <hr>
+        <div class="col-12 col-6">
+            <div class="text-center">{{selectedOrigin}} Specialty</div>
             <div class="text-center">
                 <p>Starting Equipment: {{originData.equipment}}</p>
                 <p>Starting pokemon: {{originData.startingPokemon}}</p>

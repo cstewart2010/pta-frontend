@@ -1,49 +1,49 @@
 <template>
     <div class="row">
-        <div class="col-md-10 my-auto">
-            <div class="text-center">Stats</div>
+        <div class="col-10">
+            <div>Stats</div>
         </div>
-        <div class="col-md-2 my-auto">
-            <div class="text-center">Classes</div>
+        <div class="col-2">
+            Classes
         </div>
     </div>
     <hr>
     <div class="row">
-        <div class="col-md-10 my-auto">
+        <div class="col-10 my-auto">
             <div class="row d-flex align-items-center">
-                <div class="col-md-2">
+                <div class="col-2">
                     <div class="text-center">Current HP</div>
                     <input class="w-100" type="number" :min="-trainerStats.hp" :max="trainerStats.hp" v-model="hp" @change="updateTrainerHP">
                     <div class="text-center">Max HP: {{trainerStats.hp}}</div>
                 </div>
-                <div class="col-md-2 text-center">
+                <div class="col-2 text-center">
                     <div>Attack</div>
                     <input class="w-100" type="number" min="1" max="10" v-model="trainerStats.attack" @change="updateTrainer('trainerStats', trainerStats)">
                     <div>+{{Math.floor(trainerStats.attack/2)}}</div>
                 </div>
-                <div class="col-md-2 text-center">
+                <div class="col-2 text-center">
                     <div>Defense</div>
                     <input class="w-100" type="number" min="1" max="10" v-model="trainerStats.defense" @change="updateTrainer('trainerStats', trainerStats)">
                     <div>+{{Math.floor(trainerStats.defense/2)}}</div>
                 </div>
-                <div class="col-md-2 text-center">
+                <div class="col-2 text-center">
                     <div>S. Attack</div>
                     <input class="w-100" type="number" min="1" max="10" v-model="trainerStats.specialAttack" @change="updateTrainer('trainerStats', trainerStats)">
                     <div>+{{Math.floor(trainerStats.specialAttack/2)}}</div>
                 </div>
-                <div class="col-md-2 text-center">
+                <div class="col-2 text-center">
                     <div>S. Defense</div>
                     <input class="w-100" type="number" min="1" max="10" v-model="trainerStats.specialDefense" @change="updateTrainer('trainerStats', trainerStats)">
                     <div>+{{Math.floor(trainerStats.specialDefense/2)}}</div>
                 </div>
-                <div class="col-md-2 text-center">
+                <div class="col-2 text-center">
                     <div>Speed</div>
                     <input class="w-100" type="number" min="1" max="10" v-model="trainerStats.speed" @change="updateTrainer('trainerStats', trainerStats)">
                     <div>+{{Math.floor(trainerStats.speed/2)}}</div>
                 </div>
             </div>
         </div>
-        <div class="col-md-2 my-auto">
+        <div class="col-2 my-auto">
             <select class="form-select" v-model="selectedTrainerClasses[0]" @change="updateClass(0)">
                 <option v-for="(trainerClass, index) in trainerClasses" :key="index" :id="trainerClass" :value="trainerClass.replace('/', '_')">
                     {{trainerClass}}

@@ -1,10 +1,10 @@
 <template>
     <div class="row">
-        <div class="col-md-2">
+        <div class="col-2">
             <div class="text-center">Name</div>
             <div class="text-center">{{trainerName.toUpperCase()}}</div>
         </div>
-        <div class="col-md-2">
+        <div class="col-2">
             <div class="text-center">Species</div>
             <div class="text-center" v-if="origin.includes('Pokémon')">
                 <select class="form-select text-center my-1 w-100" v-model="species" @change="updateTrainer('species', species)">
@@ -16,13 +16,13 @@
             </div>
             <div class="text-center" v-else>Human {{updateTrainer('species', 'Human')}}</div>
         </div>
-        <div class="col-md-2">
+        <div class="col-2">
             <div class="text-center">Age</div>
             <div class="text-center">
                 <input class="w-50" type="number" min="0" v-model="age" @change="updateTrainer('age', age)"> yo
             </div>
         </div>
-        <div class="col-md-2">
+        <div class="col-2">
             <div class="text-center">Gender</div>
             <div class="text-center">
                 <select class="form-select text-center w-100" v-model="gender" name="gender" id="genders" @change="updateTrainer('gender', gender)">
@@ -32,13 +32,13 @@
                 </select>
             </div>
         </div>
-        <div class="col-md-2">
+        <div class="col-2">
             <div class="text-center">Height</div>
             <div class="text-center">
                 <input class="w-75" v-model="height" type="number" min="1"  @change="updateTrainer('height', height)"> ins
             </div>
         </div>
-        <div class="col-md-2">
+        <div class="col-2">
             <div class="text-center">Weight</div>
             <div class="text-center">
                 <input class="w-75" v-model="weight" type="number" min="1" @change="updateTrainer('weight', weight)"> lbs

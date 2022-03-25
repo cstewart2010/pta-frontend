@@ -47,6 +47,28 @@ export async function findTrainerInGame(gameId, trainerId) {
 }
 
 /**
+ * Searches for a trainer using their id
+ * @param {String} gameId the session id to search with
+ * @returns 
+ */
+export async function getAllLogs(gameId){
+    nullChecker(gameId, 'gameId');
+    
+    return await requestHandler(`${GAME_RESOURCE}/${gameId}/all_logs`, METHODS.GET);
+}
+
+/**
+ * Searches for a trainer using their id
+ * @param {String} gameId the session id to search with
+ * @returns 
+ */
+export async function getLogs(gameId){
+    nullChecker(gameId, 'gameId');
+    
+    return await requestHandler(`${GAME_RESOURCE}/${gameId}/logs`, METHODS.GET);
+}
+
+/**
  * Creates a new game session and assigns it to a new game master
  * @param {String} gmUsername the username for the game session's game master
  * @param {String} gmPassword the game master's password

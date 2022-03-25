@@ -35,6 +35,12 @@ const routes = [
     name: 'Trainer/Index',
     component: () => import('../views/trainer/Index.vue'),
     props: true
+  },
+  {
+    path: '/journal',
+    name: 'Journal',
+    component: () => import('../views/Journal.vue'),
+    props: true
   }
 ]
 

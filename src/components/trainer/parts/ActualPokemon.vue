@@ -1,10 +1,10 @@
 <template>
-    <div class="col-md-1 text-center" :id="'position-'+position">{{position}}</div>
-    <div class="col-md-3 text-center" :id="'icon-'+position">
+    <div class="col-1 text-center" :id="'position-'+position">{{position}}</div>
+    <div class="col-3 text-center" :id="'icon-'+position">
         <img :src="url" :alt="pokemonData.name">
     </div>
-    <button class="col-md-3 text-center btn btn-info" :id="'nickname-'+position" data-bs-toggle="modal" :data-bs-target="'#pokemonModal'+pokemonId">{{pokemonData.nickname}} ({{pokemonData.speciesName}})</button>
-    <div class="col-md-3 text-center" :id="'notes-'+position" v-if="trainerId == pokemonData.trainerId">
+    <button class="col-3 text-center btn btn-info" :id="'nickname-'+position" data-bs-toggle="modal" :data-bs-target="'#pokemonModal'+pokemonId">{{pokemonData.nickname}} ({{pokemonData.speciesName}})</button>
+    <div class="col-3 text-center" :id="'notes-'+position" v-if="trainerId == pokemonData.trainerId">
         <span v-if="trainerId == pokemonData.originalTrainerId">Original Trainer<br></span>
         {{this.pokemonData.rarity}}
         <span v-if="pokemonData.isShiny"><br>Shiny</span>

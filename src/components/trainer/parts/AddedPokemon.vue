@@ -1,14 +1,14 @@
 <template>
-    <div class="col-md-1 text-center" :id="'position-'+position">{{position}}</div>
-    <div class="col-md-1 text-center" :id="'icon-'+position">
+    <div class="col-1 text-center" :id="'position-'+position">{{position}}</div>
+    <div class="col-1 text-center" :id="'icon-'+position">
         <img :src="url" :alt="pokemonData.name">
     </div>
-    <div class="col-md-2 text-center" :id="'nickname-'+position">
+    <div class="col-2 text-center" :id="'nickname-'+position">
         <input type="text" v-model="nickname" class="w-100" @change="updateNickname">
     </div>
-    <div class="col-md-1 text-center" :id="'species-'+position">{{pokemonData.name}}</div>
-    <div class="col-md-2 text-center" :id="'current-hp-'+position">{{pokemonData.pokemonStats.hp}}</div>
-    <div class="col-md-4 text-center" :id="'notes-'+position">Original Trainer<br>{{this.pokemonData.rarity}}</div>
+    <div class="col-1 text-center" :id="'species-'+position">{{pokemonData.name}}</div>
+    <div class="col-2 text-center" :id="'current-hp-'+position">{{pokemonData.pokemonStats.hp}}</div>
+    <div class="col-4 text-center" :id="'notes-'+position">Original Trainer<br>{{this.pokemonData.rarity}}</div>
 </template>
 
 <script>
