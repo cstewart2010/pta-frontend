@@ -1,41 +1,34 @@
 <template>
-    <div class="col-md-1 text-center">
+    <div class="col-1 text-center">
         {{moveData.name}}
     </div>
-    <div class="col-md-2 text-center">
+    <div class="col-2 text-center">
         <div class="row">
-            <div class="col-md-6">
+            <div class="col-6">
                 <input type="number" min="0" class="w-100">
             </div>
-            <div class="col-md-6">
+            <div class="col-6">
                 {{moveData.frequency}}
             </div>
         </div>
     </div>
-    <div class="col-md-2 text-center">
-        <div class="row">
-            <div class="col-md-6">
-                {{moveData.range}}
-            </div>
-            <div class="col-md-6">
-                {{toHit}}
-            </div>
-        </div>
+    <div class="col-2">
+        <half-row-slot :left="moveData.range" :right="toHit" />
     </div>
-    <div class="col-md-2 text-center">
+    <div class="col-2 text-center">
         {{damageBase}}+{{damageAdditional}}
     </div>
-    <div class="col-md-2 text-center">
+    <div class="col-2 text-center">
         <div class="row">
-            <div class="col-md-6">
+            <div class="col-6">
                 {{moveData.type}}
             </div>
-            <div class="col-md-6">
+            <div class="col-6">
                 {{moveData.stat}}
             </div>
         </div>
     </div>
-    <div class="col-md-2 text-center">
+    <div class="col-2 text-center">
         {{moveData.effects}}
     </div>
 </template>
@@ -44,6 +37,7 @@
 import { getMove } from '../../../api/dex.api'
 import { getTrainer } from '../../../utils/localStorage'
 import { generateErrorModal } from '../../../utils/modalUtil'
+import HalfRowSlot from '../../partials/HalvedRowSlot.vue'
 
 export default {
     name: 'AddedMove',
@@ -56,6 +50,9 @@ export default {
         stats: {
             default: (getTrainer()||{}).trainerStats
         }
+    },
+    components: {
+        HalfRowSlot
     },
     data(){
         return {

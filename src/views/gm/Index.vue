@@ -1,7 +1,10 @@
 <template>
+    <section v-if="trainerId!=null">
+        <incomplete-trainer :trainerId="trainerId" />
+    </section>
     <div class="row">
         <div class="" v-for="trainer in trainers.filter(trainer => !trainer.isGM)" :key="trainer.trainerId">
-            <button class="btn btn-secondary col-md-6" data-bs-toggle="modal" :data-bs-target="'#trainerModal'+trainer.trainerId">
+            <button class="btn btn-secondary col-md-6" @click="updateTrainerId(trainer.trainerId)">
                 {{trainer.trainerName}}
             </button>
             <button class="btn btn-danger col-md-6" data-bs-toggle="modal" :data-bs-target="'#trainerConfirmationModal'+trainer.trainerId">
@@ -23,8 +26,9 @@
 
 <script>
 import { refreshGM } from '../../api/trainer.api';
-import { getIsAuthenticate, getTrainers, setTrainers, removeFromStorage, setPTAActivityToken, setIsGM, getIsGM } from '../../utils/localStorage';
+import { getIsAuthenticate, getTrainers, setTrainers, removeFromStorage, setPTAActivityToken, setIsGM, getIsGM, removeTrainer } from '../../utils/localStorage';
 import { generateNavigationModal } from '../../utils/modalUtil';
+import IncompleteTrainer from '../../components/trainer/IncompleteTrainer.vue'
 import TrainerModal from '../../components/modals/TrainerModal.vue'
 import DeleteGame from '../../components/modals/DeleteGame.vue'
 import DeleteTrainer from '../../components/modals/DeleteTrainer.vue'
@@ -36,13 +40,15 @@ export default {
         return {
             trainers: [],
             gameSessionPassword: '',
+            trainerId: null
         }
     },
     components: {
         DeleteGame,
         DeleteTrainer,
         TrainerModal,
-        ExportGame
+        ExportGame,
+        IncompleteTrainer
     },
     beforeMount:async function(){
         if (!getIsAuthenticate()){
@@ -65,6 +71,17 @@ export default {
             removeFromStorage();
             generateNavigationModal(error.status, error.reason, '/');
         })
+    },
+    methods: {
+        updateTrainerId(trainerId){
+            if (this.trainerId == trainerId){
+                this.trainerId = null;
+                removeTrainer()
+            }
+            else {
+                this.trainerId = trainerId;
+            }
+        }
     }
 }
 </script>

@@ -3,23 +3,23 @@
         <h3>Moves</h3>
         <hr/>
         <div class="row">
-            <div class="col-md-1">Name</div>
-            <div class="col-md-2">
+            <div class="col-1">Name</div>
+            <div class="col-2">
                 <div class="row">
-                    <div class="col-md-6">Uses</div>
-                    <div class="col-md-6">Frequency</div>
+                    <div class="col-6">Uses</div>
+                    <div class="col-6 text-truncate" data-bs-toggle="tooltip" title="Frequency">Frequency</div>
                 </div>
             </div>
-            <div class="col-md-2">
+            <div class="col-2">
                 <div class="row">
-                    <div class="col-md-6">Range</div>
-                    <div class="col-md-6">To Hit</div>
+                    <div class="col-6">Range</div>
+                    <div class="col-6">To Hit</div>
                 </div>
             </div>
-            <div class="col-md-2">Damage Roll</div>
-            <div class="col-md-2">Type</div>
-            <div class="col-md-2">Effect</div>
-            <div class="col-md-1">Delete</div>
+            <div class="col-2">Damage Roll</div>
+            <div class="col-2">Type</div>
+            <div class="col-2">Effect</div>
+            <div class="col-1">Delete</div>
         </div>
         <hr/>
     </div>
@@ -27,7 +27,7 @@
         <div v-for="(move, index) in trainerMoves" :key="move">
             <div class="row d-flex align-items-center" :id="'move-'+index">
                 <added-move :move="move" />
-                <div class="col-md-1 text-center">
+                <div class="col-1 text-center">
                     <button class="btn-close" @click="remove(index)" />
                 </div>
             </div>
@@ -35,7 +35,7 @@
         </div>
     </div>
     <div class="row">
-        <div class="col-md-3">
+        <div class="col-3">
             <select class="form-select text-center my-1" name="move" v-model="addedMove">
                 <option v-for="(move, index) in moves" :key="index" :id="move" :value="index + 1">
                     {{move}}

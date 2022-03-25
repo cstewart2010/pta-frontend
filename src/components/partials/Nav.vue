@@ -26,6 +26,9 @@
           <router-link :to="{name: 'Registration', params: { isGM: true }}" class="nav-link">Start Session</router-link>
         </li>
         <li class="nav-item" v-if="needsToAuthenticate==false">
+          <router-link to="/journal" class="nav-link">Journal</router-link>
+        </li>
+        <li class="nav-item" v-if="needsToAuthenticate==false">
           <router-link to="/" class="nav-link" @click="logout">Log out</router-link>
         </li>
       </ul>

@@ -3,7 +3,7 @@
         <left />
         <!-- Trainer wishlist -->
         <div class="col-md-1 text-center">
-            Wishlist
+            <div>Wishlist</div>
             <input v-for="n in 20" :key="n" type="text" class="wishlist">
         </div>
     </div>

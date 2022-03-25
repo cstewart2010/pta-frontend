@@ -3,18 +3,18 @@
         <h3>Pokemon Team</h3>
         <hr/>
         <div class="row">
-            <div class="col-md-1">Number</div>
-            <div class="col-md-3">Icon</div>
-            <div class="col-md-2 text-center">Nickname</div>
-            <div class="col-md-1 text-center">Species</div>
-            <div class="col-md-3">Notes</div>
-            <div class="col-md-1">Delete</div>
+            <div class="col-1">Number</div>
+            <div class="col-3">Icon</div>
+            <div class="col-2 text-center">Nickname</div>
+            <div class="col-1 text-center">Species</div>
+            <div class="col-3">Notes</div>
+            <div class="col-1">Delete</div>
         </div>
         <div id="pokemonTeam" class="my-1">
             <div v-for="(pokemon, index) in actualTeam" :key="pokemon">
                 <div class="row d-flex align-items-center" :id="'pokemon-'+index">
                     <actual-pokemon :pokemonId="pokemon.pokemonId" :trainerId="trainer.trainerId" :position="index + 1" />
-                    <div class="col-md-1">
+                    <div class="col-1">
                         <button class="btn-close" @click="removeActual(index)" />
                     </div>
                 </div>
@@ -25,7 +25,7 @@
             <div v-for="(pokemon, index) in pokemonTeam" :key="pokemon">
                 <div class="row d-flex align-items-center" :id="'pokemon-'+index">
                     <added-pokemon :pokemon="pokemon" :isOnActiveTeam="true" :position="index + 1" />
-                    <div class="col-md-1">
+                    <div class="col-1">
                         <button class="btn-close" @click="remove(index)" />
                     </div>
                 </div>
@@ -33,7 +33,7 @@
             </div>
         </div>
         <div class="row">
-            <div class="col-md-3">
+            <div class="col-3">
                 <select class="form-select my-1" name="pokemon" v-model="addedPokemon">
                     <option v-for="(pokemon, index) in pokemonCol" :key="index" :id="pokemon" :value="index + 1">
                         {{pokemon}}
