@@ -21,14 +21,14 @@
                 <div class="col text-center">Modifier</div>
             </div>
             <div class="row d-flex align-items-center" v-for="(trainerSkill, index) in trainerSkills" :key="index">
-                <div class="col col-3 pl-2 text-truncate" data-bs-toggle="tooltip" :title="trainerSkill.name">{{trainerSkill.name}}</div>
+                <button class="col col-3 btn btn-dark pl-2 text-truncate" data-bs-toggle="tooltip" :title="trainerSkill.name" @click="sendLog(trainerSkill.name)">{{trainerSkill.name}}</button>
                 <div class="col col-3" style="text-align:center;">
                     <input type="checkbox" :name="trainerSkill.name+'-talent-1'" :id="trainerSkill.name+'-talent-1'" :checked="trainerSkills[index].talent1" @change="updateTalent1(index)">
                 </div>
                 <div class="col col-3" style="text-align:center;">
                     <input type="checkbox" :name="trainerSkill.name+'-talent-2'" :id="trainerSkill.name+'-talent-2'" :checked="trainerSkills[index].talent2" @change="updateTalent2(index)">
                 </div>
-                <div class="col col-3" style="text-align:center;">
+                <div class="col col-3" style="text-align:center;" :id="trainerSkill.name+'-modifier'">
                     <div v-if="trainerSkills[index].talent1 ^ trainerSkills[index].talent2">
                         +{{Math.floor(trainerStats[trainerSkill.modifierStat]/2) + 2}}
                     </div>
@@ -61,7 +61,8 @@
 
 <script>
 import { getAllOrigins, getOrigin, } from '../../../api/dex.api';
-import { getTrainer, setTrainer } from '../../../utils/localStorage'
+import { postLog } from '../../../api/game.api';
+import { getTrainer, setPTAActivityToken, setTrainer } from '../../../utils/localStorage'
 import { generateErrorModal } from '../../../utils/modalUtil';
 
 export default {
@@ -74,7 +75,8 @@ export default {
             money: 0,
             trainerSkills: {},
             trainerStats: {},
-            isComplete: false
+            isComplete: false,
+            trainerName: ''
         }
     },
     beforeMount: async function(){     
@@ -85,6 +87,7 @@ export default {
             .catch(generateErrorModal);
 
         const trainer = getTrainer();
+        this.trainerName = trainer.trainerName;
         this.selectedOrigin = trainer.origin
         this.money = trainer.money
         this.trainerSkills = trainer.trainerSkills
@@ -118,6 +121,18 @@ export default {
             this.trainerStats = trainer.trainerStats
             trainer[section] = value;
             setTrainer(trainer);
+        },
+        async sendLog(skillName){
+            var modifierValue = document.getElementById(`${skillName}-modifier`).textContent;
+            var modifier = modifierValue.length > 0 ? ` with a ${modifierValue} modifier` : '';
+            await postLog({
+                User: this.trainerName,
+                Action: `performed a ${skillName} roll of ${Math.ceil(Math.random()*20)}${modifier}`
+            })
+            .then(response => {
+                setPTAActivityToken(response.headers['pta-activity-token']);
+            })
+
         }
     }
 }

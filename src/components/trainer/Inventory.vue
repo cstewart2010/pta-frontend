@@ -1,7 +1,7 @@
 <template>
     <div class="row">
         <div class="col-12" style="text-align: center;">
-            ${{trainer.money}}
+            {{trainer.money}}¥
         </div>
         <div class="row">
             <key-items />

@@ -26,7 +26,7 @@
     <div id="addedMvoes" class="my-1">
         <div v-for="(move, index) in trainerMoves" :key="move">
             <div class="row d-flex align-items-center" :id="'move-'+index">
-                <added-move :move="move" />
+                <added-move :move="move" :user="trainerName" />
                 <div class="col-1 text-center">
                     <button class="btn-close" @click="remove(index)" />
                 </div>
@@ -48,7 +48,7 @@
 
 <script>
 import { getAllMoves } from '../../api/dex.api'
-import { getMoves, setMoves } from '../../utils/localStorage';
+import { getMoves, getTrainer, setMoves } from '../../utils/localStorage';
 import { generateErrorModal } from '../../utils/modalUtil'
 import AddedMove from './parts/AddedMove.vue';
 
@@ -58,7 +58,8 @@ export default {
         return {
             moves: [],
             addedMove: 'Struggle',
-            trainerMoves: []
+            trainerMoves: [],
+            trainerName: getTrainer().trainerName
         }
     },
     components:{
