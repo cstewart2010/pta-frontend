@@ -1,8 +1,8 @@
 <template>    
-    <div class="col-md-2">
+    <div class="col-4 text-truncate" data-bs-toggle="tooltip" :title="passive.name">
         {{passive.name}}
     </div>
-    <div class="col-md-10">
+    <div class="col-8">
         {{passive.effects}}
     </div>
     <hr class="my-2">

@@ -160,6 +160,18 @@ export async function addPlayerToGame(gameId, username, password){
     return await requestHandler(`${GAME_RESOURCE}/${gameId}/new`, METHODS.POST, {data});
 }
 
+export async function postLog(log){
+    const [trainerId, activityToken, sessionAuth] = getUserCredentials();
+    const gameId = getGameId();
+    nullChecker(trainerId, 'trainerId');
+    nullChecker(log, 'log');
+    nullChecker(activityToken, 'activityToken');
+    nullChecker(sessionAuth, 'sessionAuth');
+    
+    const endpoint = `${GAME_RESOURCE}/${gameId}/log/${trainerId}`
+    return await requestHandler(endpoint, METHODS.POST, {activityToken, sessionAuth, data: log});
+}
+
 /**
  * Adds changes to trainer to the database
  * @param {any} trainer the partial updated trainer data

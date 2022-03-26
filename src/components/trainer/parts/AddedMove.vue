@@ -16,7 +16,7 @@
         <half-row-slot :left="moveData.range" :right="toHit" />
     </div>
     <div class="col-2 text-center">
-        {{damageBase}}+{{damageAdditional}}
+        <damage-dice-roll :damageAdditional="damageAdditional" :damageBase="damageBase" :name="formattedName" :user="user" />
     </div>
     <div class="col-2 text-center">
         <div class="row">
@@ -38,10 +38,14 @@ import { getMove } from '../../../api/dex.api'
 import { getTrainer } from '../../../utils/localStorage'
 import { generateErrorModal } from '../../../utils/modalUtil'
 import HalfRowSlot from '../../partials/HalvedRowSlot.vue'
+import DamageDiceRoll from '../../partials/DamageDiceRoll.vue'
 
 export default {
     name: 'AddedMove',
     props: {
+        user: {
+            default: ''
+        },
         move: {
             default: {
                 name: 'Struggle'
@@ -52,20 +56,23 @@ export default {
         }
     },
     components: {
-        HalfRowSlot
+        HalfRowSlot,
+        DamageDiceRoll
     },
     data(){
         return {
             moveData: {},
             toHit: '--',
             damageBase: '--',
-            damageAdditional: '--'
+            damageAdditional: '--',
+            formattedName: ''
         }
     },
     beforeMount:async function(){
         await getMove(this.move)
             .then(response => {
                 this.moveData = response.data
+                this.formattedName = this.moveData.name.replace(' ', '_');
                 switch (this.moveData.stat){
                     case 'Attack':
                         this.toHit = Math.floor(this.stats.attack/2);

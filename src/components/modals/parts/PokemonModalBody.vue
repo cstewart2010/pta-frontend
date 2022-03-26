@@ -24,7 +24,7 @@
                         <div class="col-md-4">
                             Current HP
                             <br>
-                            <input class="w-50" type="number" :min="-pokemon.pokemonStats.hp" :max="pokemon.pokemonStats.hp" v-model="hp" @input="updateCatchRate">
+                            <input class="w-75" type="number" :min="-pokemon.pokemonStats.hp" :max="pokemon.pokemonStats.hp" v-model="hp" @input="updateCatchRate">
                         </div>
                         <div class="col-md-4">
                             Max HP<br>{{pokemon.pokemonStats.hp}}
@@ -85,7 +85,7 @@
     </div>
     <hr/>
     <div class="row">
-        <div class="col-11">
+        <div class="col-12">
             <div class="row">
                 <div class="col-2">HP</div>
                 <div class="col-2">Attack</div>
@@ -120,7 +120,7 @@
     </div>
     <div class="row" v-for="(move, index) in pokemon.moves" :key="index">
         <hr class="my-2"/>
-        <added-move :move="move" :stats="pokemon.pokemonStats" />
+        <added-move :move="move" :stats="pokemon.pokemonStats" :user="pokemon.nickname" />
     </div>
 </template>
 

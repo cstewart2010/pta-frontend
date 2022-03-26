@@ -3,19 +3,21 @@
     <div class="col-3 text-center" :id="'icon-'+position">
         <img :src="url" :alt="pokemonData.name">
     </div>
-    <button class="col-3 text-center btn btn-info" :id="'nickname-'+position" data-bs-toggle="modal" :data-bs-target="'#pokemonModal'+pokemonId">{{pokemonData.nickname}} ({{pokemonData.speciesName}})</button>
+    <button class="col-3 text-center btn btn-info" :id="'nickname-'+position" @click="changeDisplay">{{pokemonData.nickname}} ({{pokemonData.speciesName}})</button>
     <div class="col-3 text-center" :id="'notes-'+position" v-if="trainerId == pokemonData.trainerId">
         <span v-if="trainerId == pokemonData.originalTrainerId">Original Trainer<br></span>
         {{this.pokemonData.rarity}}
         <span v-if="pokemonData.isShiny"><br>Shiny</span>
     </div>
-    <pokemon-modal :pokemon="pokemonData" :position="position" />
+    <section v-if="display">
+        <pokemon-modal-body :pokemon="pokemonData" />
+    </section>
 </template>
 
 <script>
 import { getGamePokemon } from '../../../api/pokemon.api'
 import { generateErrorModal } from '../../../utils/modalUtil'
-import PokemonModal from '../../modals/PokemonModal.vue';
+import PokemonModalBody from '../../modals/parts/PokemonModalBody.vue'
 
 export default {
     name: 'ActualPokemon',
@@ -31,7 +33,7 @@ export default {
         }
     },
     components: {
-        PokemonModal
+        PokemonModalBody
     },
     data(){
         return {
@@ -41,10 +43,11 @@ export default {
                 eggGroups: [],
                 proficiencies: [],
                 passives: [],
-                skills: []
+                skills: [],
             },
             url: 'https://raw.githubusercontent.com/msikma/pokesprite/master/pokemon-gen8/regular/pikachu.png',
-            hp: 1
+            hp: 1,
+            display: false
         }
     },
     beforeMount:async function(){
@@ -59,6 +62,9 @@ export default {
     methods: {
         updateHP() {
             localStorage.setItem(`${this.pokemonId}hp`, this.hp)
+        },
+        changeDisplay(){
+            this.display = !this.display;
         }
     }
 }
