@@ -33,7 +33,7 @@
                     {{item}}
                 </option>
             </select>
-            <input type="number" class="m-1 col text-dark bg-primary bg-gradient"  min="1" name="item-amount" id="item-amount" v-model="addedAmount">
+            <input type="number" class="m-1 form-control col text-dark bg-primary bg-gradient"  min="1" name="item-amount" id="item-amount" v-model="addedAmount">
             <button class="btn btn-primary bg-gradient m-1 col text-dark" @click="addItem">Add more items</button>
         </div>
     </div>

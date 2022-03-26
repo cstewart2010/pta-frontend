@@ -41,8 +41,8 @@
 
 <script>
 import { getAllPokemon } from '../../api/dex.api'
-import { getGamePokemon } from '../../api/pokemon.api';
-import { getPokemonNewHome, getTrainer, setPokemonNewHome } from '../../utils/localStorage';
+import { deletePokemon, getGamePokemon } from '../../api/pokemon.api';
+import { getPokemonNewHome, getTrainer, setPokemonNewHome, setPTAActivityToken } from '../../utils/localStorage';
 import { generateErrorModal } from '../../utils/modalUtil'
 import AddedPokemon from './parts/AddedPokemon.vue';
 import ActualPokemon from './parts/ActualPokemon.vue';
@@ -89,6 +89,15 @@ export default {
         remove(index){
             this.pokemonHome = this.pokemonHome.filter((pokemon, entryIndex) => entryIndex != index)
             this.updateHome();
+        },
+        async removeActual(index){
+            const pokemon = this.actualHome[index];
+            await deletePokemon(pokemon.pokemonId)
+                .then(response => {
+                    this.actualHome = this.actualHome.filter((pokemon, entryIndex) => entryIndex != index)
+                    setPTAActivityToken(response.headers['pta-activity-token']);
+                })
+                .catch(generateErrorModal);
         },
         updateHome(){
             setPokemonNewHome(this.pokemonHome)
