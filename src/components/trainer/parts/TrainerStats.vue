@@ -1,9 +1,9 @@
 <template>
     <div class="row">
-        <div class="col-10">
-            <div>Stats</div>
+        <div class="col-10 text-center">
+            Stats
         </div>
-        <div class="col-2">
+        <div class="col-2 text-center">
             Classes
         </div>
     </div>
