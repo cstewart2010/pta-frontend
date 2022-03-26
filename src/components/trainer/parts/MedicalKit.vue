@@ -20,7 +20,7 @@
             <div class="col-3 border-bottom border-start">
                 {{item.name}}
             </div>
-            <button class="col-1 btn btn-danger bg-gradient border-bottom border-start" @click="setUseItem(item)"  data-bs-toggle="modal" data-bs-target="#useItemModal-medical">
+            <button class="col-1 btn btn-danger text-dark bg-gradient border-bottom border-start" @click="setUseItem(item)"  data-bs-toggle="modal" data-bs-target="#useItemModal-medical">
                 {{item.amount}}
             </button>
             <div class="col-8 border-bottom border-start">
@@ -33,7 +33,7 @@
                     {{item}}
                 </option>
             </select>
-            <input type="number" class="m-1 col text-dark bg-danger bg-gradient"  min="1" name="item-amount" id="item-amount" v-model="addedAmount">
+            <input type="number" class="m-1 form-control col text-dark bg-danger bg-gradient"  min="1" name="item-amount" id="item-amount" v-model="addedAmount">
             <button class="btn btn-danger bg-gradient m-1 col text-dark" @click="addItem">Add more items</button>
         </div>
     </div>

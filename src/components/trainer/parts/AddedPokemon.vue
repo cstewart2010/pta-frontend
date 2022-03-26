@@ -4,7 +4,7 @@
         <img :src="url" :alt="pokemonData.name">
     </div>
     <div class="col-2 text-center" :id="'nickname-'+position">
-        <input type="text" v-model="nickname" class="w-100" @change="updateNickname">
+        <input type="text" minlength="1" maxlength="18" v-model="nickname" class="w-100" @change="updateNickname">
     </div>
     <div class="col-1 text-center" :id="'species-'+position">{{pokemonData.name}}</div>
     <div class="col-2 text-center" :id="'current-hp-'+position">{{pokemonData.pokemonStats.hp}}</div>

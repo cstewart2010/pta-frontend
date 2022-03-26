@@ -1,7 +1,7 @@
 <template>
     <h3>Log in</h3>
     <div class="row">
-        <div class="col-md-6">
+        <div class="col-6">
             <div class="container">
                 <label for="trainerName" v-if="isGM==='true'">Game Master Name: </label>
                 <label for="trainerName" v-else>Trainer Name: </label>

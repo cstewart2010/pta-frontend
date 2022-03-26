@@ -1,9 +1,12 @@
 <template>
     <div>
-        <h2>Game Control</h2>
-        <input type="text" class="my-2" v-model="nickname" @input="update">
+        <h2 class="text-center">Game Control</h2>
+        <div class="input-group mb-3">
+            <span class="input-group-text">Search by nickname:</span>
+            <input type="text" class="form-control" v-model="nickname" @input="update">
+        </div>
         <div class="row">
-            <div class="col-md-4 mx-2" v-for="(game, index) in games" :key="index">
+            <div class="col-4" v-for="(game, index) in games" :key="index">
                 <button class="btn btn-dark w-100" :id="game.gameId" @click="getGame(game.gameId, game.nickname)" data-bs-toggle="modal" data-bs-target="#notificationModal">
                     {{game.nickname}}
                 </button>
