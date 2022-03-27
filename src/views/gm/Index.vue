@@ -1,11 +1,11 @@
 <template>
     <div class="row">
         <div class="col-9 border-end">
-            <section v-if="trainerId!=null">
+            <section class="m-2" v-if="trainerId!=null">
                 <incomplete-trainer :trainerId="trainerId" />
             </section>
             <div class="row">
-                <div class="" v-for="trainer in trainers.filter(trainer => !trainer.isGM)" :key="trainer.trainerId">
+                <div class="mt-3" v-for="trainer in trainers.filter(trainer => !trainer.isGM)" :key="trainer.trainerId">
                     <button class="btn btn-secondary col-md-6" @click="updateTrainerId(trainer.trainerId)">
                         {{trainer.trainerName}}
                     </button>
@@ -15,14 +15,20 @@
                     <delete-trainer :trainerId="trainer.trainerId" :trainerName="trainer.trainerName" />
                 </div>
             </div>
-            <div class="row d-flex align-items-right">
-                <div class="col-md-2">
-                    Session Password
+            <div class="row">
+                <div class="input-group my-3 col-2">
+                    <span class="input-group-text">Session Password</span>
                     <input type="password" v-model="gameSessionPassword">
                 </div>
             </div>
-            <delete-game :gameSessionPassword="gameSessionPassword" />
-            <export-game :gameSessionPassword="gameSessionPassword" />
+            <div class="row">
+                <div class="col-2">
+                    <delete-game :gameSessionPassword="gameSessionPassword" />
+                </div>
+                <div class="col-2">
+                    <export-game :gameSessionPassword="gameSessionPassword" />
+                </div>
+            </div>
         </div>
         <div class="col m-2">
             <journal />
@@ -65,10 +71,10 @@ export default {
         await refreshGM()
         .then(response => {
             var wasNotGM = !getIsGM();
-            setIsGM(true);
             setTrainers(response.data.trainers)
             setPTAActivityToken(response.headers['pta-activity-token']);
             if (wasNotGM){
+                setIsGM(true);
                 window.location.href = '/gm'
             }
             this.trainers = getTrainers();
