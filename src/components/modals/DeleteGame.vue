@@ -1,9 +1,5 @@
 <template>
-    <div class="row d-flex align-items-right">
-        <div class="col-md-2">
-            <button class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#gameConfirmationModal">Delete Game</button>
-        </div>
-    </div>
+    <button class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#gameConfirmationModal">Delete Game</button>
     <div class="modal fade" id="gameConfirmationModal" tabindex="-1" aria-labelledby="gameConfirmationModalLabel" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">

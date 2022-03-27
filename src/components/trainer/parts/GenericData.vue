@@ -19,7 +19,7 @@
         <div class="col-2">
             <div class="text-center">Age</div>
             <div class="text-center">
-                <input class="w-50" type="number" min="0" v-model="age" @change="updateTrainer('age', age)"> yo
+                <input class="w-75" type="number" min="0" v-model="age" @change="updateTrainer('age', age)"> yo
             </div>
         </div>
         <div class="col-2">
