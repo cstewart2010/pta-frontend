@@ -16,6 +16,9 @@
         <li class="nav-item" v-if="isGM==true && needsToAuthenticate==false">
           <router-link to="/gm" class="nav-link">Game Master</router-link>
         </li>
+        <li class="nav-item" v-if="isGM==true && needsToAuthenticate==false">
+          <router-link to="/trade" class="nav-link">Trade Center</router-link>
+        </li>
         <li class="nav-item" v-else-if="isGM==false && needsToAuthenticate==false">
           <router-link to="/trainer" class="nav-link">Trainer</router-link>
         </li>
