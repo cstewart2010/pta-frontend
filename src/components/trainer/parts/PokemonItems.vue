@@ -1,7 +1,7 @@
 <template>
-    <div class="col-12 col-md-6 bg-warning bg-gradient text-dark" style="text-align: center;">
+    <div class="col-12 col-md-6 bg-warning bg-opacity-50 text-dark" style="text-align: center;">
         <div class="row">
-            <strong class="col-12 border-bottom border-start">
+            <strong class="col-12 bg-warning border-bottom border-start">
                 Pokemon Items
             </strong>
         </div>
@@ -20,7 +20,7 @@
             <div class="col-3 border-bottom border-start">
                 {{item.name}}
             </div>
-            <button class="col-1 btn btn-warning bg-gradient border-bottom border-start" @click="setUseItem(item)"  data-bs-toggle="modal" data-bs-target="#useItemModal-pokemon">
+            <button class="col-1 btn border-bottom border-start" @click="setUseItem(item)"  data-bs-toggle="modal" data-bs-target="#useItemModal-pokemon">
                 {{item.amount}}
             </button>
             <div class="col-8 border-bottom border-start">
@@ -28,13 +28,13 @@
             </div>
         </div>
         <div class="row border-bottom border-start">
-            <select class="form-select m-1 col text-dark bg-warning" name="item" style="max-width: 150px" v-model="addedItem">
+            <select class="form-select m-1 col text-dark bg-warning bg-opacity-25" name="item" style="max-width: 150px" v-model="addedItem">
                 <option v-for="(item, index) in availableItems" :key="index" :id="item" :value="index + 1">
                     {{item}}
                 </option>
             </select>
-            <input type="number" class="m-1 form-control col text-dark bg-warning bg-gradient"  min="1" name="item-amount" id="item-amount" v-model="addedAmount">
-            <button class="btn btn-warning bg-gradient m-1 col text-dark" @click="addItem">Add more items</button>
+            <input type="number" class="m-1 form-control col text-dark bg-warning bg-opacity-25"  min="1" name="item-amount" id="item-amount" v-model="addedAmount">
+            <button class="btn m-1 col text-dark" @click="addItem">Add more items</button>
         </div>
     </div>
     <use-item-modal :item="itemToUse" :type="'pokemon'" />
