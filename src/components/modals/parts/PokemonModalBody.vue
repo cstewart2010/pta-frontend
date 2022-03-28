@@ -15,6 +15,15 @@
                     <halved-row-slot left="Egg Group" :right="pokemon.eggGroups.join('/')" />
                     <halved-row-slot left="Hatch rate" :right="pokemon.eggHatchRate" />
                     <halved-row-slot left="Diet" :right="pokemon.diet" />
+                    <div class="input-group">
+                        <div class="col-6">Switch form:</div>
+                        <select class="form-select col-6" v-model="differentForm" @change="switchForm">
+                            <option value=""></option>
+                            <option v-for="(form, index) in pokemon.alternateForms" :key="index" :id="form" :value="form">
+                                {{form}}
+                            </option>
+                        </select>
+                    </div>
                     Proficiencies:<br>{{pokemon.proficiencies.join(', ')}}
                 </div>
                 <div class="col-md-5">
@@ -48,14 +57,15 @@
                     <halved-row-slot left="Catch Rate" :right="catchRate" />
                     <hr>
                     <div class="row">
-                        <div class="col-md-6">                            
+                        <div>                            
                             <select class="form-select" v-model="selectedItem" @change="updateItem">
+                                <option value=""></option>
                                 <option v-for="(item, index) in items" :key="index" :id="item" :value="item">
                                     {{item}}
                                 </option>
                             </select>
                         </div>
-                        <div class="col-md-6">
+                        <div>
                             {{itemData}}
                         </div>
                     </div>
@@ -75,6 +85,7 @@
                 </div>
             <div>
                 <select class="form-select" v-model="selectedSkill" @change="updateSkill">
+                    <option value=""></option>
                     <option v-for="(skill, index) in pokemon.skills" :key="index" :id="skill" :value="skill">
                         {{skill}}
                     </option>
@@ -129,6 +140,9 @@ import { getAllPokemonItems, getPokemonItem, getSkillsFeature } from '../../../a
 import AddedMove from '../../trainer/parts/AddedMove.vue'
 import Passive from '../../trainer/parts/Passive.vue'
 import HalvedRowSlot from '../../partials/HalvedRowSlot.vue'
+import { changeForm } from '../../../api/pokemon.api'
+import { generateErrorModal } from '../../../utils/modalUtil'
+import { setPTAActivityToken } from '../../../utils/localStorage'
 
 export default {
     name: 'PokemonModalBody',
@@ -146,7 +160,8 @@ export default {
             skillData: '',
             itemData: '',
             items: [],
-            url: 'https://raw.githubusercontent.com/HybridShivam/Pokemon/master/assets/imagesHQ/001.png'
+            url: 'https://raw.githubusercontent.com/HybridShivam/Pokemon/master/assets/imagesHQ/001.png',
+            differentForm: ''
         }
     },
     components: {
@@ -170,16 +185,36 @@ export default {
     },
     methods: {
         async updateSkill(){
-            await getSkillsFeature(this.selectedSkill)
-                .then(response => {
-                    this.skillData = response.data.effects
-                })
+            if (this.selectedSkill.length > 0){
+                await getSkillsFeature(this.selectedSkill)
+                    .then(response => {
+                        this.skillData = response.data.effects
+                    })
+            }
+            else {
+                this.skillData = '';
+            }
         },
         async updateItem(){
-            await getPokemonItem(this.selectedItem.replace("/", "_"))
-                .then(response => {
-                    this.itemData = response.data.effects
-                })
+            if (this.selectedItem.length > 0){
+                await getPokemonItem(this.selectedItem.replace("/", "_"))
+                    .then(response => {
+                        this.itemData = response.data.effects;
+                    })
+            }
+            else {
+                this.itemData = '';
+            }
+        },
+        async switchForm(){
+            if (this.differentForm.length > 0){
+                await changeForm(this.pokemon.pokemonId, this.differentForm.replace("/", "_"))
+                    .then(response => {
+                        setPTAActivityToken(response.headers['pta-activity-token']);
+                        location.reload();
+                    })
+                    .catch(generateErrorModal);
+            }
         },
         updateCatchRate(){
             let modifier = -25

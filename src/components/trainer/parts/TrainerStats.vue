@@ -45,21 +45,25 @@
         </div>
         <div class="col-2 my-auto">
             <select class="form-select" v-model="selectedTrainerClasses[0]" @change="updateClass(0)">
+                <option value=""></option>
                 <option v-for="(trainerClass, index) in trainerClasses" :key="index" :id="trainerClass" :value="trainerClass.replace('/', '_')">
                     {{trainerClass}}
                 </option>
             </select>
             <select class="form-select" v-model="selectedTrainerClasses[1]" @change="updateClass(1)">
+                <option value=""></option>
                 <option v-for="(trainerClass, index) in trainerClasses" :key="index" :id="trainerClass" :value="trainerClass.replace('/', '_')">
                     {{trainerClass}}
                 </option>
             </select>
             <select class="form-select" v-model="selectedTrainerClasses[2]" @change="updateClass(2)">
+                <option value=""></option>
                 <option v-for="(trainerClass, index) in trainerClasses" :key="index" :id="trainerClass" :value="trainerClass.replace('/', '_')">
                     {{trainerClass}}
                 </option>
             </select>
             <select class="form-select" v-model="selectedTrainerClasses[3]" @change="updateClass(3)">
+                <option value=""></option>
                 <option v-for="(trainerClass, index) in trainerClasses" :key="index" :id="trainerClass" :value="trainerClass.replace('/', '_')">
                     {{trainerClass}}
                 </option>

@@ -34,6 +34,24 @@ export async function tradePokemon(leftPokemonId, rightPokemonId){
 }
 
 /**
+ * Change a pokemon to an alternate form
+ * @param {String} pokemonId The pokemon's id
+ * @param {String} form The different form
+ * @returns the update Pokemon
+ */
+export async function changeForm(pokemonId, form){
+    const [trainerId, activityToken, sessionAuth] = getUserCredentials();
+    nullChecker(pokemonId, 'pokemonId');
+    nullChecker(trainerId, 'trainerId');
+    nullChecker(form, 'form');
+    nullChecker(activityToken, 'activityToken');
+    nullChecker(sessionAuth, 'sessionAuth');
+
+    const endpoint = `${POKEMON_RESOURCE}/${pokemonId}/form/${form}?trainerId=${trainerId}`;
+    return await requestHandler(endpoint, METHODS.PUT, {activityToken, sessionAuth});
+}
+
+/**
  * Evolves a pokemon to its next Form
  * @param {String} pokemonId The Pokemon's UUID
  * @param {String} nextForm The Pokemon's evolved form

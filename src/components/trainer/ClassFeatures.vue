@@ -41,6 +41,14 @@ export default {
             if (levelComparer < 0){
                 break;
             }
+            if (trainerClass.length == 0){
+                nextComparer++;
+                if (nextComparer == 0){
+                    levelComparer = levelComparer - 2
+                }
+                levelComparer = levelComparer - (4 * nextComparer);
+                continue;
+            }
             await getTrainerClass(trainerClass)
                 .then(response => {
                     temp.push({
