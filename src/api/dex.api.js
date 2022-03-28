@@ -16,6 +16,10 @@ export async function getAllPokemon(){
     return await requestHandler(`${POKEDEX_RESOURCE}?limit=2000`, METHODS.GET);
 }
 
+export async function getAllBasePokemon(){
+    return await requestHandler(`${POKEDEX_RESOURCE}/form/Base?limit=2000`, METHODS.GET);
+}
+
 /**
  * @returns All berry in the berrydex
  */

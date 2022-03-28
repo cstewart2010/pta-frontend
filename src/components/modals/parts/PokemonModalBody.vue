@@ -63,7 +63,7 @@
                 <div class="col-md-2">
                     {{pokemon.nickname}}
                     <hr>
-                    <img class="img-fluid" src="https://raw.githubusercontent.com/HybridShivam/Pokemon/master/assets/imagesHQ/001.png" :alt="pokemon.nickname">
+                    <img class="img-fluid" :src="url" :alt="pokemon.nickname">
                 </div>
             </div>
         </div>
@@ -145,7 +145,8 @@ export default {
             selectedItem: '',
             skillData: '',
             itemData: '',
-            items: []
+            items: [],
+            url: 'https://raw.githubusercontent.com/HybridShivam/Pokemon/master/assets/imagesHQ/001.png'
         }
     },
     components: {
@@ -159,6 +160,12 @@ export default {
                 this.items = response.data.results.map(item => item.name)
             })
         this.hp = this.pokemon.pokemonStats.hp;
+        if (this.pokemon.isShiny){
+            this.url = `https://play.pokemonshowdown.com/sprites/ani-shiny/${this.pokemon.shinyPortrait}.gif`
+        }
+        else{
+            this.url = `https://play.pokemonshowdown.com/sprites/ani/${this.pokemon.shinyPortrait}.gif`
+        }
         this.updateCatchRate();
     },
     methods: {
