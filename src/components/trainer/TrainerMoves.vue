@@ -37,6 +37,7 @@
     <div class="row">
         <div class="col-3">
             <select class="form-select text-center my-1" name="move" v-model="addedMove">
+                <option value=""></option>
                 <option v-for="(move, index) in moves" :key="index" :id="move" :value="index + 1">
                     {{move}}
                 </option>
@@ -57,7 +58,7 @@ export default {
     data(){
         return {
             moves: [],
-            addedMove: 'Struggle',
+            addedMove: '',
             trainerMoves: [],
             trainerName: getTrainer().trainerName
         }
@@ -78,8 +79,10 @@ export default {
     },
     methods:{
         addMove(){
-            this.trainerMoves.push(this.addedMove);
-            this.updateMoves();
+            if (this.addedMove.length > 0){
+                this.trainerMoves.push(this.addedMove);
+                this.updateMoves();
+            }
         },
         remove(index){
             this.trainerMoves = this.trainerMoves.filter((move, entryIndex) => entryIndex != index)

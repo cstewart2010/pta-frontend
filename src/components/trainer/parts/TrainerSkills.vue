@@ -5,6 +5,7 @@
         </div>
         <div class="col-6">
             <select class="form-select text-center" name="origin" v-model="selectedOrigin" @change="updateOrigin" :disabled="isComplete">
+                <option value=""></option>
                 <option v-for="(origin, index) in origins" :key="index" :id="origin" :value="origin.replace('/', '_')">
                     {{origin}}
                 </option>
@@ -97,7 +98,7 @@ export default {
     },
     methods: {
         async updateOrigin(){
-            if (this.selectedOrigin){
+            if (this.selectedOrigin.length > 0){
                 await getOrigin(this.selectedOrigin.replace('/', '_'))
                     .then(response => {
                         this.updateTrainer('origin', this.selectedOrigin);
@@ -106,6 +107,12 @@ export default {
                         this.updateTrainer('money', this.money);
                     })
                     .catch(generateErrorModal);
+            }
+            else {
+                this.updateTrainer('origin', this.selectedOrigin);
+                this.money = 0;
+                this.originData = ''
+                this.updateTrainer('money', this.money);
             }
         },
         updateTalent1(index){
