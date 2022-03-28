@@ -34,11 +34,12 @@
         </div>
         <div class="row">
             <div class="col-3">
-                <select class="form-select my-1" name="pokemon" v-model="addedPokemon">
-                    <option v-for="(pokemon, index) in pokemonCol" :key="index" :id="pokemon" :value="index + 1">
-                        {{pokemon}}
+                <input class="form-control my-1" list="datalistOptions" id="pokemonDataList" v-model="addedPokemon" placeholder="Type to search...">
+                <datalist id="datalistOptions" name="pokemon">
+                    <option v-for="(pokemon, index) in pokemonCol" :key="index" :id="pokemon.name+'_'+pokemon.form" :value="pokemon.friendly">
+                        {{index}}
                     </option>
-                </select>
+                </datalist>
                 <button class="btn btn-primary my-1" @click="addPokemon">Add this pokemon</button>
             </div>
         </div>
@@ -46,7 +47,7 @@
 </template>
 
 <script>
-import { getAllPokemon } from '../../api/dex.api'
+import { getAllBasePokemon } from '../../api/dex.api'
 import { deletePokemon, getGamePokemon } from '../../api/pokemon.api'
 import { getPokemonNewTeam, setPokemonNewTeam, getPokemonNewHome, setPokemonNewHome, getTrainer, setPTAActivityToken } from '../../utils/localStorage';
 import { generateErrorModal } from '../../utils/modalUtil'
@@ -58,7 +59,7 @@ export default {
     data(){
         return {
             trainer: getTrainer(),
-            pokemonCol: [],
+            pokemonCol: {},
             actualTeam: [],
             pokemonTeam: [],
             actualHome: [],
@@ -71,9 +72,15 @@ export default {
         ActualPokemon
     },
     beforeMount:async function(){        
-        await getAllPokemon()
+        await getAllBasePokemon()
             .then(response => {
-                this.pokemonCol = response.data.results.map(item => item.name)
+                for (const item of response.data){
+                    let friendly = item.name;
+                    if (item.form != "Base"){
+                        friendly = `${item.form.replace("Base/", "")} ${item.name}`
+                    }
+                    this.pokemonCol[friendly] = item;
+                }
                 this.trainer.pokemonTeam
                     .map(async pokemon => await getGamePokemon(pokemon.pokemonId).then(response => {
                         this.actualTeam.push(response.data)
@@ -95,19 +102,22 @@ export default {
     },
     methods:{
         addPokemon(){
+            const pokemon = this.pokemonCol[this.addedPokemon];
             if ((this.pokemonTeam.length + this.actualTeam.length) > 5){
                 this.pokemonHome.push({
-                    speciesName: this.pokemonCol[this.addedPokemon - 1],
-                    nickname: this.pokemonCol[this.addedPokemon - 1],
-                    isOnActiveTeam: false
+                    speciesName: pokemon.name,
+                    nickname: pokemon.name,
+                    isOnActiveTeam: false,
+                    form: pokemon.form
                 });
                 this.updateHome();
             }
             else {
                 this.pokemonTeam.push({
-                    speciesName: this.pokemonCol[this.addedPokemon - 1],
-                    nickname: this.pokemonCol[this.addedPokemon - 1],
-                    isOnActiveTeam: true
+                    speciesName: pokemon.name,
+                    nickname: pokemon.name,
+                    isOnActiveTeam: true,
+                    form: pokemon.form
                 });
                 this.updateTeam();
             }
