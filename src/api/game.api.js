@@ -2,7 +2,7 @@ import { BASE_URL } from './api.config.json'
 import { METHODS } from './enums.json'
 import { requestHandler, nullChecker, natureChecker, statusChecker, genderChecker } from './axiosHandler';
 import { getPokemon } from './dex.api';
-import { getGameId, getTrainerId, getUserCredentials } from '../utils/localStorage';
+import { getGameId, getGameMasterId, getUserCredentials } from '../utils/localStorage';
 const GAME_RESOURCE = `${BASE_URL}/api/v1/game`
 
 /**
@@ -293,7 +293,7 @@ export async function exportGame(gameSessionPassword){
  */
 export async function deleteGame(gameSessionPassword){
     const gameId = getGameId();
-    const gameMasterId = getTrainerId()
+    const gameMasterId = getGameMasterId()
     nullChecker(gameId, 'gameId');
     nullChecker(gameMasterId, 'gameMasterId');
     nullChecker(gameSessionPassword, 'gameSessionPassword');

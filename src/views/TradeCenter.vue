@@ -51,7 +51,7 @@
 
 <script>
 import { tradePokemon } from '../api/pokemon.api';
-import { getTrainers, setPTAActivityToken, setTrainerId } from '../utils/localStorage'
+import { getTrainers, setPTAActivityToken } from '../utils/localStorage'
 import { generateErrorModal } from '../utils/modalUtil';
 export default {
     name: "TradeCenter",
@@ -64,9 +64,6 @@ export default {
             selectedPokemon: null,
             trainers: getTrainers()
         }
-    },
-    beforeMount: function(){
-        setTrainerId(this.trainers.filter(trainer => trainer.isGM)[0].trainerId);
     },
     methods: {
         pickTrainer(trainer){

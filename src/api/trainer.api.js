@@ -146,6 +146,36 @@ export async function userLogout(){
 }
 
 /**
+ * Adds a new honor to the party
+ * @param {string} honor the honor to add
+ */
+export async function addGroupHonor(honor){
+    const [gmId, activityToken, sessionAuth] = getUserCredentials();
+    nullChecker(gmId, 'gmId');
+    nullChecker(honor, 'honor');
+    nullChecker(activityToken, 'activityToken');
+    nullChecker(sessionAuth, 'sessionAuth');
+
+    return await requestHandler(`${TRAINER_RESOURCE}/${gmId}/groupHonor`, METHODS.PUT, {activityToken, sessionAuth, data: {honor}});
+}
+
+/**
+ * Adds a new honor to a single trainer
+ * @param {string} honor the honor to add
+ * @param {string} trainerId The trainer to grant the honor to
+ */
+export async function addHonor(honor, trainerId){
+    const [gmId, activityToken, sessionAuth] = getUserCredentials();
+    nullChecker(gmId, 'gmId');
+    nullChecker(trainerId, 'trainerId');
+    nullChecker(honor, 'honor');
+    nullChecker(activityToken, 'activityToken');
+    nullChecker(sessionAuth, 'sessionAuth');
+
+    return await requestHandler(`${TRAINER_RESOURCE}/${gmId}/honor`, METHODS.PUT, {activityToken, sessionAuth, data: {honor, trainerId}});
+}
+
+/**
  * Add items to a trainer's bag
  * @param {any} itemPairs The key/value pairs for the items
  */

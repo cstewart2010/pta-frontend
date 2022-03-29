@@ -90,7 +90,7 @@
                     name: response.portal
                 }
 
-                setInitialCredentials(trainerId, response, this.isGM);
+                setInitialCredentials(trainerId, response, JSON.parse(this.isGM));
                 this.$router.go(options);
             },
             async gmLogin(){

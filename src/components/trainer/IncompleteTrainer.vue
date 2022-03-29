@@ -84,7 +84,7 @@ import PokemonTeam from './PokemonTeam.vue';
 import PokemonHome from './PokemonHome.vue';
 import Honors from './Honors.vue';
 import Inventory from './Inventory.vue';
-import { getGameId, getPokemonNewHome, getPokemonNewTeam, getTrainer, removeFromStorage, setPokemonNewHome, setPokemonNewTeam, setPTAActivityToken, setTrainer } from '../../utils/localStorage';
+import { getGameId, getPokemonNewHome, getPokemonNewTeam, getTrainer, removeFromStorage, setPokemonNewHome, setPokemonNewTeam, setPTAActivityToken, setTrainer, setTrainerId } from '../../utils/localStorage';
 import { generateErrorModal, generateNavigationModal } from '../../utils/modalUtil';
 import { completeTrainer, findTrainerInGame } from '../../api/game.api';
 import { refreshTrainer } from '../../api/trainer.api';
@@ -115,6 +115,7 @@ export default {
             await findTrainerInGame(getGameId(), this.trainerId)
                 .then(response => {
                     setTrainer(response.data.trainer);
+                    setTrainerId(this.trainerId)
                 })
                 .catch(generateErrorModal)
         }
