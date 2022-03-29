@@ -8,7 +8,7 @@
     </div>
     <div class="col-1 text-center" :id="'species-'+position">{{pokemonData.name}}</div>
     <div class="col-2 text-center" :id="'current-hp-'+position">{{pokemonData.pokemonStats.hp}}</div>
-    <div class="col-4 text-center" :id="'notes-'+position">Original Trainer<br>{{this.pokemonData.rarity}}</div>
+    <div class="col-4 text-center" :id="'notes-'+position">Original Trainer<br>{{pokemonData.rarity}}</div>
 </template>
 
 <script>
@@ -35,7 +35,7 @@ export default {
                 name: '',
                 pokemonStats: ''
             },
-            url: 'https://raw.githubusercontent.com/msikma/pokesprite/master/pokemon-gen8/regular/pikachu.png',
+            url: '',
             nickname: ''
         }
     },

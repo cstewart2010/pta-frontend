@@ -10,9 +10,11 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" />
                 </div>
                 <div class="modal-body">
-                    What are you targeting?
-                    <input type="text" minlength="6" v-model="target" class="form-control">
-                    <button class="btn btn-danger" @click="sendLog" data-bs-dismiss="modal">ATTACK!!!</button>
+                    <div class="input-group">
+                        <span class="input-group-text">What are you targeting?</span>
+                        <input type="text" minlength="6" v-model="target" class="form-control">
+                        <button class="btn btn-danger" @click="sendLog" data-bs-dismiss="modal">ATTACK!!!</button>
+                    </div>
                 </div>
             </div>
         </div>

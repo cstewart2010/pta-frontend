@@ -45,7 +45,7 @@ export default {
                 passives: [],
                 skills: [],
             },
-            url: 'https://raw.githubusercontent.com/msikma/pokesprite/master/pokemon-gen8/regular/pikachu.png',
+            url: '',
             hp: 1,
             display: false
         }
