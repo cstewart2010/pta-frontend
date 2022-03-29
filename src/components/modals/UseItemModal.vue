@@ -7,8 +7,12 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    How many would you like to use? ({{item.name}}: {{item.amount}})
-                    <input type="number" min="1" :max="item.amount" v-model="useAmount">
+                    <div class="input-grou">
+                        <span class="input-group-text">
+                            How many would you like to use? ({{item.name}}: {{item.amount}})
+                        </span>
+                        <input class="form-control" type="number" min="1" :max="item.amount" v-model="useAmount">
+                    </div>
                 </div>
                 <div class="modal-footer">
                     <button class="btn btn-light" @click="useItem" data-bs-dismiss="modal">Use {{item.name}}</button>

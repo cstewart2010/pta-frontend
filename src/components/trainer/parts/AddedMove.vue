@@ -12,7 +12,7 @@
             </div>
         </div>
     </div>
-    <div class="col-2">
+    <div class="col-2 text-center">
         <half-row-slot :left="moveData.range" :right="toHit" />
     </div>
     <div class="col-2 text-center">
@@ -20,12 +20,7 @@
     </div>
     <div class="col-2 text-center">
         <div class="row">
-            <div class="col-6">
-                {{moveData.type}}
-            </div>
-            <div class="col-6">
-                {{moveData.stat}}
-            </div>
+            <half-row-slot :left="moveData.type" :right="moveData.stat" />
         </div>
     </div>
     <div class="col-2 text-center">

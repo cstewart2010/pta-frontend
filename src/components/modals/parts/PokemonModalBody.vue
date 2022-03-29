@@ -160,7 +160,7 @@ export default {
             skillData: '',
             itemData: '',
             items: [],
-            url: 'https://raw.githubusercontent.com/HybridShivam/Pokemon/master/assets/imagesHQ/001.png',
+            url: '',
             differentForm: ''
         }
     },

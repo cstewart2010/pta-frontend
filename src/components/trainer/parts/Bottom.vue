@@ -2,15 +2,15 @@
     <div class="row">
         <div class="col-md-6">
             <div class="text-center">Physical Description</div>
-            <textarea v-model="description" class="w-100" @input="updateTrainer('description', description)" />
+            <textarea v-model="description" class="form-control" @input="updateTrainer('description', description)" />
             <div class="text-center">Personality</div>
-            <textarea v-model="personality" class="w-100" @input="updateTrainer('personality', personality)" />
+            <textarea v-model="personality" class="form-control" @input="updateTrainer('personality', personality)" />
         </div>
         <div class="col-md-6">
             <div class="text-center">Background</div>
-            <textarea v-model="background" class="w-100" @input="updateTrainer('background', background)" />
+            <textarea v-model="background" class="form-control" @input="updateTrainer('background', background)" />
             <div class="text-center">Goals / Dreams / Obsessions</div>
-            <textarea v-model="goals" class="w-100" @input="updateTrainer('goals', goals)" />
+            <textarea v-model="goals" class="form-control" @input="updateTrainer('goals', goals)" />
         </div>
     </div>
     <hr>

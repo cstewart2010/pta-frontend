@@ -20,7 +20,7 @@
                 <div class="row" v-if="regularTrainers.length > 0">
                     <div class="input-group my-1">
                         <span class="input-group-text">Add a group honor</span>
-                        <input class="form-control" v-model="groupHonor" type="text">
+                        <textarea class="form-control" v-model="groupHonor" cols="30" rows="1" />
                         <button class="btn btn-secondary" @click="onGroupHonor">Add honor</button>
                     </div>
                 </div>
@@ -33,7 +33,7 @@
                                 {{trainer.trainerName}}
                             </option>
                         </select>
-                        <input class="form-control" v-model="singleHonor" type="text">
+                        <textarea class="form-control" v-model="singleHonor" cols="30" rows="1" />
                         <button class="btn btn-secondary" @click="onSingleHonor">Add honor</button>
                     </div>
                 </div>
