@@ -13,7 +13,7 @@
 
 <script>
 import { refreshTrainer } from '../../api/trainer.api';
-import { getIsAuthenticate, getTrainer, removeFromStorage, setTrainer, setPTAActivityToken, setIsGM } from '../../utils/localStorage';
+import { getIsAuthenticate, getTrainer, removeFromStorage, setTrainer, setPTAActivityToken, setIsGM, setGameMasterId, setTrainerId } from '../../utils/localStorage';
 import IncompleteTrainer from '../../components/trainer/IncompleteTrainer.vue';
 import { generateNavigationModal } from '../../utils/modalUtil';
 import Journal from '../Journal.vue'
@@ -41,6 +41,8 @@ export default {
             this.isComplete = response.data.trainer.isComplete
             setPTAActivityToken(response.headers['pta-activity-token']);
             if (response.data.trainer.isGM){
+                setGameMasterId(response.data.trainer.trainerId);
+                setTrainerId(null);
                 setIsGM(true);
                 location.href = '/gm';
                 return;

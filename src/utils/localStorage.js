@@ -6,6 +6,7 @@ const SESSION_AUTH = "ptaSessionAuth";
 const TRAINER = "trainer";
 const TRAINERS = "trainers";
 const TRAINER_ID = "trainerId";
+const GAMEMASTER_ID = "gmId";
 const MOVES = "moves"
 const POKEMON_TEAM = "pokemonTeam"
 const POKEMON_HOME = "pokemonHome"
@@ -19,7 +20,7 @@ const CURRENT_HP = "currentHP"
  */
 export function getUserCredentials(){
     return [
-        getTrainerId(),
+        getIsGM() ? getGameMasterId() : getTrainerId(),
         getPTAActivityToken(),
         getSessionAuth() 
     ]
@@ -117,6 +118,13 @@ export function getTrainerId(){
 }
 
 /**
+ * @returns the game master's gmId
+ */
+export function getGameMasterId(){
+    return localStorage.getItem(GAMEMASTER_ID);
+}
+
+/**
  * @returns trainer's current hp
  */
 export function getCurrentHP(){
@@ -130,7 +138,12 @@ export function getCurrentHP(){
  * @param {Boolean} isGM whether the user is a game master
  */
 export function setInitialCredentials(trainerId, response, isGM){
-    setTrainerId(trainerId);
+    if (isGM){
+        setGameMasterId(trainerId);
+    }
+    else{
+        setTrainerId(trainerId);
+    }
     setPTAActivityToken(response.headers['pta-activity-token']);
     setSessionAuth(response.headers['pta-session-auth']);
     setIsAuthenticate(true);
@@ -184,6 +197,13 @@ export function setSessionAuth(sessionAuth){
  */
 export function setTrainerId(trainerId){
     localStorage.setItem(TRAINER_ID, trainerId);
+}
+/**
+ * Adds the game master's gmId to local storage
+ * @param {String} gmId 
+ */
+export function setGameMasterId(gmId){
+    localStorage.setItem(GAMEMASTER_ID, gmId);
 }
 
 /**
