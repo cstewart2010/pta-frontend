@@ -52,21 +52,62 @@ export async function changeForm(pokemonId, form){
 }
 
 /**
+ * Mark a pokemon as evolvable
+ * @param {String} pokemonId The Pokemon's UUID
+ */
+export async function markAsEvolvable(pokemonId){
+    const [gmId, activityToken, sessionAuth] = getUserCredentials();
+    nullChecker(pokemonId, 'pokemonId');
+    nullChecker(gmId, 'trainerId');
+    nullChecker(activityToken, 'activityToken');
+    nullChecker(sessionAuth, 'sessionAuth');
+    
+    const endpoint = `${POKEMON_RESOURCE}/${gmId}/canEvolve/${pokemonId}`;
+    return await requestHandler(endpoint, METHODS.PUT, {activityToken, sessionAuth});
+}
+
+/**
+ * Gets a pokemon's possible evolutions
+ * @param {String} pokemonId The Pokemon's UUID
+ * @returns all possible evolutions
+ */
+export async function getPossibleEvolutions(pokemonId){
+    const [trainerId, activityToken, sessionAuth] = getUserCredentials();
+    nullChecker(pokemonId, 'pokemonId');
+    nullChecker(trainerId, 'trainerId');
+    nullChecker(activityToken, 'activityToken');
+    nullChecker(sessionAuth, 'sessionAuth');
+    
+    const endpoint = `${POKEMON_RESOURCE}/${trainerId}/possibleEvolutions/${pokemonId}`;
+    return await requestHandler(endpoint, METHODS.PUT, {activityToken, sessionAuth});
+}
+
+/**
  * Evolves a pokemon to its next Form
  * @param {String} pokemonId The Pokemon's UUID
  * @param {String} nextForm The Pokemon's evolved form
+ * @param {String[]} keptMoves The Pokemon's moves to keep
+ * @param {String[]} newMoves The Pokemon's moves to learn
  * @returns the updated Pokemon
  */
-export async function evolvePokemon(pokemonId, nextForm){
+export async function evolvePokemon(pokemonId, nextForm, keptMoves, newMoves){
     const [trainerId, activityToken, sessionAuth] = getUserCredentials();
     nullChecker(pokemonId, 'pokemonId');
     nullChecker(trainerId, 'trainerId');
     nullChecker(nextForm, 'nextForm');
+    nullChecker(keptMoves, 'keptMoves');
+    nullChecker(newMoves, 'newMoves');
     nullChecker(activityToken, 'activityToken');
     nullChecker(sessionAuth, 'sessionAuth');
 
-    const endpoint = `${POKEMON_RESOURCE}/${pokemonId}/evolve?trainerId${trainerId}&nextForm=${nextForm}`;
-    return await requestHandler(endpoint, METHODS.PUT, {activityToken, sessionAuth});
+    const data = {
+        nextForm,
+        keptMoves,
+        newMoves
+    }
+
+    const endpoint = `${POKEMON_RESOURCE}/${trainerId}/evolve/${pokemonId}`;
+    return await requestHandler(endpoint, METHODS.PUT, {activityToken, sessionAuth, data});
 }
 
 /**
