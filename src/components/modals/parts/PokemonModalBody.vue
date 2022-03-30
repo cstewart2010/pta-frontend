@@ -2,8 +2,8 @@
     <div class="row my-2">
         <div class="col-md-8">
             <div class="row">
-                <div class="col-md-5">
-                    Data
+                <div class="row col-md-5">
+                    <div>Data</div>
                     <hr>
                     <halved-row-slot left="Nickname" :right="pokemon.nickname" />
                     <halved-row-slot left="Species" :right="pokemon.speciesName" />
@@ -24,6 +24,8 @@
                             </option>
                         </select>
                     </div>
+                    <button class="btn btn-primary" v-if="isGM && !pokemon.canEvolve" @click="readyToEvolve">Ready for Evolution</button>
+                    <evolve-pokemon :pokemon="pokemon" v-else />
                     Proficiencies:<br>{{pokemon.proficiencies.join(', ')}}
                 </div>
                 <div class="col-md-5">
@@ -140,9 +142,10 @@ import { getAllPokemonItems, getPokemonItem, getSkillsFeature } from '../../../a
 import AddedMove from '../../trainer/parts/AddedMove.vue'
 import Passive from '../../trainer/parts/Passive.vue'
 import HalvedRowSlot from '../../partials/HalvedRowSlot.vue'
-import { changeForm } from '../../../api/pokemon.api'
+import { changeForm, markAsEvolvable } from '../../../api/pokemon.api'
 import { generateErrorModal } from '../../../utils/modalUtil'
-import { setPTAActivityToken } from '../../../utils/localStorage'
+import { getIsGM, setPTAActivityToken } from '../../../utils/localStorage'
+import EvolvePokemon from '../EvolvePokemon.vue'
 
 export default {
     name: 'PokemonModalBody',
@@ -161,13 +164,15 @@ export default {
             itemData: '',
             items: [],
             url: '',
-            differentForm: ''
+            differentForm: '',
+            isGM: getIsGM()
         }
     },
     components: {
         AddedMove,
         HalvedRowSlot,
-        Passive
+        Passive,
+        EvolvePokemon
     },
     async beforeMount(){
         await getAllPokemonItems()
@@ -232,6 +237,15 @@ export default {
             }
 
             this.catchRate = this.pokemon.catchRate + modifier;
+        },
+        async readyToEvolve(){
+            if (this.isGM){
+                await markAsEvolvable(this.pokemon.pokemonId)
+                    .then(response => {
+                        setPTAActivityToken(response.headers['pta-activity-token']);
+                    })
+                    .catch(generateErrorModal);
+            }
         }
     }
 }
