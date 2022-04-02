@@ -130,6 +130,9 @@ const errorHandler = error => {
             case 400:
                 reason = 'You made a malformed request';
                 break;
+            case 409:
+                reason = 'Input data is in conflict with database';
+                break
             case 500:
                 reason = 'Congrats, you broke it';
                 break;

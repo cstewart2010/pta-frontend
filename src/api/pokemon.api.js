@@ -34,6 +34,23 @@ export async function tradePokemon(leftPokemonId, rightPokemonId){
 }
 
 /**
+ * Updates a pokemon's current hp
+ * @param {String} pokemonId The pokemon's id
+ * @param {int} hp The updated hp
+ */
+export async function updateHP(pokemonId, hp){
+    const [trainerId, activityToken, sessionAuth] = getUserCredentials();
+    nullChecker(pokemonId, 'pokemonId');
+    nullChecker(trainerId, 'trainerId');
+    nullChecker(hp, 'hp');
+    nullChecker(activityToken, 'activityToken');
+    nullChecker(sessionAuth, 'sessionAuth');
+
+    const endpoint = `${POKEMON_RESOURCE}/${pokemonId}/hp/${hp}?trainerId=${trainerId}`;
+    return await requestHandler(endpoint, METHODS.PUT, {activityToken, sessionAuth});
+}
+
+/**
  * Change a pokemon to an alternate form
  * @param {String} pokemonId The pokemon's id
  * @param {String} form The different form
