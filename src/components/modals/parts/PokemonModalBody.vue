@@ -35,7 +35,7 @@
                         <div class="col-md-4">
                             Current HP
                             <br>
-                            <input class="w-75" type="number" :min="-pokemon.pokemonStats.hp" :max="pokemon.pokemonStats.hp" v-model="hp" @input="updateCatchRate">
+                            <input class="w-75" type="number" :min="-pokemon.pokemonStats.hp" :max="pokemon.pokemonStats.hp" v-model="hp" @change="updateCatchRate">
                         </div>
                         <div class="col-md-4">
                             Max HP<br>{{pokemon.pokemonStats.hp}}
@@ -142,7 +142,7 @@ import { getAllPokemonItems, getPokemonItem, getSkillsFeature } from '../../../a
 import AddedMove from '../../trainer/parts/AddedMove.vue'
 import Passive from '../../trainer/parts/Passive.vue'
 import HalvedRowSlot from '../../partials/HalvedRowSlot.vue'
-import { changeForm, markAsEvolvable } from '../../../api/pokemon.api'
+import { changeForm, markAsEvolvable, updateHP } from '../../../api/pokemon.api'
 import { generateErrorModal } from '../../../utils/modalUtil'
 import { getIsGM, setPTAActivityToken } from '../../../utils/localStorage'
 import EvolvePokemon from '../EvolvePokemon.vue'
@@ -179,7 +179,7 @@ export default {
             .then(response => {
                 this.items = response.data.results.map(item => item.name)
             })
-        this.hp = this.pokemon.pokemonStats.hp;
+        this.hp = this.pokemon.currentHP;
         if (this.pokemon.isShiny){
             this.url = `https://play.pokemonshowdown.com/sprites/ani-shiny/${this.pokemon.shinyPortrait}.gif`
         }
@@ -221,7 +221,7 @@ export default {
                     .catch(generateErrorModal);
             }
         },
-        updateCatchRate(){
+        async updateCatchRate(){
             let modifier = -25
             if (this.hp < 0){
                 modifier = 75
@@ -234,6 +234,11 @@ export default {
             }
             else if (this.hp >= this.pokemon.pokemonStats.hp/2 && this.hp < this.pokemon.pokemonStats.hp){
                 modifier = -10
+            }
+
+            if (this.hp != this.pokemon.currentHp){
+                await updateHP(this.pokemon.pokemonId, this.hp)
+                    .catch(generateErrorModal);
             }
 
             this.catchRate = this.pokemon.catchRate + modifier;
