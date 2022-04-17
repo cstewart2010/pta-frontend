@@ -6,7 +6,7 @@ const NPC_RESOURCE = `${BASE_URL}/api/v1/npc`
 
 /**
  * returns npc by id
- * @param {String} npcId 
+ * @param {string} npcId 
  * @returns NpcModel
  */
 export async function getNpc(npcId){
