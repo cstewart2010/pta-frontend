@@ -59,6 +59,49 @@ export async function addToActiveEncounter(){
 }
 
 /**
+ * Updates the participants position on the map
+ * @param {string} participantId The participant to change
+ * @returns 200
+ */
+export async function updateParticipantPosition(participantId){
+    const [gameMasterId, activityToken, sessionAuth] = getUserCredentials();
+    nullChecker(gameMasterId, 'gameMasterId');
+    nullChecker(participantId, 'participantId');
+    nullChecker(activityToken, 'activityToken');
+    nullChecker(sessionAuth, 'sessionAuth');
+
+    return await requestHandler(`${ENCOUNTER_RESOURCE}/${gameMasterId}/position/${participantId}`, METHODS.PUT, {activityToken, sessionAuth});
+}
+
+/**
+ * Updates the current trainer's position on the map
+ * @returns 200
+ */
+export async function updateTrainerPositionAsync(){
+    const [trainerId, activityToken, sessionAuth] = getUserCredentials();
+    nullChecker(trainerId, 'trainerId');
+    nullChecker(activityToken, 'activityToken');
+    nullChecker(sessionAuth, 'sessionAuth');
+    
+    return await requestHandler(`${ENCOUNTER_RESOURCE}/${trainerId}/trainer_position`, METHODS.PUT, {activityToken, sessionAuth});
+}
+
+/**
+ * Updates a current trainer's pokemon's position on the map
+ * @param {string} pokemonId The trainer's pokemon
+ * @returns 
+ */
+export async function UpdatePokemonPositionAsync(pokemonId){
+    const [trainerId, activityToken, sessionAuth] = getUserCredentials();
+    nullChecker(trainerId, 'trainerId');
+    nullChecker(pokemonId, 'pokemonId');
+    nullChecker(activityToken, 'activityToken');
+    nullChecker(sessionAuth, 'sessionAuth');
+    
+    return await requestHandler(`${ENCOUNTER_RESOURCE}/${trainerId}/pokemon_position/${pokemonId}`, METHODS.PUT, {activityToken, sessionAuth});
+}
+
+/**
  * Set the selected encounter to active
  * @param {string} encounterId The encounter
  * @returns 200
