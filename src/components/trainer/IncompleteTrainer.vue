@@ -84,7 +84,7 @@ import PokemonTeam from './PokemonTeam.vue';
 import PokemonHome from './PokemonHome.vue';
 import Honors from './Honors.vue';
 import Inventory from './Inventory.vue';
-import { getGameId, getPokemonNewHome, getPokemonNewTeam, getTrainer, removeFromStorage, setPokemonNewHome, setPokemonNewTeam, setPTAActivityToken, setTrainer, setTrainerId } from '../../utils/localStorage';
+import { getCurrentHP, getGameId, getPokemonNewHome, getPokemonNewTeam, getTrainer, removeFromStorage, setPokemonNewHome, setPokemonNewTeam, setPTAActivityToken, setTrainer, setTrainerId } from '../../utils/localStorage';
 import { generateErrorModal, generateNavigationModal } from '../../utils/modalUtil';
 import { completeTrainer, findTrainerInGame } from '../../api/game.api';
 import { refreshTrainer } from '../../api/trainer.api';
@@ -130,6 +130,7 @@ export default {
             const trainer = getTrainer();
             trainer.newPokemon = trainer.newPokemon.concat(getPokemonNewTeam())
             trainer.newPokemon = trainer.newPokemon.concat(getPokemonNewHome())
+            trainer.currentHp = getCurrentHP() || trainer.currentHp;
             trainer.pokemonTeam = [];
             trainer.pokemonHome = [];
             trainer.pokeDex = [];
