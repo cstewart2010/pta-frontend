@@ -97,7 +97,7 @@ export default {
 
         const trainer = getTrainer();
         this.trainerStats = trainer.trainerStats;
-        this.hp = getCurrentHP() || this.trainerStats.hp
+        this.hp = getCurrentHP() || trainer.currentHP
         this.selectedTrainerClasses = trainer.trainerClasses
     },
     methods: {        
@@ -119,7 +119,7 @@ export default {
             setCurrentHP(this.hp);
         },
         isNullOrEmpty(value){
-            value == null || value.length == 0;
+            return value == null || value.length == 0;
         }
     }
 }
