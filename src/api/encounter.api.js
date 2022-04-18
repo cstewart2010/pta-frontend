@@ -77,7 +77,7 @@ export async function updateParticipantPosition(participantId){
  * Updates the current trainer's position on the map
  * @returns 200
  */
-export async function updateTrainerPositionAsync(){
+export async function updateTrainerPosition(){
     const [trainerId, activityToken, sessionAuth] = getUserCredentials();
     nullChecker(trainerId, 'trainerId');
     nullChecker(activityToken, 'activityToken');
@@ -91,7 +91,7 @@ export async function updateTrainerPositionAsync(){
  * @param {string} pokemonId The trainer's pokemon
  * @returns 
  */
-export async function UpdatePokemonPositionAsync(pokemonId){
+export async function updatePokemonPosition(pokemonId){
     const [trainerId, activityToken, sessionAuth] = getUserCredentials();
     nullChecker(trainerId, 'trainerId');
     nullChecker(pokemonId, 'pokemonId');
