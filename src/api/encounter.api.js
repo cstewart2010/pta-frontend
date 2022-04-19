@@ -49,13 +49,14 @@ export async function createEncounter(name, type){
  * Adds the current trainer to the active Encounter
  * @returns 200
  */
-export async function addToActiveEncounter(){
+export async function addToActiveEncounter(participantData){
     const [trainerId, activityToken, sessionAuth] = getUserCredentials();
     nullChecker(trainerId, 'trainerId');
+    nullChecker(participantData, 'participantData');
     nullChecker(activityToken, 'activityToken');
     nullChecker(sessionAuth, 'sessionAuth');
     
-    return await requestHandler(`${ENCOUNTER_RESOURCE}/${trainerId}`, METHODS.PUT, {activityToken, sessionAuth});
+    return await requestHandler(`${ENCOUNTER_RESOURCE}/${trainerId}`, METHODS.PUT, {activityToken, sessionAuth, data: participantData});
 }
 
 /**
@@ -77,13 +78,19 @@ export async function updateParticipantPosition(participantId){
  * Updates the current trainer's position on the map
  * @returns 200
  */
-export async function updateTrainerPosition(){
+export async function updateTrainerPosition(x, y){
     const [trainerId, activityToken, sessionAuth] = getUserCredentials();
     nullChecker(trainerId, 'trainerId');
+    nullChecker(x, 'x');
+    nullChecker(y, 'y');
     nullChecker(activityToken, 'activityToken');
     nullChecker(sessionAuth, 'sessionAuth');
     
-    return await requestHandler(`${ENCOUNTER_RESOURCE}/${trainerId}/trainer_position`, METHODS.PUT, {activityToken, sessionAuth});
+    const data = {
+        x,
+        y
+    };
+    return await requestHandler(`${ENCOUNTER_RESOURCE}/${trainerId}/trainer_position`, METHODS.PUT, {activityToken, sessionAuth, data});
 }
 
 /**

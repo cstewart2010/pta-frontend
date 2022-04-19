@@ -133,6 +133,9 @@ const errorHandler = error => {
             case 409:
                 reason = 'Input data is in conflict with database';
                 break
+            case 411:
+                reason = "You can't move to that position (Out of Range)."
+                break;
             case 500:
                 reason = 'Congrats, you broke it';
                 break;
