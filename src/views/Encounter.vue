@@ -48,7 +48,8 @@
                         :src="cellData.url"
                         :alt="cellData.alt"
                         @click="changeDisplay(cellData)"
-                        v-if="cellData.url && cellData.url.length > 0">
+                        v-if="cellData.url && cellData.url.length > 0"
+                        :title="cellData.alt">
                     <div
                         class=" grid-cell"
                         data-bs-toggle="modal"
@@ -73,7 +74,8 @@
                         :alt="cellData.alt"
                         data-bs-toggle="modal"
                         :data-bs-target="`#cellModal_${rowIndex}_${columnIndex}`"
-                        v-if="cellData.url && cellData.url.length > 0">
+                        v-if="cellData.url && cellData.url.length > 0"
+                        :title="cellData.alt">
                     <div
                         class=" grid-cell"
                         data-bs-toggle="modal"
