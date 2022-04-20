@@ -40,7 +40,21 @@
             </div>
             <div id="npcs" class="my-3">
                 <h3 class="text-muted">NPCS</h3>
-                TODO
+                <div class="input-group my-1">
+                        <span class="input-group-text">Add a Npc</span>
+                        <input class="form-control" v-model="npcName">
+                        <select class="form-select" v-model="npcClasses" multiple>
+                            <option v-for="trainerClass in allClasses" :key="trainerClass" :value="trainerClass">
+                                {{trainerClass}}
+                            </option>
+                        </select>
+                        <select class="form-select" v-model="npcFeats" multiple>
+                            <option v-for="feat in allFeats" :key="feat" :value="feat">
+                                {{feat}}
+                            </option>
+                        </select>
+                        <button class="btn btn-secondary" @click="onCreateNewNpc">Add Npc</button>
+                    </div>
             </div>
             <div class="my-3" id="danger-zone">
                 <h3 class="text-danger">Danger Zone</h3>
@@ -75,6 +89,8 @@ import DeleteGame from '../../components/modals/DeleteGame.vue'
 import DeleteTrainer from '../../components/modals/DeleteTrainer.vue'
 import ExportGame from '../../components/modals/ExportGame.vue'
 import Journal from '../Journal.vue'
+import { createNewNpc } from '../../api/npc.api';
+import { getAllGeneralFeatures, getAllTrainerClasses} from '../../api/dex.api';
 
 export default {
     name: 'GMPortal',
@@ -87,6 +103,11 @@ export default {
             singleHonor: '',
             singleRecipient: '',
             regularTrainers: [],
+            npcName: '',
+            npcClasses: [],
+            npcFeats: [],
+            allClasses: [],
+            allFeats:[]
         }
     },
     components: {
@@ -117,6 +138,16 @@ export default {
         .catch(error => {
             removeFromStorage();
             generateNavigationModal(error.status, error.reason, '/');
+        })
+
+        await getAllTrainerClasses()
+        .then(response => {
+            this.allClasses = response.data.results.map(item => item.name)
+        })
+
+        await getAllGeneralFeatures()
+        .then(response => {
+            this.allFeats = response.data.results.map(item => item.name)
         })
     },
     methods: {
@@ -149,6 +180,17 @@ export default {
             }
             await addHonor(this.singleHonor, this.singleRecipient)
                 .then(response => {
+                    setPTAActivityToken(response.headers['pta-activity-token']);
+                    location.reload();
+                })
+                .catch(generateErrorModal);
+        },
+        async onCreateNewNpc(){
+              if (this.npcName.length == 0){
+                return;
+            }
+            await createNewNpc(this.npcName, this.npcClasses, this.npcFeats)
+             .then(response => {
                     setPTAActivityToken(response.headers['pta-activity-token']);
                     location.reload();
                 })

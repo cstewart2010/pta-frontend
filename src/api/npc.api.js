@@ -51,6 +51,10 @@ export async function getNpc(npcId){
  * @returns NpcModel
  */
 export async function createNewNpc(trainerName, classes, feats){
+    const [gmId, activityToken, sessionAuth] = getUserCredentials();
+    nullChecker(gmId, 'gmId');
+    nullChecker(activityToken, 'activityToken');
+    nullChecker(sessionAuth, 'sessionAuth');
     nullChecker(trainerName, 'trainerName');
     nullChecker(classes, 'classes');
     nullChecker(feats, 'feats');
@@ -60,7 +64,7 @@ export async function createNewNpc(trainerName, classes, feats){
         classes,
         feats
     }
-    return await requestHandler(`${NPC_RESOURCE}/new`, METHODS.POST, {data})
+    return await requestHandler(`${NPC_RESOURCE}/${gmId}/new`, METHODS.POST, {sessionAuth, activityToken, data})
 }
 
 

@@ -55,6 +55,15 @@ export function getIsGM(){
 }
 
 /**
+ * 
+ * @param {String} npcId 
+ * @returns the selected npc
+ */
+export function getNpc(npcId){
+    return getParsedItem(npcId);
+}
+
+/**
  * @returns the user's sesstion auth
  */
 export function getSessionAuth(){
@@ -181,6 +190,14 @@ export function setIsAuthenticate(isAuthenticated){
  */
 export function setIsGM(isGM){
     localStorage.setItem(IS_GM, isGM);
+}
+
+/**
+ * adds npc to local storage
+ * @param {any} npc the current npc to set
+ */
+export function setNpc(npc){
+    localStorage.setItem(npc.npcId, JSON.stringify(npc))
 }
 
 /**
