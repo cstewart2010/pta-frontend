@@ -7,7 +7,7 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <div class="input-grou">
+                    <div class="input-group">
                         <span class="input-group-text">
                             How many would you like to use? ({{item.name}}: {{item.amount}})
                         </span>

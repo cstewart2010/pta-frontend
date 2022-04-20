@@ -141,6 +141,13 @@ export function getCurrentHP(){
 }
 
 /**
+ * @returns cell participant
+ */
+export function getCellParticipant(id){
+    return getParsedItem(id);
+}
+
+/**
  * Sets the users initial credentials on sign up or login
  * @param {String} trainerId the trainer's id
  * @param {import("axios").AxiosResponse<any,any>} response the response to build the initials credentials from
@@ -285,6 +292,14 @@ export function setPokemonNewHome(home){
  */
 export function setCurrentHP(hp){
     localStorage.setItem(CURRENT_HP, JSON.stringify(hp));
+}
+
+/**
+ * Adds the cell participant to local storage
+ * @param {Number} participant the cell participant
+ */
+export function setCellParticipant(id, participant){
+    localStorage.setItem(id, JSON.stringify(participant));
 }
 
 /**

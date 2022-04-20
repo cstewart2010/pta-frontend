@@ -22,6 +22,9 @@
         <li class="nav-item" v-else-if="isGM==false && needsToAuthenticate==false">
           <router-link to="/trainer" class="nav-link">Trainer</router-link>
         </li>
+        <li class="nav-item" v-if="needsToAuthenticate==false">
+          <router-link to="/encounter" class="nav-link">Encounter</router-link>
+        </li>
         <li class="nav-item" v-if="needsToAuthenticate==true">
           <router-link to="/games" class="nav-link">Search for Game</router-link>
         </li>

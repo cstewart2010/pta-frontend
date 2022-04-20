@@ -49,13 +49,24 @@ export async function createEncounter(name, type){
  * Adds the current trainer to the active Encounter
  * @returns 200
  */
-export async function addToActiveEncounter(){
+export async function addToActiveEncounter(participantData){
     const [trainerId, activityToken, sessionAuth] = getUserCredentials();
     nullChecker(trainerId, 'trainerId');
+    nullChecker(participantData, 'participantData');
     nullChecker(activityToken, 'activityToken');
     nullChecker(sessionAuth, 'sessionAuth');
     
-    return await requestHandler(`${ENCOUNTER_RESOURCE}/${trainerId}`, METHODS.PUT, {activityToken, sessionAuth});
+    return await requestHandler(`${ENCOUNTER_RESOURCE}/${trainerId}`, METHODS.PUT, {activityToken, sessionAuth, data: participantData});
+}
+
+export async function removeFromActiveEncounter(participantId){
+    const [gameMasterId, activityToken, sessionAuth] = getUserCredentials();
+    nullChecker(gameMasterId, 'gameMasterId');
+    nullChecker(participantId, 'participantId');
+    nullChecker(activityToken, 'activityToken');
+    nullChecker(sessionAuth, 'sessionAuth');
+    
+    return await requestHandler(`${ENCOUNTER_RESOURCE}/${gameMasterId}/remove/${participantId}`, METHODS.PUT, {activityToken, sessionAuth});
 }
 
 /**
@@ -63,27 +74,38 @@ export async function addToActiveEncounter(){
  * @param {string} participantId The participant to change
  * @returns 200
  */
-export async function updateParticipantPosition(participantId){
+export async function updateParticipantPosition(participantId, x, y){
     const [gameMasterId, activityToken, sessionAuth] = getUserCredentials();
     nullChecker(gameMasterId, 'gameMasterId');
     nullChecker(participantId, 'participantId');
     nullChecker(activityToken, 'activityToken');
     nullChecker(sessionAuth, 'sessionAuth');
+    
+    const data = {
+        x,
+        y
+    };
 
-    return await requestHandler(`${ENCOUNTER_RESOURCE}/${gameMasterId}/position/${participantId}`, METHODS.PUT, {activityToken, sessionAuth});
+    return await requestHandler(`${ENCOUNTER_RESOURCE}/${gameMasterId}/position/${participantId}`, METHODS.PUT, {activityToken, sessionAuth, data});
 }
 
 /**
  * Updates the current trainer's position on the map
  * @returns 200
  */
-export async function updateTrainerPosition(){
+export async function updateTrainerPosition(x, y){
     const [trainerId, activityToken, sessionAuth] = getUserCredentials();
     nullChecker(trainerId, 'trainerId');
+    nullChecker(x, 'x');
+    nullChecker(y, 'y');
     nullChecker(activityToken, 'activityToken');
     nullChecker(sessionAuth, 'sessionAuth');
     
-    return await requestHandler(`${ENCOUNTER_RESOURCE}/${trainerId}/trainer_position`, METHODS.PUT, {activityToken, sessionAuth});
+    const data = {
+        x,
+        y
+    };
+    return await requestHandler(`${ENCOUNTER_RESOURCE}/${trainerId}/trainer_position`, METHODS.PUT, {activityToken, sessionAuth, data});
 }
 
 /**
@@ -91,14 +113,19 @@ export async function updateTrainerPosition(){
  * @param {string} pokemonId The trainer's pokemon
  * @returns 
  */
-export async function updatePokemonPosition(pokemonId){
+export async function updatePokemonPosition(pokemonId, x, y){
     const [trainerId, activityToken, sessionAuth] = getUserCredentials();
     nullChecker(trainerId, 'trainerId');
     nullChecker(pokemonId, 'pokemonId');
     nullChecker(activityToken, 'activityToken');
     nullChecker(sessionAuth, 'sessionAuth');
     
-    return await requestHandler(`${ENCOUNTER_RESOURCE}/${trainerId}/pokemon_position/${pokemonId}`, METHODS.PUT, {activityToken, sessionAuth});
+    const data = {
+        x,
+        y
+    };
+    
+    return await requestHandler(`${ENCOUNTER_RESOURCE}/${trainerId}/pokemon_position/${pokemonId}`, METHODS.PUT, {activityToken, sessionAuth, data});
 }
 
 /**

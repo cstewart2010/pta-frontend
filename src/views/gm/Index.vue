@@ -56,6 +56,34 @@
                         <button class="btn btn-secondary" @click="onCreateNewNpc">Add Npc</button>
                     </div>
             </div>
+            <div id="encounters" class="my-3">
+                <h3 class="text-primary">Encounters</h3>
+                <div class="row">
+                    <div class="my-1" v-for="encounter in encounters" :key="encounter.encounterId">
+                        <button class="btn btn-primary col-6" @click="deactivateEncounter(encounter.encounterId)" v-if="encounter.isActive">
+                            Deactive {{encounter.name}}
+                        </button>
+                        <button class="btn btn-secondary col-6" @click="activateEncounter(encounter.encounterId)" v-else>
+                            Activate {{encounter.name}}
+                        </button>
+                        <button class="btn btn-danger col-6" data-bs-toggle="modal" :data-bs-target="'#encounterConfirmationModal'+encounter.encounterId">
+                            Delete {{encounter.name}}
+                        </button>
+                        <delete-encounter :encounterName="encounter.name" :encounterId="encounter.encounterId" />
+                    </div>
+                </div>
+                <div class="input-group my-1">
+                    <span class="input-group-text">Create a new encounter</span>
+                    <input type="text" v-model="encounterName">
+                    <select class="form-select" v-model="encounterType">
+                        <option value="" selected></option>
+                        <option value="Wild">Wild</option>
+                        <option value="Trainer">Trainer</option>
+                        <option value="Hybrid">Hybrid</option>
+                    </select>
+                    <button class="btn btn-primary" @click="onNewEncounter">Add encounter</button>
+                </div>
+            </div>
             <div class="my-3" id="danger-zone">
                 <h3 class="text-danger">Danger Zone</h3>
                 <div class="row">
@@ -87,11 +115,12 @@ import { generateErrorModal, generateNavigationModal } from '../../utils/modalUt
 import IncompleteTrainer from '../../components/trainer/IncompleteTrainer.vue'
 import DeleteGame from '../../components/modals/DeleteGame.vue'
 import DeleteTrainer from '../../components/modals/DeleteTrainer.vue'
+import DeleteEncounter from '../../components/modals/DeleteEncounter.vue'
 import ExportGame from '../../components/modals/ExportGame.vue'
 import Journal from '../Journal.vue'
 import { createNewNpc } from '../../api/npc.api';
 import { getAllGeneralFeatures, getAllTrainerClasses} from '../../api/dex.api';
-
+import { createEncounter, getAllEncounters, setEncounterToActive, setEncounterToInactive } from '../../api/encounter.api';
 export default {
     name: 'GMPortal',
     data(){
@@ -107,12 +136,16 @@ export default {
             npcClasses: [],
             npcFeats: [],
             allClasses: [],
-            allFeats:[]
+            allFeats:[],
+            encounterName: '',
+            encounterType: '',
+            encounters: []
         }
     },
     components: {
         DeleteGame,
         DeleteTrainer,
+        DeleteEncounter,
         ExportGame,
         IncompleteTrainer,
         Journal
@@ -124,7 +157,7 @@ export default {
         }
         
         await refreshGM()
-        .then(response => {
+        .then(async response => {
             var wasNotGM = !getIsGM();
             setTrainers(response.data.trainers)
             setPTAActivityToken(response.headers['pta-activity-token']);
@@ -134,6 +167,10 @@ export default {
             }
             this.trainers = getTrainers();
             this.regularTrainers = this.trainers.filter(trainer => !trainer.isGM)
+            await getAllEncounters()
+                .then(response => {
+                    this.encounters = response.data;
+                });
         })
         .catch(error => {
             removeFromStorage();
@@ -193,7 +230,27 @@ export default {
              .then(response => {
                     setPTAActivityToken(response.headers['pta-activity-token']);
                     location.reload();
-                })
+                })},
+        async onNewEncounter(){
+            if (this.encounterName.length == 0){
+                return;
+            }
+            if (this.encounterType.length == 0){
+                return;
+            }
+
+            await createEncounter(this.encounterName, this.encounterType)
+                .then(() => location.reload())
+                .catch(generateErrorModal);
+        },
+        async activateEncounter(encounterId){
+            await setEncounterToActive(encounterId)
+                .then(() => location.reload())
+                .catch(generateErrorModal);
+        },
+        async deactivateEncounter(encounterId){
+            await setEncounterToInactive(encounterId)
+                .then(() => location.reload())
                 .catch(generateErrorModal);
         }
     }
