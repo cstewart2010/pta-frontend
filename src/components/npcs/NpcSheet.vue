@@ -1,11 +1,11 @@
 <template>
     <div class="row">
         <div class="col-md-8">
-            <generic-data />
+            <generic-data :npcId="npcId" />
             <trainer-stats />
             <trainer-skills />
         </div>
-        <portrait />
+        <portrait :npcId="npcId"/>
     </div>
 </template>
 
@@ -16,6 +16,11 @@ import TrainerStats from './TrainerStats.vue'
 import TrainerSkills from './TrainerSkills.vue'
 export default {
     name: "Npc",
+    props: {
+        npcId:{
+            default: null
+        }
+    },
     components: {
         GenericData,
         Portrait,

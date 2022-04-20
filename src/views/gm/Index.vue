@@ -4,7 +4,7 @@
             <section class="m-2" v-if="trainerId!=null">
                 <incomplete-trainer :trainerId="trainerId" />
             </section>
-            <div class="my-3" id="npcs">
+            <div class="my-3" id="trainers">
                 <h3>Trainers</h3>
                 <div class="row">
                     <div class="my-1" v-for="trainer in regularTrainers" :key="trainer.trainerId">
@@ -38,8 +38,22 @@
                     </div>
                 </div>
             </div>
+             <section class="m-2" v-if="npcId!=null">
+                <incomplete-npc :npcId="npcId" />
+            </section>
             <div id="npcs" class="my-3">
                 <h3 class="text-muted">NPCS</h3>
+                <div class="row">
+                    <div class="my-1" v-for="npc in npcs" :key="npc.npcId">
+                        <button class="btn btn-secondary col-6" @click="updateNpcId(npc.npcId)">
+                            {{npc.trainerName}}
+                        </button>
+                        <button class="btn btn-danger col-6" data-bs-toggle="modal" :data-bs-target="'#npcConfirmationModal'+npc.npcId">
+                            Delete {{npc.trainerName}}
+                        </button>
+                        <delete-npc :trainerName="npc.trainerName" :npcId="npc.npcId"/>
+                    </div>
+                </div>
                 <div class="input-group my-1">
                         <span class="input-group-text">Add a Npc</span>
                         <input class="form-control" v-model="npcName">
@@ -118,9 +132,11 @@ import DeleteTrainer from '../../components/modals/DeleteTrainer.vue'
 import DeleteEncounter from '../../components/modals/DeleteEncounter.vue'
 import ExportGame from '../../components/modals/ExportGame.vue'
 import Journal from '../Journal.vue'
-import { createNewNpc } from '../../api/npc.api';
+import { createNewNpc, getNpcsInGame } from '../../api/npc.api';
 import { getAllGeneralFeatures, getAllTrainerClasses} from '../../api/dex.api';
 import { createEncounter, getAllEncounters, setEncounterToActive, setEncounterToInactive } from '../../api/encounter.api';
+import DeleteNpc from '../../components/modals/DeleteNpc.vue';
+import IncompleteNpc from '../../components/npcs/incompleteNpc.vue';
 export default {
     name: 'GMPortal',
     data(){
@@ -133,8 +149,10 @@ export default {
             singleRecipient: '',
             regularTrainers: [],
             npcName: '',
+            npcId: null,
             npcClasses: [],
             npcFeats: [],
+            npcs: [],
             allClasses: [],
             allFeats:[],
             encounterName: '',
@@ -148,9 +166,11 @@ export default {
         DeleteEncounter,
         ExportGame,
         IncompleteTrainer,
-        Journal
+        Journal,
+        IncompleteNpc,
+        DeleteNpc
     },
-    beforeMount:async function(){
+    beforeMount: async function(){
         if (!getIsAuthenticate()){
             window.location.href = '/'
             return
@@ -167,6 +187,10 @@ export default {
             }
             this.trainers = getTrainers();
             this.regularTrainers = this.trainers.filter(trainer => !trainer.isGM)
+            await getNpcsInGame()
+            .then(response => {
+                this.npcs = response.data;
+            });
             await getAllEncounters()
                 .then(response => {
                     this.encounters = response.data;
@@ -194,7 +218,17 @@ export default {
                 removeTrainer()
             }
             else {
+                this.npcId = null;
                 this.trainerId = trainerId;
+            }
+        },
+         updateNpcId(npcId){
+            if (this.npcId == npcId){
+                this.npcId = null;
+            }
+            else {
+                this.npcId = npcId;
+                this.trainerId = null;
             }
         },
         async onGroupHonor(){
