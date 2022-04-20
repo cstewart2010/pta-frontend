@@ -13,6 +13,13 @@ export async function findAllGames() {
 }
 
 /**
+ * @returns Sprites to be used for Trainer portraits
+ */
+export async function getAllSprites(){
+    return await requestHandler(`${GAME_RESOURCE}/sprites/all`, METHODS.GET);
+}
+
+/**
  * @param {String} nickname the session nickname to limit the query by
  * @returns All game sessions matching the nickname
  */
