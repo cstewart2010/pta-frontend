@@ -1,11 +1,11 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import Index from '../views/Index.vue'
 
 const routes = [
   {
     path: '/',
     name: 'Index',
-    component: Index
+    component: () => import('../views/Index.vue'),
+    props: true
   },
   {
     path: '/games',
@@ -16,7 +16,8 @@ const routes = [
   {
     path: '/about',
     name: 'About',
-    component: () => import('../views/About.vue')
+    component: () => import('../views/About.vue'),
+    props: true
   },
   {
     path: '/registration',
@@ -46,6 +47,12 @@ const routes = [
     path: '/trade',
     name: 'TradeCenter',
     component: () => import('../views/TradeCenter.vue'),
+    props: true
+  },
+  {
+    path: '/encounter',
+    name: 'Encounter',
+    component: () => import('../views/Encounter.vue'),
     props: true
   }
 ]

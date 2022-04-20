@@ -16,20 +16,31 @@
         <div class="row">
             <div class="text-center">Portrait</div>
             <hr>
-            <img class="img-fluid" src="https://64.media.tumblr.com/335d9c582288054a4746c5515c748fbe/tumblr_pnm47d3ndK1w7c1ka_1280.jpg" alt="">
+            <img class="img-fluid" :src="`http://play.pokemonshowdown.com/sprites/trainers/${trainer.sprite}.png`" alt="">
+            <select v-model="sprite" class="form-select my-3" @change="updateSprite">
+                <option value="acetrainer">Ace Trainer (Male)</option>
+                <option value="acetrainerf">Ace Trainer (Female)</option>
+            </select>
         </div>
     </div>
 </template>
 
 <script>
-import { getTrainer } from '../../../utils/localStorage'
+import { getTrainer, setTrainer } from '../../../utils/localStorage'
 export default {
     name: 'Portrait',
     data() {
         return {
             trainer: getTrainer() || {
                 honors: 0
-            }
+            },
+            sprite: ''
+        }
+    },
+    methods: {
+        updateSprite(){
+            this.trainer.sprite = this.sprite;
+            setTrainer(this.trainer)
         }
     }
 }
