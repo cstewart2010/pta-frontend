@@ -14,6 +14,25 @@
             <input type="number" min="0" :max="length" v-model="y">
             <button class="btn btn-secondary" @click="sendOut">Send out</button>
         </div>
+        <div v-else>
+            <div class="input-group my-2">
+                <span class="input-group-text">Remove from encounter</span>
+                <select v-model="removalOption" class="form-select">
+                    <option value=""></option>
+                    <option
+                        v-for="activeParticipant in activeParticipants"
+                        :key="activeParticipant.participantId"
+                        :value="activeParticipant.participantId">
+                        ({{activeParticipant.type}}) {{activeParticipant.name}}
+                    </option>
+                </select>
+                <button class="btn btn-danger" @click="removeFromEncounter">Remove</button>
+            </div>
+            <section v-if="displaySection">
+                <trainer-sheet :trainerId="participantId" v-if="displaySection == 'Trainer'" />
+                <pokemon-sheet :pokemonId="participantId" v-if="displaySection == 'Pokemon'" />
+            </section>
+        </div>
         <div class="input-group my-1 col-2" v-if="needToJoin">
             <span class="input-group-text">Join the Encounter</span>
             <span class="input-group-text">x-coordinate</span>
@@ -22,30 +41,73 @@
             <input type="number" min="0" :max="length" v-model="y">
             <button class="btn btn-secondary" @click="join">Join</button>
         </div>
-        <div class="row" v-for="(row, rowIndex) in encounterMap" :key="rowIndex">
-            <button :class="'col border border-dark btn grid-cell ' + cellData.color" v-for="(cellData, columnIndex) in row" :key="`${rowIndex}_${columnIndex}`">
-                <img class="img-fluid"
-                :src="cellData.url"
-                :alt="cellData.alt"
-                data-bs-toggle="modal"
-                :data-bs-target="`#cellModal_${rowIndex}_${columnIndex}`">
-                <cell-modal :participant="cellData.participant" :x="rowIndex" :y="columnIndex" :modalSize="cellData.modalSize" />
-            </button>
+        <div v-if="isGM">
+            <div class="row" v-for="(row, rowIndex) in encounterMap" :key="rowIndex">
+                <button :class="'col border border-dark btn grid-cell ' + cellData.color" v-for="(cellData, columnIndex) in row" :key="`${rowIndex}_${columnIndex}`">
+                    <img class="img-fluid"
+                        :src="cellData.url"
+                        :alt="cellData.alt"
+                        @click="changeDisplay(cellData)"
+                        v-if="cellData.url && cellData.url.length > 0">
+                    <div
+                        class=" grid-cell"
+                        data-bs-toggle="modal"
+                        :data-bs-target="`#cellModal_${rowIndex}_${columnIndex}`"
+                        v-else>
+                    </div>
+                    <cell-modal
+                        :participant="cellData.participant"
+                        :x="rowIndex"
+                        :y="columnIndex"
+                        :modalSize="cellData.modalSize"
+                        :trainerMons="trainerMons"
+                        :participants="activeParticipants" />
+                </button>
+            </div>
+        </div>
+        <div v-else>
+            <div class="row" v-for="(row, rowIndex) in encounterMap" :key="rowIndex">
+                <button :class="'col border border-dark btn grid-cell ' + cellData.color" v-for="(cellData, columnIndex) in row" :key="`${rowIndex}_${columnIndex}`">
+                    <img class="img-fluid"
+                        :src="cellData.url"
+                        :alt="cellData.alt"
+                        data-bs-toggle="modal"
+                        :data-bs-target="`#cellModal_${rowIndex}_${columnIndex}`"
+                        v-if="cellData.url && cellData.url.length > 0">
+                    <div
+                        class=" grid-cell"
+                        data-bs-toggle="modal"
+                        :data-bs-target="`#cellModal_${rowIndex}_${columnIndex}`"
+                        v-else>
+                    </div>
+                    <cell-modal
+                        :participant="cellData.participant"
+                        :x="rowIndex"
+                        :y="columnIndex"
+                        :modalSize="cellData.modalSize"
+                        :trainerMons="trainerMons"
+                        :participants="activeParticipants" />
+                </button>
+            </div>
         </div>
     </div>
 </template>
 
 <script>
 import { getGameId, getIsGM, getTrainer, getTrainerId, setCellParticipant, } from '../utils/localStorage'
-import { addToActiveEncounter, getActiveEncounter } from '../api/encounter.api'
+import { addToActiveEncounter, getActiveEncounter, removeFromActiveEncounter } from '../api/encounter.api'
 import { generateErrorModal } from '../utils/modalUtil'
 import CellModal from '../components/modals/CellModal.vue'
 import { getGamePokemon } from '../api/pokemon.api'
 import { findTrainerInGame } from '../api/game.api'
+import TrainerSheet from '../components/encounter/TrainerSheet.vue'
+import PokemonSheet from '../components/encounter/PokemonSheet.vue'
 export default {
     name: "Encounter",
     components: {
-        CellModal
+        CellModal,
+        TrainerSheet,
+        PokemonSheet
     },
     data() {
         return {
@@ -68,12 +130,17 @@ export default {
             encounter: {},
             needToJoin: true,
             x: 0,
-            y: 0
+            y: 0,
+            displaySection: null,
+            participantId: '',
+            activeParticipants: [],
+            removalOption: ''
         }
     },
     async beforeMount(){
         if (this.gameId){
             this.encounter = await this.getEncounter();
+            this.activeParticipants = this.encounter.activeParticipants;
             if (!this.encounter.name){
                 return;
             }
@@ -188,6 +255,27 @@ export default {
                         return response.data;
                     })
                     .catch(console.log);
+            }
+        },
+        async removeFromEncounter(){
+            if (this.removalOption){
+                await removeFromActiveEncounter(this.removalOption)
+                    .then(() => location.reload())
+                    .catch(generateErrorModal)
+            }
+        },
+        changeDisplay(cellData){
+            if (cellData.participant.participantId == this.participantId){
+                if (this.displaySection){
+                    this.displaySection = null
+                }
+                else {
+                    this.displaySection = cellData.participant.type
+                }
+            }
+            else {
+                this.displaySection = cellData.participant.type
+                this.participantId = cellData.participant.participantId
             }
         }
     }

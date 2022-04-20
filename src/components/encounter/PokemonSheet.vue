@@ -237,7 +237,6 @@ export default {
         },
         async updateCatchRate(){
             let modifier = -25
-            console.log(this.pokemon)
             if (this.hp < 0){
                 modifier = 75
             }

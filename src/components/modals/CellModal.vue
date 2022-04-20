@@ -10,7 +10,38 @@
                 </div>
                 <div class="modal-body">
                     <div v-if="participant.type == null">
-                        Would you like to move to cell ({{x}},{{y}})?
+                        <div class="container">
+                            Would you like to move to cell ({{x}},{{y}})?
+                            <div class="row" v-if="isGM">
+                                <button
+                                    type="button"
+                                    class="btn btn-success my-3"
+                                    data-bs-dismiss="modal"
+                                    v-for="(activeParticipant, index) in participants"
+                                    :key="index"
+                                    @click="move(activeParticipant.participantId)">
+                                    {{activeParticipant.name}}
+                                </button>
+                            </div>
+                            <div class="row" v-else>
+                                <button
+                                    type="button"
+                                    class="btn btn-success my-3"
+                                    data-bs-dismiss="modal"
+                                    @click="moveTrainer">
+                                    {{self}}
+                                </button>
+                                <button
+                                    type="button"
+                                    class="btn btn-success my-3"
+                                    data-bs-dismiss="modal"
+                                    v-for="(pokemon, index) in trainerMons"
+                                    :key="index"
+                                    @click="movePokemon(pokemon)">
+                                    {{pokemon.nickname}}
+                                </button>
+                            </div>
+                        </div>
                     </div>
                     <div v-else-if="participant.type == 'Trainer'">
                         <trainer-sheet :trainerId="participant.participantId" />
@@ -20,7 +51,6 @@
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-success" data-bs-dismiss="modal" v-if="!participant.name" @click="move">Yes</button>
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
                 </div>
             </div>
@@ -29,11 +59,11 @@
 </template>
 
 <script>
-import { getGameId, setCellParticipant } from '../../utils/localStorage'
+import { getGameId, getIsGM, getTrainer, setCellParticipant } from '../../utils/localStorage'
 import { findTrainerInGame } from '../../api/game.api'
 import TrainerSheet from '../encounter/TrainerSheet.vue'
 import PokemonSheet from '../encounter/PokemonSheet.vue'
-import { updateTrainerPosition } from '../../api/encounter.api'
+import { updateParticipantPosition, updatePokemonPosition, updateTrainerPosition } from '../../api/encounter.api'
 import { generateErrorModal } from '../../utils/modalUtil'
 import { getGamePokemon } from '../../api/pokemon.api'
 export default {
@@ -51,6 +81,18 @@ export default {
         },
         modalSize: {
             default: null
+        },
+        trainerMons: {
+            default: []
+        },
+        participants: {
+            default: []
+        }
+    },
+    data(){
+        return {
+            isGM: getIsGM(),
+            self: getTrainer().trainerName
         }
     },
     async beforeMount(){
@@ -70,8 +112,20 @@ export default {
         }
     },
     methods: {
-        async move(){
+        async moveTrainer(){
             await updateTrainerPosition(this.x, this.y)
+                .then(() => location.reload())
+                .catch(generateErrorModal);
+        },
+        async movePokemon(pokemon){
+            if (this.participants.some(participant => participant.participantId == pokemon.pokemonId)){
+                updatePokemonPosition(pokemon.pokemonId, this.x, this.y)
+                    .then(() => location.reload())
+                    .catch(generateErrorModal);
+            }
+        },
+        async move(participantId){
+            updateParticipantPosition(participantId, this.x, this.y)
                 .then(() => location.reload())
                 .catch(generateErrorModal);
         }

@@ -59,19 +59,34 @@ export async function addToActiveEncounter(participantData){
     return await requestHandler(`${ENCOUNTER_RESOURCE}/${trainerId}`, METHODS.PUT, {activityToken, sessionAuth, data: participantData});
 }
 
-/**
- * Updates the participants position on the map
- * @param {string} participantId The participant to change
- * @returns 200
- */
-export async function updateParticipantPosition(participantId){
+export async function removeFromActiveEncounter(participantId){
     const [gameMasterId, activityToken, sessionAuth] = getUserCredentials();
     nullChecker(gameMasterId, 'gameMasterId');
     nullChecker(participantId, 'participantId');
     nullChecker(activityToken, 'activityToken');
     nullChecker(sessionAuth, 'sessionAuth');
+    
+    return await requestHandler(`${ENCOUNTER_RESOURCE}/${gameMasterId}/remove/${participantId}`, METHODS.PUT, {activityToken, sessionAuth});
+}
 
-    return await requestHandler(`${ENCOUNTER_RESOURCE}/${gameMasterId}/position/${participantId}`, METHODS.PUT, {activityToken, sessionAuth});
+/**
+ * Updates the participants position on the map
+ * @param {string} participantId The participant to change
+ * @returns 200
+ */
+export async function updateParticipantPosition(participantId, x, y){
+    const [gameMasterId, activityToken, sessionAuth] = getUserCredentials();
+    nullChecker(gameMasterId, 'gameMasterId');
+    nullChecker(participantId, 'participantId');
+    nullChecker(activityToken, 'activityToken');
+    nullChecker(sessionAuth, 'sessionAuth');
+    
+    const data = {
+        x,
+        y
+    };
+
+    return await requestHandler(`${ENCOUNTER_RESOURCE}/${gameMasterId}/position/${participantId}`, METHODS.PUT, {activityToken, sessionAuth, data});
 }
 
 /**
@@ -98,14 +113,19 @@ export async function updateTrainerPosition(x, y){
  * @param {string} pokemonId The trainer's pokemon
  * @returns 
  */
-export async function updatePokemonPosition(pokemonId){
+export async function updatePokemonPosition(pokemonId, x, y){
     const [trainerId, activityToken, sessionAuth] = getUserCredentials();
     nullChecker(trainerId, 'trainerId');
     nullChecker(pokemonId, 'pokemonId');
     nullChecker(activityToken, 'activityToken');
     nullChecker(sessionAuth, 'sessionAuth');
     
-    return await requestHandler(`${ENCOUNTER_RESOURCE}/${trainerId}/pokemon_position/${pokemonId}`, METHODS.PUT, {activityToken, sessionAuth});
+    const data = {
+        x,
+        y
+    };
+    
+    return await requestHandler(`${ENCOUNTER_RESOURCE}/${trainerId}/pokemon_position/${pokemonId}`, METHODS.PUT, {activityToken, sessionAuth, data});
 }
 
 /**
