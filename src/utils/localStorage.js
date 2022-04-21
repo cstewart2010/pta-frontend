@@ -141,6 +141,13 @@ export function getCurrentHP(){
 }
 
 /**
+ * @returns npc's current hp
+ */
+ export function getNpcHP(npcId){
+    return getParsedItem(npcId+"hp");
+}
+
+/**
  * @returns cell participant
  */
 export function getCellParticipant(id){
@@ -292,6 +299,15 @@ export function setPokemonNewHome(home){
  */
 export function setCurrentHP(hp){
     localStorage.setItem(CURRENT_HP, JSON.stringify(hp));
+}
+
+
+/**
+ * Adds the current npc's hp to local storage
+ * @param {Number} hp the current npc's hp
+ */
+ export function setNpcHP(hp, npcId){
+    localStorage.setItem(npcId+"hp", JSON.stringify(hp));
 }
 
 /**

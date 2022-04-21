@@ -2,10 +2,10 @@
     <div class="row">
         <div class="col-md-8">
             <generic-data :npcId="npcId" />
-            <trainer-stats />
-            <trainer-skills />
+            <trainer-stats :npcId="npcId"/>
+            <trainer-skills :npcId="npcId"/>
         </div>
-        <portrait :npcId="npcId"/>
+        <portrait :npcId="npcId"/>                                                                      
     </div>
 </template>
 

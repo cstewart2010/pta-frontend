@@ -45,7 +45,6 @@ export default {
         await getAllSprites()
             .then(response => {
                 this.sprites = response.data
-                console.log(this.npcId);
                 this.npc = getNpc(this.npcId);
                 this.level = this.npc.level;
             })
