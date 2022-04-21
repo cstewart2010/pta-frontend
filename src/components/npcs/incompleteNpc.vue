@@ -7,7 +7,7 @@
             <class-features :npcId="npcId"/>
         </div>
         <div v-else-if="sheet=='moves'">
-            <!-- <trainer-moves /> -->
+            <trainer-moves :npcId="npcId"/>
         </div>
         <div v-else-if="sheet=='team'">
             <!-- <pokemon-team /> -->
@@ -64,12 +64,14 @@ import { setNpc } from '../../utils/localStorage'
 import { generateErrorModal } from '../../utils/modalUtil'
 import NpcSheet from './NpcSheet.vue'
 import ClassFeatures from './ClassFeatures.vue'
+import TrainerMoves from './TrainerMoves.vue'
 
 export default {
     name:"IncompleteNpc",
     components: {
         NpcSheet,
-        ClassFeatures
+        ClassFeatures,
+        TrainerMoves
     }, 
     data(){
         return {

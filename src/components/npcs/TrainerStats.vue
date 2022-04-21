@@ -58,7 +58,7 @@
             </select>
             <select class="form-select" v-model="selectedTrainerClasses[2]" @change="updateClass(2)">
                 <option value=""></option>
-                <option v-for="(trainerClass, index) in trainerClasses" :key="index" :id="npcClass" :value="trainerClass.replace('/', '_')">
+                <option v-for="(trainerClass, index) in trainerClasses" :key="index" :id="trainerClass" :value="trainerClass.replace('/', '_')">
                     {{trainerClass}}
                 </option>
             </select>

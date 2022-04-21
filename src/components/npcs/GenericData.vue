@@ -67,7 +67,6 @@ export default {
          await getAllPokemon()
             .then(response => {
                 this.pokemonCol = response.data.results.map(item => item.name)
-                console.log(this.npcId)
                 const npc = getNpc(this.npcId);
                 this.trainerName = npc.trainerName;
                 this.gender = npc.gender;

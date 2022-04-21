@@ -71,6 +71,15 @@ export async function createNewNpc(trainerName, classes, feats){
     return await requestHandler(`${NPC_RESOURCE}/${gmId}/new`, METHODS.POST, {sessionAuth, activityToken, data})
 }
 
+export async function createNpcPokemon(npcId, ...pokemon){
+  const [gmId, activityToken, sessionAuth] = getUserCredentials();
+  nullChecker(npcId, 'npcId'); 
+  nullChecker(gmId, 'gmId');
+  nullChecker(activityToken, 'activityToken');
+  nullChecker(sessionAuth, 'sessionAuth');
+  nullChecker(pokemon, 'pokemon')
+  return await requestHandler(`${NPC_RESOURCE}/${gmId}/${npcId}/new`, METHODS.POST, {sessionAuth, activityToken, data:pokemon})
+}
 
 /**
  * Updates Npc's stats by NpcId

@@ -29,7 +29,9 @@ export default {
     name: 'Portrait',
     data() {
         return {
-            npc: {},
+            npc: {
+                sprite: 'acetrainer'
+            },
             sprites: [],
             selectedSprite: '',
             level: 0

@@ -7,6 +7,8 @@
         </div>
         <portrait :npcId="npcId"/>                                                                      
     </div>
+     <hr>
+    <bottom :npcId="npcId"/>
 </template>
 
 <script>
@@ -14,6 +16,7 @@ import GenericData from './GenericData.vue'
 import Portrait from './Portrait.vue'
 import TrainerStats from './TrainerStats.vue'
 import TrainerSkills from './TrainerSkills.vue'
+import Bottom from './Bottom.vue'
 export default {
     name: "Npc",
     props: {
@@ -26,6 +29,7 @@ export default {
         Portrait,
         TrainerStats,
         TrainerSkills,
+        Bottom
     }
 }
 </script>
