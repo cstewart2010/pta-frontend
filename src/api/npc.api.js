@@ -71,7 +71,7 @@ export async function createNewNpc(trainerName, classes, feats){
     return await requestHandler(`${NPC_RESOURCE}/${gmId}/new`, METHODS.POST, {sessionAuth, activityToken, data})
 }
 
-export async function createNpcPokemon(npcId, ...pokemon){
+export async function createNpcPokemon(npcId, pokemon){
   const [gmId, activityToken, sessionAuth] = getUserCredentials();
   nullChecker(npcId, 'npcId'); 
   nullChecker(gmId, 'gmId');
@@ -88,11 +88,14 @@ export async function createNpcPokemon(npcId, ...pokemon){
  */
   export async function addNpcStats(npcId){
     const [gmId, activityToken, sessionAuth] = getUserCredentials();
-    nullChecker(npcId, 'npcId'); 
+    const ptaLocalStorage = require('../utils/localStorage')
+    const npc = ptaLocalStorage.getNpc(npcId);
+    nullChecker(npcId, 'npcId');
+    nullChecker(npc, 'npc');  
     nullChecker(gmId, 'gmId');
     nullChecker(activityToken, 'activityToken');
     nullChecker(sessionAuth, 'sessionAuth');
-    return await requestHandler(`${NPC_RESOURCE}/${gmId}/${npcId}/addStats`, METHODS.PUT, {sessionAuth, activityToken})
+    return await requestHandler(`${NPC_RESOURCE}/${gmId}/${npcId}/addStats`, METHODS.PUT, {sessionAuth, activityToken, data : npc})
   }
 
 /**

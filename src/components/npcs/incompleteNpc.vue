@@ -10,7 +10,7 @@
             <trainer-moves :npcId="npcId"/>
         </div>
         <div v-else-if="sheet=='team'">
-            <!-- <pokemon-team /> -->
+           <pokemon-team :npcId="npcId"/>
         </div> 
     </div>
     <div class="modal fade" id="confirmationModal" tabindex="-1" aria-labelledby="confirmationModalLabel" aria-hidden="true">
@@ -59,19 +59,21 @@
 </template>
 
 <script>
-import { getNpc } from '../../api/npc.api'
-import { setNpc } from '../../utils/localStorage'
+import { addNpcStats, getNpc, createNpcPokemon } from '../../api/npc.api'
 import { generateErrorModal } from '../../utils/modalUtil'
 import NpcSheet from './NpcSheet.vue'
 import ClassFeatures from './ClassFeatures.vue'
 import TrainerMoves from './TrainerMoves.vue'
+import PokemonTeam from './PokemonTeam.vue'
+const ptaLocalStorage = require('../../utils/localStorage')
 
 export default {
     name:"IncompleteNpc",
     components: {
         NpcSheet,
         ClassFeatures,
-        TrainerMoves
+        TrainerMoves,
+        PokemonTeam
     }, 
     data(){
         return {
@@ -87,7 +89,8 @@ export default {
         if(this.npcId){
             await getNpc(this.npcId)
             .then(response => {
-                setNpc(response.data)
+                ptaLocalStorage.setNpc(response.data)
+                ptaLocalStorage.setPokemonNewTeam([]) 
             })
             .catch(generateErrorModal)
         }
@@ -99,7 +102,17 @@ export default {
             localStorage.setItem('savedNpcSheet', sheet);
         },
         async saveChange(){
-
+            const npc = ptaLocalStorage.getNpc(this.npcId);
+            npc.currentHp = ptaLocalStorage.getNpcHP() || npc.currentHp;
+            npc.pokemonTeam = [];
+            await createNpcPokemon(this.npcId, ptaLocalStorage.getPokemonNewTeam())
+            .then(async () => {
+                    await addNpcStats(this.npcId)
+                    .then( () => {
+                           location.reload() 
+                    })
+            })
+            
         }
     }
 }
