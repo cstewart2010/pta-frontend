@@ -136,7 +136,7 @@ import { createNewNpc, getNpcsInGame } from '../../api/npc.api';
 import { getAllGeneralFeatures, getAllTrainerClasses} from '../../api/dex.api';
 import { createEncounter, getAllEncounters, setEncounterToActive, setEncounterToInactive } from '../../api/encounter.api';
 import DeleteNpc from '../../components/modals/DeleteNpc.vue';
-import IncompleteNpc from '../../components/npcs/IncompleteNpc___.vue';
+import IncompleteNpc from '../../components/npcs/Incomplete_Npc.vue';
 export default {
     name: 'GMPortal',
     data(){
