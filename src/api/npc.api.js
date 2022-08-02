@@ -10,8 +10,12 @@ const NPC_RESOURCE = `${BASE_URL}/api/v1/npc`
  * @returns NpcModel
  */
 export async function getNpc(npcId){
- nullChecker(npcId, 'npcId');
- return await requestHandler(`${NPC_RESOURCE}/${npcId}`, METHODS.GET);
+  const [gmId, activityToken, sessionAuth] = getUserCredentials();
+  nullChecker(npcId, 'npcId'); 
+  nullChecker(gmId, 'gmId');
+  nullChecker(activityToken, 'activityToken');
+  nullChecker(sessionAuth, 'sessionAuth');
+  return await requestHandler(`${NPC_RESOURCE}/${gmId}/${npcId}`, METHODS.GET, {sessionAuth, activityToken})
 }
 
 /**
@@ -51,6 +55,10 @@ export async function getNpc(npcId){
  * @returns NpcModel
  */
 export async function createNewNpc(trainerName, classes, feats){
+    const [gmId, activityToken, sessionAuth] = getUserCredentials();
+    nullChecker(gmId, 'gmId');
+    nullChecker(activityToken, 'activityToken');
+    nullChecker(sessionAuth, 'sessionAuth');
     nullChecker(trainerName, 'trainerName');
     nullChecker(classes, 'classes');
     nullChecker(feats, 'feats');
@@ -60,9 +68,18 @@ export async function createNewNpc(trainerName, classes, feats){
         classes,
         feats
     }
-    return await requestHandler(`${NPC_RESOURCE}/new`, METHODS.POST, {data})
+    return await requestHandler(`${NPC_RESOURCE}/${gmId}/new`, METHODS.POST, {sessionAuth, activityToken, data})
 }
 
+export async function createNpcPokemon(npcId, pokemon){
+  const [gmId, activityToken, sessionAuth] = getUserCredentials();
+  nullChecker(npcId, 'npcId'); 
+  nullChecker(gmId, 'gmId');
+  nullChecker(activityToken, 'activityToken');
+  nullChecker(sessionAuth, 'sessionAuth');
+  nullChecker(pokemon, 'pokemon')
+  return await requestHandler(`${NPC_RESOURCE}/${gmId}/${npcId}/new`, METHODS.POST, {sessionAuth, activityToken, data:pokemon})
+}
 
 /**
  * Updates Npc's stats by NpcId
@@ -71,11 +88,14 @@ export async function createNewNpc(trainerName, classes, feats){
  */
   export async function addNpcStats(npcId){
     const [gmId, activityToken, sessionAuth] = getUserCredentials();
-    nullChecker(npcId, 'npcId'); 
+    const ptaLocalStorage = require('../utils/localStorage')
+    const npc = ptaLocalStorage.getNpc(npcId);
+    nullChecker(npcId, 'npcId');
+    nullChecker(npc, 'npc');  
     nullChecker(gmId, 'gmId');
     nullChecker(activityToken, 'activityToken');
     nullChecker(sessionAuth, 'sessionAuth');
-    return await requestHandler(`${NPC_RESOURCE}/${gmId}/${npcId}/addStats`, METHODS.PUT, {sessionAuth, activityToken})
+    return await requestHandler(`${NPC_RESOURCE}/${gmId}/${npcId}/addStats`, METHODS.PUT, {sessionAuth, activityToken, data : npc})
   }
 
 /**
@@ -84,8 +104,12 @@ export async function createNewNpc(trainerName, classes, feats){
  * @returns 200 status
  */
 export async function deleteNpc(npcId){
-    nullChecker(npcId, 'npcId');
-    return await requestHandler(`${NPC_RESOURCE}/${npcId}`, METHODS.DELETE)
+    const [gmId, activityToken, sessionAuth] = getUserCredentials();
+    nullChecker(npcId, 'npcId'); 
+    nullChecker(gmId, 'gmId');
+    nullChecker(activityToken, 'activityToken');
+    nullChecker(sessionAuth, 'sessionAuth');
+    return await requestHandler(`${NPC_RESOURCE}/${gmId}/${npcId}`, METHODS.DELETE, {sessionAuth, activityToken})
 }
 
 /**

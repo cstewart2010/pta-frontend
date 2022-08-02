@@ -55,6 +55,15 @@ export function getIsGM(){
 }
 
 /**
+ * 
+ * @param {String} npcId 
+ * @returns the selected npc
+ */
+export function getNpc(npcId){
+    return getParsedItem(npcId);
+}
+
+/**
  * @returns the user's sesstion auth
  */
 export function getSessionAuth(){
@@ -132,6 +141,13 @@ export function getCurrentHP(){
 }
 
 /**
+ * @returns npc's current hp
+ */
+ export function getNpcHP(npcId){
+    return getParsedItem(npcId+"hp");
+}
+
+/**
  * @returns cell participant
  */
 export function getCellParticipant(id){
@@ -188,6 +204,14 @@ export function setIsAuthenticate(isAuthenticated){
  */
 export function setIsGM(isGM){
     localStorage.setItem(IS_GM, isGM);
+}
+
+/**
+ * adds npc to local storage
+ * @param {any} npc the current npc to set
+ */
+export function setNpc(npc){
+    localStorage.setItem(npc.npcId, JSON.stringify(npc))
 }
 
 /**
@@ -275,6 +299,15 @@ export function setPokemonNewHome(home){
  */
 export function setCurrentHP(hp){
     localStorage.setItem(CURRENT_HP, JSON.stringify(hp));
+}
+
+
+/**
+ * Adds the current npc's hp to local storage
+ * @param {Number} hp the current npc's hp
+ */
+ export function setNpcHP(hp, npcId){
+    localStorage.setItem(npcId+"hp", JSON.stringify(hp));
 }
 
 /**
