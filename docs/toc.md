@@ -1,0 +1,36 @@
+Table of Contents
+---
+
+- [Introduction](introduction.md)
+  - [Purpose](introduction.md#purpose)
+  - [Scope](introduction.md#scope)
+  - [Terms and Definitions](introduction.md#terms-and-definitions)
+  - [References](introduction.md#references)
+- [Template and Module Guidelines](template_module.md)
+  - [Module Design](template_module.md#module-design)
+  - [Template Design](template_module.md#template-design)
+- [Subroutines](subroutine.md)
+  - [Scope](subroutine.md#scope)
+  - [Declarations](subroutine.md#declarations)
+  - [Layout](subroutine.md#layout)
+  - [Size](subroutine.md#size)
+  - [Parameter List](subroutine.md#parameter-list)
+  - [Variable Declaration](subroutine.md#variable-declaration)
+- [Comments](comment.md)
+  - [JSDoc](comment.md#jsdoc)
+  - [Inline Comments](comment.md#inline-comments)
+  - [Block Comments](comment.md#block-comments)
+- [Code Layout](layout.md)
+  - [Statement Frequency](layout.md#statement-frequency)
+  - [Indentation](layout.md#indentation)
+  - [Error Handling](layout.md#error-handling)
+- [Naming Conventions]
+  - [Meaningful Names]
+  - [Subroutines]
+  - [Constants]
+  - [Booleans]
+  - [Components]
+- [Miscellaneous]
+  - [Conditionals]
+  - [Imports]
+  - [Debugging]
