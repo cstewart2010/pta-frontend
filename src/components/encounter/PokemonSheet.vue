@@ -1,6 +1,6 @@
 <template>
     <div class="row my-2">
-        <div class="col-md-8">
+        <div class="col-md-8" v-if="isGM || pokemon.trainerId == currentTrainerId">
             <div class="row">
                 <div class="col-md-5">
                     <div>Data</div>
@@ -83,6 +83,33 @@
                 </div>
             </div>
         </div>
+        <div class="col-md-8" v-else>
+            <div class="row">
+                <div class="col-md-10">
+                    <div>Data</div>
+                    <hr>
+                    <div class="row">
+                        <halved-row-slot left="Nickname" :right="pokemon.nickname" />
+                        <halved-row-slot left="Species" :right="pokemon.speciesName" />
+                        <halved-row-slot left="Gender" :right="pokemon.gender" />
+                        <halved-row-slot left="Type" :right="pokemon.type" />
+                        <halved-row-slot left="Nature" :right="pokemon.nature" />
+                        <halved-row-slot left="Size" :right="pokemon.size" />
+                        <halved-row-slot left="Weight" :right="pokemon.weight" />
+                        <halved-row-slot left="Egg Group" :right="pokemon.eggGroups.join('/')" />
+                        <halved-row-slot left="Hatch rate" :right="pokemon.eggHatchRate" />
+                        <halved-row-slot left="Diet" :right="pokemon.diet" />
+                        <halved-row-slot left="Form" :right="pokemon.form" />
+                        <halved-row-slot left="Proficiencies" :right="pokemon.proficiencies.join(', ')" />
+                    </div>
+                </div>
+                <div class="col-md-2">
+                    {{pokemon.nickname}}
+                    <hr>
+                    <img class="img-fluid" :src="url" :alt="pokemon.nickname">
+                </div>
+            </div>
+        </div>
         <div class="col-md-4">
             Passives
             <hr>
@@ -150,7 +177,7 @@ import Passive from '../trainer/parts/Passive.vue'
 import HalvedRowSlot from '../partials/HalvedRowSlot.vue'
 import { changeForm, markAsEvolvable, updateHP } from '../../api/pokemon.api'
 import { generateErrorModal } from '../../utils/modalUtil'
-import { getCellParticipant, getIsGM, setPTAActivityToken } from '../../utils/localStorage'
+import { getCellParticipant, getIsGM, getTrainerId, setPTAActivityToken } from '../../utils/localStorage'
 import EvolvePokemon from '../modals/EvolvePokemon.vue'
 
 export default {
@@ -175,7 +202,8 @@ export default {
             pokemon: {
                 pokemonStats: {},
                 eggGroups: []
-            }
+            },
+            currentTrainerId: getTrainerId()
         }
     },
     components: {

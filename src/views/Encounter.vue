@@ -16,6 +16,34 @@
         </div>
         <div v-else>
             <div class="input-group my-2">
+                <span class="input-group-text">Add Npc</span>
+                <select v-model="npcSelection" class="form-select">
+                    <option value=""></option>
+                    <option v-for="(npc, index) in npcs" :key="index" :value="index">
+                        {{npc.trainerName}}
+                    </option>
+                </select>
+                <span class="input-group-text">x-coordinate</span>
+                <input type="number" min="0" :max="length" v-model="x">
+                <span class="input-group-text">y-coordinate</span>
+                <input type="number" min="0" :max="length" v-model="y">
+                <button class="btn btn-secondary" @click="addNpc">Add</button>
+            </div>
+            <div class="input-group my-2" v-if="participantId && displaySection == 'Npc'">
+                <span class="input-group-text">Add Npc Mon</span>
+                <select v-model="npcMonSelection" class="form-select">
+                    <option value=""></option>
+                    <option v-for="(pokemon, index) in selectedNpc.pokemonTeam" :key="index" :value="pokemon">
+                        {{pokemon.nickname}}
+                    </option>
+                </select>
+                <span class="input-group-text">x-coordinate</span>
+                <input type="number" min="0" :max="length" v-model="x">
+                <span class="input-group-text">y-coordinate</span>
+                <input type="number" min="0" :max="length" v-model="y">
+                <button class="btn btn-secondary" @click="addNpcMon">Add</button>
+            </div>
+            <div class="input-group my-2">
                 <span class="input-group-text">Remove from encounter</span>
                 <select v-model="removalOption" class="form-select">
                     <option value=""></option>
@@ -31,6 +59,7 @@
             <section v-if="displaySection">
                 <trainer-sheet :trainerId="participantId" v-if="displaySection == 'Trainer'" />
                 <pokemon-sheet :pokemonId="participantId" v-if="displaySection == 'Pokemon'" />
+                <npc-sheet :npcId="participantId" v-if="displaySection == 'Npc'" />
             </section>
         </div>
         <div class="input-group my-1 col-2" v-if="needToJoin">
@@ -104,12 +133,15 @@ import { getGamePokemon } from '../api/pokemon.api'
 import { findTrainerInGame } from '../api/game.api'
 import TrainerSheet from '../components/encounter/TrainerSheet.vue'
 import PokemonSheet from '../components/encounter/PokemonSheet.vue'
+import NpcSheet from '../components/encounter/NpcSheet.vue'
+import { getNpc, getNpcsInGame } from '../api/npc.api'
 export default {
     name: "Encounter",
     components: {
         CellModal,
         TrainerSheet,
-        PokemonSheet
+        PokemonSheet,
+        NpcSheet
     },
     data() {
         return {
@@ -136,7 +168,11 @@ export default {
             displaySection: null,
             participantId: '',
             activeParticipants: [],
-            removalOption: ''
+            removalOption: '',
+            npcs: [],
+            npcSelection: null,
+            npcMonSelection: null,
+            selectedNpc: {}
         }
     },
     async beforeMount(){
@@ -158,6 +194,11 @@ export default {
             if (!this.isGM){
                 this.trainerMons = getTrainer().pokemonTeam
             }
+            else {
+                await getNpcsInGame(this.gameId).then(response => {
+                    this.npcs = response.data;
+                });
+            }
             this.needToJoin = !(this.isGM || this.encounter.activeParticipants.some(participant => participant.participantId == getTrainerId()))
             for (const participant of this.encounter.activeParticipants) {
                 const source = await this.setACellParticipant(participant);
@@ -173,9 +214,14 @@ export default {
                     }
                     this.encounterMap[participant.position.x][participant.position.y].color = "bg-success"
                 }
-                else{
+                else {
                     this.encounterMap[participant.position.x][participant.position.y].url = `http://play.pokemonshowdown.com/sprites/trainers/${source.sprite}.png`
-                    this.encounterMap[participant.position.x][participant.position.y].color = "bg-dark"
+                    if (participant.type == "Trainer"){
+                        this.encounterMap[participant.position.x][participant.position.y].color = "bg-dark"
+                    }
+                    else {
+                        this.encounterMap[participant.position.x][participant.position.y].color = "bg-secondary"
+                    }
                 }
             }
         }
@@ -241,22 +287,86 @@ export default {
             .then(() => location.reload())
             .catch(generateErrorModal)
         },
-        async setACellParticipant(participant){
-            if (participant.type == "Trainer"){
-                return await findTrainerInGame(getGameId(), participant.participantId)
-                    .then(response => {
-                        setCellParticipant(participant.participantId, response.data.trainer)
-                        return response.data.trainer;
-                    })
-                    .catch(console.log);
+        async addNpc(){
+            if (this.x > this.length || this.x < 0){
+                return;
             }
-            else if (participant.type == "Pokemon"){
-                return await getGamePokemon(participant.participantId)
-                    .then(response => {
-                        setCellParticipant(participant.participantId, response.data)
-                        return response.data;
-                    })
-                    .catch(console.log);
+            if (this.y > this.length || this.y < 0){
+                return;
+            }
+            if (this.encounterMap[this.x][this.y].participant.id){
+                return;
+            }
+            if (!this.npcs[this.npcSelection]){
+                return;
+            }
+            
+            var npc = this.npcs[this.npcSelection];
+            await addToActiveEncounter({
+                participantId: npc.npcId,
+                name: npc.trainerName,
+                health: "Feeling fresh!",
+                type: "Npc",
+                position: {
+                    x: this.x,
+                    y: this.y
+                },
+                speed: npc.trainerStats.speed
+            })
+            .then(() => location.reload())
+            .catch(generateErrorModal)
+        },
+        async addNpcMon(){
+            if (this.x > this.length || this.x < 0){
+                return;
+            }
+            if (this.y > this.length || this.y < 0){
+                return;
+            }
+            if (this.encounterMap[this.x][this.y].participant.id){
+                return;
+            }
+            if (!this.npcMonSelection){
+                return;
+            }
+                        
+            await addToActiveEncounter({
+                participantId: this.npcMonSelection.pokemonId,
+                name: this.npcMonSelection.nickname,
+                health: "Feeling fresh!",
+                type: "Pokemon",
+                position: {
+                    x: this.x,
+                    y: this.y
+                },
+                speed: this.npcMonSelection.pokemonStats.speed
+            })
+            .then(() => location.reload())
+            .catch(generateErrorModal)
+        },
+        async setACellParticipant(participant){
+            switch (participant.type){
+                case "Trainer":
+                    return await findTrainerInGame(getGameId(), participant.participantId)
+                        .then(response => {
+                            setCellParticipant(participant.participantId, response.data.trainer)
+                            return response.data.trainer;
+                        })
+                        .catch(console.log);
+                case "Pokemon":
+                    return await getGamePokemon(participant.participantId)
+                        .then(response => {
+                            setCellParticipant(participant.participantId, response.data)
+                            return response.data;
+                        })
+                        .catch(console.log);
+                case "Npc":
+                    return await getNpc(participant.participantId)
+                        .then(response => {
+                            setCellParticipant(participant.participantId, response.data)
+                            return response.data;
+                        })
+                        .catch(console.log);
             }
         },
         async removeFromEncounter(){
@@ -278,6 +388,11 @@ export default {
             else {
                 this.displaySection = cellData.participant.type
                 this.participantId = cellData.participant.participantId
+
+                if (this.displaySection == 'Npc'){
+                    this.selectedNpc = this.npcs.find(npc => npc.npcId == this.participantId);
+                    console.log(this.selectedNpc);
+                }
             }
         }
     }

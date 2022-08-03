@@ -49,6 +49,9 @@
                     <div v-else-if="participant.type == 'Pokemon'">
                         <pokemon-sheet :pokemonId="participant.participantId" />
                     </div>
+                    <div v-else-if="participant.type == 'Npc'">
+                        <npc-sheet :npcId="participant.participantId" />
+                    </div>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
@@ -63,11 +66,12 @@ import { getGameId, getIsGM, getTrainer, setCellParticipant } from '../../utils/
 import { findTrainerInGame } from '../../api/game.api'
 import TrainerSheet from '../encounter/TrainerSheet.vue'
 import PokemonSheet from '../encounter/PokemonSheet.vue'
+import NpcSheet from '../encounter/NpcSheet.vue'
 import { updateParticipantPosition, updatePokemonPosition, updateTrainerPosition } from '../../api/encounter.api'
 import { generateErrorModal } from '../../utils/modalUtil'
 import { getGamePokemon } from '../../api/pokemon.api'
 export default {
-  components: { TrainerSheet, PokemonSheet },
+  components: { TrainerSheet, PokemonSheet, NpcSheet },
     name: 'CellModal',
     props: {
         participant: {
