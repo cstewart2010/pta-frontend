@@ -12,6 +12,10 @@
             <option value="20">d20</option>
         </select>
     </div>
+    <div class="input-group my-1" v-else>
+        <button class="btn btn-secondary" @click="sendAlert">Send Alert</button>
+        <input type="text" v-model="alert">
+    </div>
     <div class="row">
         <div class="input-group my-3" v-if="isGM">
             <button class="btn btn-secondary" @click="refreshLogs">Refresh</button>
@@ -45,7 +49,8 @@ export default {
             conjugation: '',
             isGM: false,
             dice: 2,
-            diceNumber: 1
+            diceNumber: 1,
+            alert: ''
         }
     },
     beforeMount: async function(){
@@ -91,6 +96,18 @@ export default {
                 setPTAActivityToken(response.headers['pta-activity-token']);
                 this.refreshLogs();
             })
+        },
+        async sendAlert(){
+            if (this.alert){
+                await postLog({
+                    User: "NEW GM ALERT:",
+                    Action: this.alert
+                })
+                .then(response => {
+                    setPTAActivityToken(response.headers['pta-activity-token']);
+                    this.refreshLogs();
+                })
+            }
         }
     }
 }
