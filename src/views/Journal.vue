@@ -1,4 +1,17 @@
 <template>
+    <div class="input-group my-1" v-if="!isGM">
+        <button class="btn btn-secondary" @click="sendLog">Roll</button>
+        <input class="w-50" type="number" min="1" max="10" v-model="diceNumber">
+        <select class="form-select" v-model="dice">
+            <option value="2" selected>d2</option>
+            <option value="4">d4</option>
+            <option value="6">d6</option>
+            <option value="8">d8</option>
+            <option value="10">d10</option>
+            <option value="12">d12</option>
+            <option value="20">d20</option>
+        </select>
+    </div>
     <div class="row">
         <div class="input-group my-3" v-if="isGM">
             <button class="btn btn-secondary" @click="refreshLogs">Refresh</button>
@@ -19,8 +32,8 @@
 </template>
 
 <script>
-import { getAllLogs, getLogs } from '../api/game.api'
-import { getGameId, getIsGM } from '../utils/localStorage'
+import { getAllLogs, getLogs, postLog } from '../api/game.api'
+import { getGameId, getIsGM, getTrainer, setPTAActivityToken } from '../utils/localStorage'
 export default {
     name: "Journal",
     data() {
@@ -30,7 +43,9 @@ export default {
             allLogs: [],
             page: 1,
             conjugation: '',
-            isGM: false
+            isGM: false,
+            dice: 2,
+            diceNumber: 1
         }
     },
     beforeMount: async function(){
@@ -60,6 +75,22 @@ export default {
             }
             this.conjugation = this.allLogs.length > 1 ? 'pages' : 'page'
             this.changePage();
+        },
+        async sendLog(){
+            if (this.diceNumber > 0 && this.diceNumber < 11){
+                var rolls = [];
+                for (var i = 0; i < this.diceNumber; i++){
+                    rolls[i] = Math.ceil(Math.random()*this.dice)
+                }
+            }
+            await postLog({
+                User: getTrainer().trainerName,
+                Action: `rolled ${this.diceNumber}d${this.dice}: ${rolls}`
+            })
+            .then(response => {
+                setPTAActivityToken(response.headers['pta-activity-token']);
+                this.refreshLogs();
+            })
         }
     }
 }
