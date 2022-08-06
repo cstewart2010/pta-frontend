@@ -172,59 +172,75 @@ export default {
             npcs: [],
             npcSelection: null,
             npcMonSelection: null,
-            selectedNpc: {}
+            selectedNpc: {},
+            interval: null
         }
     },
-    async beforeMount(){
+    async mounted(){
         if (this.gameId){
             this.encounter = await this.getEncounter();
-            this.activeParticipants = this.encounter.activeParticipants;
-            if (!this.encounter.name){
-                return;
-            }
-            for (let i = 0; i <= this.length; i++){
-                this.encounterMap[i] = [];
-                for (let j = 0; j <= this.length; j++){
-                    this.encounterMap[i][j] = {
-                        color: null,
-                        participant: {}
-                    }
-                }
-            }
-            if (!this.isGM){
-                this.trainerMons = getTrainer().pokemonTeam
-            }
-            else {
-                await getNpcsInGame(this.gameId).then(response => {
-                    this.npcs = response.data;
-                });
-            }
-            this.needToJoin = !(this.isGM || this.encounter.activeParticipants.some(participant => participant.participantId == getTrainerId()))
-            for (const participant of this.encounter.activeParticipants) {
-                const source = await this.setACellParticipant(participant);
-                this.encounterMap[participant.position.x][participant.position.y].participant = participant;
-                this.encounterMap[participant.position.x][participant.position.y].alt = participant.name;
-                this.encounterMap[participant.position.x][participant.position.y].modalSize = 'modal-fullscreen'
-                if (participant.type == "Pokemon"){
-                    if (source.isShiny){
-                        this.encounterMap[participant.position.x][participant.position.y].url = `https://play.pokemonshowdown.com/sprites/ani-shiny/${source.shinyPortrait}.gif`
-                    }
-                    else{
-                        this.encounterMap[participant.position.x][participant.position.y].url = `https://play.pokemonshowdown.com/sprites/ani/${source.shinyPortrait}.gif`
-                    }
-                    this.encounterMap[participant.position.x][participant.position.y].color = "bg-success"
-                }
-                else {
-                    this.encounterMap[participant.position.x][participant.position.y].url = `http://play.pokemonshowdown.com/sprites/trainers/${source.sprite}.png`
-                    if (participant.type == "Trainer"){
-                        this.encounterMap[participant.position.x][participant.position.y].color = "bg-dark"
-                    }
-                    else {
-                        this.encounterMap[participant.position.x][participant.position.y].color = "bg-secondary"
+            if (this.encounter.name){
+                for (let i = 0; i <= this.length; i++){
+                    this.encounterMap[i] = [];
+                    for (let j = 0; j <= this.length; j++){
+                        this.encounterMap[i][j] = {
+                            color: null,
+                            participant: {}
+                        }
                     }
                 }
             }
         }
+        this.interval = setInterval(async () => {
+            if (this.gameId){
+                this.encounter = await this.getEncounter();
+                this.activeParticipants = this.encounter.activeParticipants;
+                if (!this.encounter.name){
+                    return;
+                }
+                if (!this.isGM){
+                    this.trainerMons = getTrainer().pokemonTeam
+                }
+                else {
+                    await getNpcsInGame(this.gameId).then(response => {
+                        this.npcs = response.data;
+                    });
+                }
+                this.needToJoin = !(this.isGM || this.encounter.activeParticipants.some(participant => participant.participantId == getTrainerId()))
+                for (const participant of this.encounter.activeParticipants) {
+                    if (this.encounterMap[participant.position.x][participant.position.y].participant.participantId != participant.participantId){
+                        console.log(this.encounterMap[participant.position.x][participant.position.y].participant)
+                        console.log(participant)
+                        this.removeClones(participant.participantId);
+                        const source = await this.setACellParticipant(participant);
+                        this.encounterMap[participant.position.x][participant.position.y].participant = participant;
+                        this.encounterMap[participant.position.x][participant.position.y].alt = participant.name;
+                        this.encounterMap[participant.position.x][participant.position.y].modalSize = 'modal-fullscreen'
+                        if (participant.type == "Pokemon"){
+                            if (source.isShiny){
+                                this.encounterMap[participant.position.x][participant.position.y].url = `https://play.pokemonshowdown.com/sprites/ani-shiny/${source.shinyPortrait}.gif`
+                            }
+                            else{
+                                this.encounterMap[participant.position.x][participant.position.y].url = `https://play.pokemonshowdown.com/sprites/ani/${source.shinyPortrait}.gif`
+                            }
+                            this.encounterMap[participant.position.x][participant.position.y].color = "bg-success"
+                        }
+                        else {
+                            this.encounterMap[participant.position.x][participant.position.y].url = `http://play.pokemonshowdown.com/sprites/trainers/${source.sprite}.png`
+                            if (participant.type == "Trainer"){
+                                this.encounterMap[participant.position.x][participant.position.y].color = "bg-dark"
+                            }
+                            else {
+                                this.encounterMap[participant.position.x][participant.position.y].color = "bg-secondary"
+                            }
+                        }
+                    }
+                }
+            }
+        }, 5000)
+    },
+    unmounted() {
+        clearInterval(this.interval);
     },
     methods: {
         async getEncounter(){
@@ -255,8 +271,20 @@ export default {
                 },
                 speed: trainer.trainerStats.speed
             })
-            .then(() => location.reload())
             .catch(generateErrorModal)
+        },
+        removeClones(participantId){
+            for (const row of this.encounterMap){
+                for (const cell of row){
+                    const participant = cell.participant
+                    if (participant.participantId == participantId){
+                        this.encounterMap[participant.position.x][participant.position.y] = {
+                            color: null,
+                            participant: {}
+                        }
+                    }
+                }
+            }
         },
         async sendOut(){
             if (this.x > this.length || this.x < 0){
@@ -284,7 +312,6 @@ export default {
                 },
                 speed: pokemon.pokemonStats.speed
             })
-            .then(() => location.reload())
             .catch(generateErrorModal)
         },
         async addNpc(){
@@ -313,7 +340,6 @@ export default {
                 },
                 speed: npc.trainerStats.speed
             })
-            .then(() => location.reload())
             .catch(generateErrorModal)
         },
         async addNpcMon(){
@@ -341,7 +367,6 @@ export default {
                 },
                 speed: this.npcMonSelection.pokemonStats.speed
             })
-            .then(() => location.reload())
             .catch(generateErrorModal)
         },
         async setACellParticipant(participant){
@@ -372,7 +397,6 @@ export default {
         async removeFromEncounter(){
             if (this.removalOption){
                 await removeFromActiveEncounter(this.removalOption)
-                    .then(() => location.reload())
                     .catch(generateErrorModal)
             }
         },

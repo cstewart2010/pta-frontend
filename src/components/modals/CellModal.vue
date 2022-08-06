@@ -118,19 +118,16 @@ export default {
     methods: {
         async moveTrainer(){
             await updateTrainerPosition(this.x, this.y)
-                .then(() => location.reload())
                 .catch(generateErrorModal);
         },
         async movePokemon(pokemon){
             if (this.participants.some(participant => participant.participantId == pokemon.pokemonId)){
                 updatePokemonPosition(pokemon.pokemonId, this.x, this.y)
-                    .then(() => location.reload())
                     .catch(generateErrorModal);
             }
         },
         async move(participantId){
             updateParticipantPosition(participantId, this.x, this.y)
-                .then(() => location.reload())
                 .catch(generateErrorModal);
         }
     }
