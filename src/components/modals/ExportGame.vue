@@ -11,7 +11,7 @@
                     Are you sure you want to export this game? (This will delete the session from the database)
                 </div>
                 <div class="modal-footer">
-                    <button class="btn btn-danger" data-bs-target="#exportConfirmationModal" @click="exportThisGame" data-bs-dismiss="modal">Export game</button>
+                    <button class="btn btn-danger" data-bs-target="#exportConfirmationModal" data-bs-dismiss="modal" @click="exportThisGame">Export game</button>
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
                 </div>
             </div>
