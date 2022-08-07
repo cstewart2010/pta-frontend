@@ -90,6 +90,7 @@ export async function createNpcPokemon(npcId, pokemon){
     const [gmId, activityToken, sessionAuth] = getUserCredentials();
     const ptaLocalStorage = require('../utils/localStorage')
     const npc = ptaLocalStorage.getNpc(npcId);
+    npc.pokemonTeam = [];
     nullChecker(npcId, 'npcId');
     nullChecker(npc, 'npc');  
     nullChecker(gmId, 'gmId');
