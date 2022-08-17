@@ -11,7 +11,7 @@
                     Are you sure you want to delete this game?
                 </div>
                 <div class="modal-footer">
-                    <button class="btn btn-danger" data-bs-target="#gameConfirmationModal" @click="deleteThisGame" data-bs-dismiss="modal">Delete game</button>
+                    <button class="btn btn-danger" data-bs-target="#gameConfirmationModal" data-bs-dismiss="modal" @click="deleteThisGame">Delete game</button>
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
                 </div>
             </div>

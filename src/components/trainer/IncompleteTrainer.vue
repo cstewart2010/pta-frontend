@@ -33,7 +33,7 @@
                     Are you sure you want to save your changes?
                 </div>
                 <div class="modal-footer">
-                    <button class="btn btn-success" data-bs-target="#confirmationModal" @click="saveChange">Save Changes</button>
+                    <button class="btn btn-success" data-bs-target="#confirmationModal" @click="saveChange" data-bs-dismiss="modal">Save Changes</button>
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
                 </div>
             </div>
