@@ -1,13 +1,11 @@
 <template>
-    <div class="col-md-11">
-        <div class="row">
-            <div class="col-md-8">
-                <generic-data />
-                <trainer-stats />
-                <trainer-skills />
-            </div>
-            <portrait />
+    <div class="row">
+        <div class="col-md-8">
+            <generic-data />
+            <trainer-stats />
+            <trainer-skills />
         </div>
+        <portrait />
     </div>
 </template>
 
