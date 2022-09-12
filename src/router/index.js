@@ -26,6 +26,17 @@ const routes = [
     props: true
   },
   {
+    path: '/new',
+    name: 'NewGame',
+    component: () => import('../views/NewGame.vue')
+  },
+  {
+    path: '/join',
+    name: 'JoinGame',
+    component: () => import('../views/JoinGame.vue'),
+    props: true
+  },
+  {
     path: '/gm',
     name: 'GM/Index',
     component: () => import('../views/gm/Index.vue'),

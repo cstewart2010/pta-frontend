@@ -1,7 +1,7 @@
 import { BASE_URL } from './api.config.json'
 import { METHODS } from './enums.json'
 import { requestHandler, nullChecker } from './axiosHandler';
-import { getUserCredentials } from '../utils/localStorage';
+import { getGameId, getUserCredentials } from '../utils/localStorage';
 const POKEMON_RESOURCE = `${BASE_URL}/api/v1/pokemon`
 
 /**
@@ -39,6 +39,7 @@ export async function tradePokemon(leftPokemonId, rightPokemonId){
  * @param {int} hp The updated hp
  */
 export async function updateHP(pokemonId, hp){
+    const gameId = getGameId();
     const [trainerId, activityToken, sessionAuth] = getUserCredentials();
     nullChecker(pokemonId, 'pokemonId');
     nullChecker(trainerId, 'trainerId');
@@ -46,7 +47,7 @@ export async function updateHP(pokemonId, hp){
     nullChecker(activityToken, 'activityToken');
     nullChecker(sessionAuth, 'sessionAuth');
 
-    const endpoint = `${POKEMON_RESOURCE}/${pokemonId}/hp/${hp}?trainerId=${trainerId}`;
+    const endpoint = `${POKEMON_RESOURCE}/${gameId}/${trainerId}/${pokemonId}/hp/${hp}`;
     return await requestHandler(endpoint, METHODS.PUT, {activityToken, sessionAuth});
 }
 
@@ -57,6 +58,7 @@ export async function updateHP(pokemonId, hp){
  * @returns the update Pokemon
  */
 export async function changeForm(pokemonId, form){
+    const gameId = getGameId();
     const [trainerId, activityToken, sessionAuth] = getUserCredentials();
     nullChecker(pokemonId, 'pokemonId');
     nullChecker(trainerId, 'trainerId');
@@ -64,7 +66,7 @@ export async function changeForm(pokemonId, form){
     nullChecker(activityToken, 'activityToken');
     nullChecker(sessionAuth, 'sessionAuth');
 
-    const endpoint = `${POKEMON_RESOURCE}/${pokemonId}/form/${form}?trainerId=${trainerId}`;
+    const endpoint = `${POKEMON_RESOURCE}/${gameId}/${trainerId}/${pokemonId}/form/${form}`;
     return await requestHandler(endpoint, METHODS.PUT, {activityToken, sessionAuth});
 }
 
@@ -73,13 +75,14 @@ export async function changeForm(pokemonId, form){
  * @param {String} pokemonId The Pokemon's UUID
  */
 export async function markAsEvolvable(pokemonId){
+    const gameId = getGameId();
     const [gmId, activityToken, sessionAuth] = getUserCredentials();
     nullChecker(pokemonId, 'pokemonId');
     nullChecker(gmId, 'trainerId');
     nullChecker(activityToken, 'activityToken');
     nullChecker(sessionAuth, 'sessionAuth');
     
-    const endpoint = `${POKEMON_RESOURCE}/${gmId}/canEvolve/${pokemonId}`;
+    const endpoint = `${POKEMON_RESOURCE}/${gameId}/${gmId}/${pokemonId}/canEvolve`;
     return await requestHandler(endpoint, METHODS.PUT, {activityToken, sessionAuth});
 }
 
@@ -89,13 +92,14 @@ export async function markAsEvolvable(pokemonId){
  * @returns all possible evolutions
  */
 export async function getPossibleEvolutions(pokemonId){
+    const gameId = getGameId();
     const [trainerId, activityToken, sessionAuth] = getUserCredentials();
     nullChecker(pokemonId, 'pokemonId');
     nullChecker(trainerId, 'trainerId');
     nullChecker(activityToken, 'activityToken');
     nullChecker(sessionAuth, 'sessionAuth');
     
-    const endpoint = `${POKEMON_RESOURCE}/${trainerId}/possibleEvolutions/${pokemonId}`;
+    const endpoint = `${POKEMON_RESOURCE}/${gameId}/${trainerId}/${pokemonId}/possibleEvolutions`;
     return await requestHandler(endpoint, METHODS.PUT, {activityToken, sessionAuth});
 }
 
@@ -108,6 +112,7 @@ export async function getPossibleEvolutions(pokemonId){
  * @returns the updated Pokemon
  */
 export async function evolvePokemon(pokemonId, nextForm, keptMoves, newMoves){
+    const gameId = getGameId();
     const [trainerId, activityToken, sessionAuth] = getUserCredentials();
     nullChecker(pokemonId, 'pokemonId');
     nullChecker(trainerId, 'trainerId');
@@ -123,7 +128,7 @@ export async function evolvePokemon(pokemonId, nextForm, keptMoves, newMoves){
         newMoves
     }
 
-    const endpoint = `${POKEMON_RESOURCE}/${trainerId}/evolve/${pokemonId}`;
+    const endpoint = `${POKEMON_RESOURCE}/${gameId}/${trainerId}/${pokemonId}/evolve`;
     return await requestHandler(endpoint, METHODS.PUT, {activityToken, sessionAuth, data});
 }
 
@@ -134,6 +139,7 @@ export async function evolvePokemon(pokemonId, nextForm, keptMoves, newMoves){
  * @returns 
  */
 export async function seePokemon(trainerId, dexNo){
+    const gameId = getGameId();
     const [gmId, activityToken, sessionAuth] = getUserCredentials();
     nullChecker(gmId, 'gmId');
     nullChecker(trainerId, 'trainerId');
@@ -141,7 +147,7 @@ export async function seePokemon(trainerId, dexNo){
     nullChecker(activityToken, 'activityToken');
     nullChecker(sessionAuth, 'sessionAuth');
 
-    const endpoint = `${POKEMON_RESOURCE}/${trainerId}/saw?gameMasterId=${gmId}&dexNo=${dexNo}`;
+    const endpoint = `${POKEMON_RESOURCE}/${gameId}/${gmId}/${trainerId}/saw?dexNo=${dexNo}`;
     return await requestHandler(endpoint, METHODS.PUT, {activityToken, sessionAuth});
 }
 
@@ -151,11 +157,12 @@ export async function seePokemon(trainerId, dexNo){
  * @returns A generic message
  */
 export async function deletePokemon(pokemonId){
+    const gameId = getGameId();
     const [gmId, activityToken, sessionAuth] = getUserCredentials();
     nullChecker(pokemonId, 'pokemonId');
     nullChecker(gmId, 'gmId');
     nullChecker(activityToken, 'activityToken');
     nullChecker(sessionAuth, 'sessionAuth');
 
-    return await requestHandler(`${POKEMON_RESOURCE}/${pokemonId}?gameMasterId=${gmId}`, METHODS.DELETE, {activityToken, sessionAuth});
+    return await requestHandler(`${POKEMON_RESOURCE}/${gameId}/${gmId}/${pokemonId}`, METHODS.DELETE, {activityToken, sessionAuth});
 }

@@ -10,12 +10,14 @@ const NPC_RESOURCE = `${BASE_URL}/api/v1/npc`
  * @returns NpcModel
  */
 export async function getNpc(npcId){
+  const gameId = getGameId();
   const [gmId, activityToken, sessionAuth] = getUserCredentials();
   nullChecker(npcId, 'npcId'); 
   nullChecker(gmId, 'gmId');
   nullChecker(activityToken, 'activityToken');
   nullChecker(sessionAuth, 'sessionAuth');
-  return await requestHandler(`${NPC_RESOURCE}/${gmId}/${npcId}`, METHODS.GET, {sessionAuth, activityToken})
+
+  return await requestHandler(`${NPC_RESOURCE}/${gameId}/${gmId}/${npcId}`, METHODS.GET, {sessionAuth, activityToken})
 }
 
 /**
@@ -25,12 +27,13 @@ export async function getNpc(npcId){
  * @returns PokemonModel
  */
  export async function getNpcMon(npcId, pokemonId){
+  const gameId = getGameId();
     const [gmId, activityToken, sessionAuth] = getUserCredentials(); 
     nullChecker(npcId, 'npcId');
     nullChecker(gmId, 'gmId');
     nullChecker(activityToken, 'activityToken');
     nullChecker(sessionAuth, 'sessionAuth');
-    return await requestHandler(`${NPC_RESOURCE}/${npcId}/pokemon/${pokemonId}?gameMasterId=${gmId}`, METHODS.GET, {sessionAuth, activityToken})
+    return await requestHandler(`${NPC_RESOURCE}/${gameId}/${gmId}/${npcId}/${pokemonId}`, METHODS.GET, {sessionAuth, activityToken})
  }
 
  /**
@@ -44,7 +47,7 @@ export async function getNpc(npcId){
     nullChecker(activityToken, 'activityToken');
     nullChecker(sessionAuth, 'sessionAuth');
     nullChecker(gameId, 'gameId');
-    return await requestHandler(`${NPC_RESOURCE}/${gmId}/all/${gameId}`, METHODS.GET, {sessionAuth, activityToken})
+    return await requestHandler(`${NPC_RESOURCE}/${gameId}/${gmId}/npcs/all`, METHODS.GET, {sessionAuth, activityToken})
   }
     
 /**
@@ -55,6 +58,7 @@ export async function getNpc(npcId){
  * @returns NpcModel
  */
 export async function createNewNpc(trainerName, classes, feats){
+  const gameId = getGameId();
     const [gmId, activityToken, sessionAuth] = getUserCredentials();
     nullChecker(gmId, 'gmId');
     nullChecker(activityToken, 'activityToken');
@@ -68,17 +72,18 @@ export async function createNewNpc(trainerName, classes, feats){
         classes,
         feats
     }
-    return await requestHandler(`${NPC_RESOURCE}/${gmId}/new`, METHODS.POST, {sessionAuth, activityToken, data})
+    return await requestHandler(`${NPC_RESOURCE}/${gameId}/${gmId}/new`, METHODS.POST, {sessionAuth, activityToken, data})
 }
 
 export async function createNpcPokemon(npcId, pokemon){
+  const gameId = getGameId();
   const [gmId, activityToken, sessionAuth] = getUserCredentials();
   nullChecker(npcId, 'npcId'); 
   nullChecker(gmId, 'gmId');
   nullChecker(activityToken, 'activityToken');
   nullChecker(sessionAuth, 'sessionAuth');
   nullChecker(pokemon, 'pokemon')
-  return await requestHandler(`${NPC_RESOURCE}/${gmId}/${npcId}/new`, METHODS.POST, {sessionAuth, activityToken, data:pokemon})
+  return await requestHandler(`${NPC_RESOURCE}/${gameId}/${gmId}/${npcId}/new`, METHODS.POST, {sessionAuth, activityToken, data:pokemon})
 }
 
 /**
@@ -87,6 +92,7 @@ export async function createNpcPokemon(npcId, pokemon){
  * @returns NpcModel
  */
   export async function addNpcStats(npcId){
+    const gameId = getGameId();
     const [gmId, activityToken, sessionAuth] = getUserCredentials();
     const ptaLocalStorage = require('../utils/localStorage')
     const npc = ptaLocalStorage.getNpc(npcId);
@@ -96,7 +102,7 @@ export async function createNpcPokemon(npcId, pokemon){
     nullChecker(gmId, 'gmId');
     nullChecker(activityToken, 'activityToken');
     nullChecker(sessionAuth, 'sessionAuth');
-    return await requestHandler(`${NPC_RESOURCE}/${gmId}/${npcId}/addStats`, METHODS.PUT, {sessionAuth, activityToken, data : npc})
+    return await requestHandler(`${NPC_RESOURCE}/${gameId}/${gmId}/${npcId}/addStats`, METHODS.PUT, {sessionAuth, activityToken, data : npc})
   }
 
 /**
@@ -105,12 +111,13 @@ export async function createNpcPokemon(npcId, pokemon){
  * @returns 200 status
  */
 export async function deleteNpc(npcId){
+  const gameId = getGameId();
     const [gmId, activityToken, sessionAuth] = getUserCredentials();
     nullChecker(npcId, 'npcId'); 
     nullChecker(gmId, 'gmId');
     nullChecker(activityToken, 'activityToken');
     nullChecker(sessionAuth, 'sessionAuth');
-    return await requestHandler(`${NPC_RESOURCE}/${gmId}/${npcId}`, METHODS.DELETE, {sessionAuth, activityToken})
+    return await requestHandler(`${NPC_RESOURCE}/${gameId}/${gmId}/${npcId}`, METHODS.DELETE, {sessionAuth, activityToken})
 }
 
 /**
@@ -124,5 +131,5 @@ export async function deleteNpc(npcId){
     nullChecker(activityToken, 'activityToken');
     nullChecker(sessionAuth, 'sessionAuth');
     nullChecker(gameId, 'gameId');
-    return await requestHandler(`${NPC_RESOURCE}/${gmId}/all/${gameId}`, METHODS.DELETE, {sessionAuth, activityToken})
+    return await requestHandler(`${NPC_RESOURCE}/${gameId}/${gmId}/npcs/all`, METHODS.DELETE, {sessionAuth, activityToken})
 }

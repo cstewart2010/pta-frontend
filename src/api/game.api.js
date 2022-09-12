@@ -2,14 +2,20 @@ import { BASE_URL } from './api.config.json'
 import { METHODS } from './enums.json'
 import { requestHandler, nullChecker, natureChecker, statusChecker, genderChecker } from './axiosHandler';
 import { getPokemon } from './dex.api';
-import { getGameId, getGameMasterId, getUserCredentials } from '../utils/localStorage';
+import { getGameId, getUserCredentials, getUserId } from '../utils/localStorage';
 const GAME_RESOURCE = `${BASE_URL}/api/v1/game`
 
 /**
  * @returns The last 20 game sessions generated
  */
 export async function findAllGames() {
-    return await requestHandler(GAME_RESOURCE, METHODS.GET);
+    const [userId, activityToken, sessionAuth] = getUserCredentials();
+    return await requestHandler(`${GAME_RESOURCE}/user/${userId}`, METHODS.GET, {activityToken, sessionAuth});
+}
+
+export async function findAllUserGames(){
+    const [userId, activityToken, sessionAuth] = getUserCredentials();
+    return await requestHandler(`${GAME_RESOURCE}/user/games/${userId}`, METHODS.GET, {activityToken, sessionAuth});
 }
 
 /**
@@ -24,9 +30,10 @@ export async function getAllSprites(){
  * @returns All game sessions matching the nickname
  */
 export async function findAllGamesByNickname(nickname) {
+    const [userId, activityToken, sessionAuth] = getUserCredentials();
     nullChecker(nickname, 'nickname');
 
-    return await requestHandler(`${GAME_RESOURCE}?nickname=${nickname}`, METHODS.GET);
+    return await requestHandler(`${GAME_RESOURCE}/user/${userId}?nickname=${nickname}`, METHODS.GET, {activityToken, sessionAuth});
 }
 
 /**
@@ -37,7 +44,7 @@ export async function findAllGamesByNickname(nickname) {
 export async function findGameById(gameId) {
     nullChecker(gameId, 'gameId');
 
-    return await requestHandler(`${GAME_RESOURCE}/${gameId}`, METHODS.GET)
+    return await requestHandler(`${GAME_RESOURCE}/getGame/${gameId}`, METHODS.GET)
 }
 
 /**
@@ -50,7 +57,7 @@ export async function findTrainerInGame(gameId, trainerId) {
     nullChecker(gameId, 'gameId');
     nullChecker(trainerId, 'trainerId');
 
-    return await requestHandler(`${GAME_RESOURCE}/${gameId}/find/${trainerId}`, METHODS.GET);
+    return await requestHandler(`${GAME_RESOURCE}/${gameId}/${trainerId}/find`, METHODS.GET);
 }
 
 /**
@@ -77,27 +84,23 @@ export async function getLogs(gameId){
 
 /**
  * Creates a new game session and assigns it to a new game master
- * @param {String} gmUsername the username for the game session's game master
- * @param {String} gmPassword the game master's password
+ * @param {String} username the username for the game session's game master
+ * @param {String} userId the game master's user id
  * @param {String} gameSessionPassword the game session's password
  * @param {String} nickname the game nickname, if the game master wishes to set one
  * @returns the Game data
  */
-export async function createNewGame(gmUsername, gmPassword, gameSessionPassword, nickname = null){
-    nullChecker(gmUsername, 'gmUsername');
-    nullChecker(gmPassword, 'gmPassword');
+export async function createNewGame(username, userId, gameSessionPassword, nickname = null){
+    nullChecker(username, 'username');
+    nullChecker(userId, 'userId');
     nullChecker(gameSessionPassword, 'gameSessionPassword');
 
-    let endpoint = `${GAME_RESOURCE}/new?gameSessionPassword=${gameSessionPassword}`;
+    let endpoint = `${GAME_RESOURCE}/${userId}/newGame?gameSessionPassword=${gameSessionPassword}&username=${username}`;
     if (nickname){
         endpoint = `${endpoint}&nickname=${nickname}`;
     }
-
-    const data = {
-        gmUsername,
-        gmPassword
-    }
-    return await requestHandler(endpoint, METHODS.POST, {data});
+    
+    return await requestHandler(endpoint, METHODS.POST);
 }
 
 /**
@@ -151,20 +154,15 @@ export async function createWildPokemon(pokemon, nature, gender, status, nicknam
  * Add a new player to an extant game session
  * @param {String} gameId the session id to search with
  * @param {String} username the trainer's username
- * @param {String} password the trainer's password
+ * @param {String} userId the game master's user id
  * @returns the trainer data
  */
-export async function addPlayerToGame(gameId, username, password){
+export async function addPlayerToGame(gameId, username, userId){
     nullChecker(gameId, 'gameId');
     nullChecker(username, 'username');
-    nullChecker(password, 'password');
+    nullChecker(userId, 'userId');
 
-    const data = {
-        username,
-        password
-    }
-
-    return await requestHandler(`${GAME_RESOURCE}/${gameId}/new`, METHODS.POST, {data});
+    return await requestHandler(`${GAME_RESOURCE}/${gameId}/${userId}/newUser?username=${username}`, METHODS.POST);
 }
 
 export async function postLog(log){
@@ -175,8 +173,26 @@ export async function postLog(log){
     nullChecker(activityToken, 'activityToken');
     nullChecker(sessionAuth, 'sessionAuth');
     
-    const endpoint = `${GAME_RESOURCE}/${gameId}/log/${trainerId}`
+    const endpoint = `${GAME_RESOURCE}/${gameId}/${trainerId}/log`
     return await requestHandler(endpoint, METHODS.POST, {activityToken, sessionAuth, data: log});
+}
+
+export async function allowUser(gameId, trainerId){
+    nullChecker(gameId, 'gameId');
+    nullChecker(trainerId, 'trainerId');
+    const [gameMasterId, activityToken, sessionAuth] = getUserCredentials();
+
+    const endpoint = `${GAME_RESOURCE}/${gameId}/${gameMasterId}/${trainerId}/allow`
+    return await requestHandler(endpoint, METHODS.POST, {activityToken, sessionAuth});
+}
+
+export async function disallowUser(gameId, trainerId){
+    nullChecker(gameId, 'gameId');
+    nullChecker(trainerId, 'trainerId');
+    const [gameMasterId, activityToken, sessionAuth] = getUserCredentials();
+
+    const endpoint = `${GAME_RESOURCE}/${gameId}/${gameMasterId}/${trainerId}/disallow`
+    return await requestHandler(endpoint, METHODS.POST, {activityToken, sessionAuth});
 }
 
 /**
@@ -185,13 +201,14 @@ export async function postLog(log){
  * @returns the completed updated trainer data
  */
 export async function completeTrainer(trainer){
+    const gameId = getGameId();
     const [trainerId, activityToken, sessionAuth] = getUserCredentials();
     nullChecker(trainerId, 'trainerId');
     nullChecker(trainer, 'trainer');
     nullChecker(activityToken, 'activityToken');
     nullChecker(sessionAuth, 'sessionAuth');
     
-    const endpoint = `${GAME_RESOURCE}/${trainerId}/addStats`
+    const endpoint = `${GAME_RESOURCE}/${gameId}/${trainerId}/addStats`
     return await requestHandler(endpoint, METHODS.PUT, {activityToken, sessionAuth, data: trainer});
 }
 
@@ -246,7 +263,7 @@ export async function addNpcs(npcList){
     nullChecker(activityToken, 'activityToken');
     nullChecker(sessionAuth, 'sessionAuth');
 
-    return await requestHandler(`${GAME_RESOURCE}/${gameId}/addNpcs?npcList=${npcList}&gameMasterId=${gameMasterId}`, METHODS.PUT, {activityToken, sessionAuth});
+    return await requestHandler(`${GAME_RESOURCE}/${gameId}/${gameMasterId}/addNpcs`, METHODS.PUT, {activityToken, sessionAuth});
 }
 
 /**
@@ -262,7 +279,7 @@ export async function removeNpcs(npcList){
     nullChecker(activityToken, 'activityToken');
     nullChecker(sessionAuth, 'sessionAuth');
 
-    return await requestHandler(`${GAME_RESOURCE}/${gameId}/removeNpcs?npcList=${npcList}&gameMasterId=${gameMasterId}`, METHODS.PUT, {activityToken, sessionAuth});
+    return await requestHandler(`${GAME_RESOURCE}/${gameId}/${gameMasterId}/removeNpcs?npcList=${npcList}`, METHODS.PUT, {activityToken, sessionAuth});
 }
 
 /**
@@ -289,7 +306,7 @@ export async function exportGame(gameSessionPassword){
     nullChecker(gameId, 'gameId');
     nullChecker(gameSessionPassword, 'gameSessionPassword');
     
-    const endpoint = `${GAME_RESOURCE}/${gameId}/export?gameMasterId=${gameMasterId}&gameSessionPassword=${gameSessionPassword}`;
+    const endpoint = `${GAME_RESOURCE}/${gameId}/${gameMasterId}/export?gameSessionPassword=${gameSessionPassword}`;
     return await requestHandler(endpoint, METHODS.DELETE, {activityToken, sessionAuth});
 }
 
@@ -300,11 +317,11 @@ export async function exportGame(gameSessionPassword){
  */
 export async function deleteGame(gameSessionPassword){
     const gameId = getGameId();
-    const gameMasterId = getGameMasterId()
+    const gameMasterId = getUserId()
     nullChecker(gameId, 'gameId');
     nullChecker(gameMasterId, 'gameMasterId');
     nullChecker(gameSessionPassword, 'gameSessionPassword');
     
-    const endpoint = `${GAME_RESOURCE}/${gameId}?gameMasterId=${gameMasterId}&gameSessionPassword=${gameSessionPassword}`;
+    const endpoint = `${GAME_RESOURCE}/${gameId}/${gameMasterId}?gameSessionPassword=${gameSessionPassword}`;
     return await requestHandler(endpoint, METHODS.DELETE);
 }

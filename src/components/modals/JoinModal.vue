@@ -1,9 +1,9 @@
 <template>
-    <div class="modal fade" id="notificationModal" tabindex="-1" aria-labelledby="notificationModalLabel" aria-hidden="true">
+    <div class="modal fade" id="joinModal" tabindex="-1" aria-labelledby="joinModalLabel" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="notificationModalLabel">{{title}}</h5>
+                    <h5 class="modal-title" id="joinModalLabel">{{title}}</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" />
                 </div>
                 <div class="modal-body row">
@@ -13,7 +13,7 @@
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-dark" data-bs-dismiss="modal" @click="goTo()">Launch Game</button>
+                    <button type="button" class="btn btn-dark" data-bs-dismiss="modal" @click="goTo()">Create Player</button>
                 </div>
             </div>
         </div>
@@ -21,12 +21,10 @@
 </template>
 
 <script>
-import { findTrainerInGame } from '../../api/game.api';
-import { getUserId, setGameId, setTrainer, setTrainerId } from '../../utils/localStorage';
-import { generateErrorModal } from '../../utils/modalUtil';
+import { setGameId } from '../../utils/localStorage';
 
 export default {
-    name: 'NotificationModal',
+    name: 'JoinModal',
     props: {
         title: {
             default: 'Modal title'
@@ -39,16 +37,16 @@ export default {
         }
     },
     methods: {
-        async goTo(){
+        goTo(){
             if (this.gameId){
                 setGameId(this.gameId);
-                await findTrainerInGame(this.gameId, getUserId())
-                    .then(response => {
-                        setTrainer(response.data.trainer);
-                        setTrainerId(this.trainerId);
-                    })
-                    .catch(generateErrorModal);
-                window.location.href = "/";
+                this.$router.push({
+                    name: 'JoinGame',
+                    params: {
+                        gameId: this.gameId,
+                        nickname: this.title
+                    }
+                });
             }
         }
     }

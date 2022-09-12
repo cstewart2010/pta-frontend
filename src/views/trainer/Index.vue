@@ -12,7 +12,7 @@
 </template>
 
 <script>
-import { refreshTrainer } from '../../api/trainer.api';
+import { refreshInGame } from '../../api/user.api'
 import { getIsAuthenticate, getTrainer, removeFromStorage, setTrainer, setPTAActivityToken, setIsGM, setGameMasterId, setTrainerId } from '../../utils/localStorage';
 import IncompleteTrainer from '../../components/trainer/IncompleteTrainer.vue';
 import { generateNavigationModal } from '../../utils/modalUtil';
@@ -22,7 +22,7 @@ export default {
     name: 'TrainerPortal',
     data(){
         return {
-            trainer: {},
+            trainer: getTrainer(),
             isComplete: false
         }
     },
@@ -36,7 +36,7 @@ export default {
             return
         }
 
-        await refreshTrainer()
+        await refreshInGame()
         .then(response => {
             this.isComplete = response.data.trainer.isComplete
             setPTAActivityToken(response.headers['pta-activity-token']);
@@ -48,7 +48,6 @@ export default {
                 return;
             }
             setTrainer(response.data.trainer);
-            this.trainer = getTrainer();
         })
         .catch(error => {
             removeFromStorage();

@@ -1,13 +1,12 @@
 <template>
     <div class="row">
-        <h2 v-if="isGM==='true'">Game Master Portal</h2>
-        <h2 v-else>Trainer Portal</h2>
+        <h2>User Portal</h2>
         <div class="row">
-            <div class="row col-6">
-                <Login v-bind:isGM="isGM" />
+            <div class="col-6">
+                <login />
             </div>
-            <div class="row col-6">
-                <SignUp v-bind:isGM="isGM" />
+            <div class="col-6">
+                <sign-up />
             </div>
         </div>
     </div>
@@ -20,11 +19,6 @@ import { getIsAuthenticate } from '../utils/localStorage';
 
 export default {
     name: 'Registration',
-    props: {
-        isGM: {
-            default: false
-        }
-    },
     components: {
       Login,
       SignUp
@@ -32,8 +26,7 @@ export default {
     beforeMount:function(){
         if (getIsAuthenticate()){
             // validate trainer credentials
-            const folder = this.isGM ? 'gm' : 'trainer'
-            this.$router.push(`/${folder}`);
+            this.$router.push(`/`);
         }
     }
 }

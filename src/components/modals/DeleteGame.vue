@@ -21,7 +21,7 @@
 
 <script>
 import { deleteGame } from '../../api/game.api';
-import { removeFromStorage } from '../../utils/localStorage';
+import { removeGameId } from '../../utils/localStorage';
 import { generateErrorModal } from '../../utils/modalUtil';
 export default {
     name: 'DeleteGame',
@@ -34,7 +34,7 @@ export default {
         async deleteThisGame(){
             await deleteGame(this.gameSessionPassword)
                 .then(() => {
-                    removeFromStorage();
+                    removeGameId();
                     window.location.href = '/'
                 })
                 .catch(generateErrorModal);

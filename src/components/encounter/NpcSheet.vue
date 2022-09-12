@@ -1,5 +1,5 @@
 <template>
-    <div v-if="gameId">
+    <div v-if="isGM">
         <div class="row">
             <div class="col-md-8">
                 <generic-data :npcId="npcId" />
@@ -33,7 +33,7 @@ export default {
     },
     data(){
         return {
-            gameId: getIsGM()
+            isGM: getIsGM()
         }
     },
     components: {

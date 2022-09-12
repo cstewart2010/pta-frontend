@@ -123,9 +123,10 @@
 </template>
 
 <script>
-import { addGroupHonor, addHonor, refreshGM } from '../../api/trainer.api';
+import { addGroupHonor, addHonor } from '../../api/trainer.api';
 import { getIsAuthenticate, getTrainers, setTrainers, removeFromStorage, setPTAActivityToken, setIsGM, getIsGM, removeTrainer } from '../../utils/localStorage';
 import { generateErrorModal, generateNavigationModal } from '../../utils/modalUtil';
+import { refreshInGame } from '../../api/user.api'
 import IncompleteTrainer from '../../components/trainer/IncompleteTrainer.vue'
 import DeleteGame from '../../components/modals/DeleteGame.vue'
 import DeleteTrainer from '../../components/modals/DeleteTrainer.vue'
@@ -176,7 +177,7 @@ export default {
             return
         }
         
-        await refreshGM()
+        await refreshInGame()
         .then(async response => {
             var wasNotGM = !getIsGM();
             setTrainers(response.data.trainers)

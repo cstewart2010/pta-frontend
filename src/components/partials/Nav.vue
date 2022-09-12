@@ -13,41 +13,49 @@
         <li class="nav-item">
           <router-link to="/about" class="nav-link">About</router-link>
         </li>
-        <li class="nav-item" v-if="isGM==true && needsToAuthenticate==false">
-          <router-link to="/gm" class="nav-link">Game Master</router-link>
-        </li>
-        <li class="nav-item" v-if="isGM==true && needsToAuthenticate==false">
+        <li class="nav-item" v-if="gameId && isGM==true && needsToAuthenticate==false">
           <router-link to="/trade" class="nav-link">Trade Center</router-link>
         </li>
-        <li class="nav-item" v-else-if="isGM==false && needsToAuthenticate==false">
-          <router-link to="/trainer" class="nav-link">Trainer</router-link>
-        </li>
-        <li class="nav-item" v-if="needsToAuthenticate==false">
+        <li class="nav-item" v-if="gameId && needsToAuthenticate==false">
           <router-link to="/encounter" class="nav-link">Encounter</router-link>
         </li>
-        <li class="nav-item" v-if="needsToAuthenticate==true">
-          <router-link to="/games" class="nav-link">Search for Game</router-link>
+        <li class="nav-item" v-if="needsToAuthenticate==false">
+          <router-link to="/games" class="nav-link">Games</router-link>
         </li>
-        <li class="nav-item" v-if="needsToAuthenticate==true">
-          <router-link :to="{name: 'Registration', params: { isGM: true }}" class="nav-link">Start Session</router-link>
+        <li class="nav-item" v-if="needsToAuthenticate==false">
+          <router-link to="/new" class="nav-link">New Game</router-link>
         </li>
         <li class="nav-item" v-if="needsToAuthenticate==false">
           <router-link to="/" class="nav-link" @click="logout">Log out</router-link>
         </li>
+        <li class="nav-item" v-if="needsToAuthenticate">
+          <router-link to="/registration" class="nav-link">Sign up</router-link>
+        </li>
       </ul>
     </div>
+    <form class="d-inline-flex flex-column flex-lg-row" @submit.prevent="login" v-if="needsToAuthenticate">
+      <span class="input-group-text">Username: </span>
+      <input type="text" v-model="username">
+      <span class="input-group-text">Password: </span>
+      <input type="password" v-model="password">
+      <button type="submit" class="btn btn-primary">Sign in</button>
+    </form>
   </div>
 </nav>
 </template>
 <script>
-import { getIsAuthenticate, getIsGM, removeFromStorage } from '../../utils/localStorage';
-import { userLogout } from '../../api/trainer.api';
+import { getGameId, getIsAuthenticate, getIsGM, removeFromStorage, setInitialCredentials } from '../../utils/localStorage';
+import { login, logout } from '../../api/user.api';
+import { generateErrorModal } from '../../utils/modalUtil';
   export default {
     name: 'Nav',
     data(){
       return {
         needsToAuthenticate: false,
         isGM: false,
+        gameId: getGameId(),
+        username: '',
+        password: ''
       }
     },
     mounted:function(){
@@ -55,13 +63,30 @@ import { userLogout } from '../../api/trainer.api';
       this.isGM = getIsGM() === true;
     },
     methods: {
+      async login(){
+        console.log(this.username)
+        await login(this.username, this.password)
+          .then(response => {
+            this.pushToNext(response.data.user, response.headers);
+          })
+          .catch(generateErrorModal);
+      },
       async logout(){
-        await userLogout()
+        await logout()
           .then(() => {
             removeFromStorage();
             this.needsToAuthenticate = true
+            window.location.href = "/"
           })
-          .catch(console.log);
+          .catch(error => {
+            removeFromStorage();
+            window.location.href = "/"
+            console.log(error);
+          });
+      },
+      pushToNext(user, headers){
+          setInitialCredentials(user, headers);
+          window.location.href = "/"
       }
     }
   };

@@ -87,7 +87,7 @@ import Inventory from './Inventory.vue';
 import { getCurrentHP, getGameId, getPokemonNewHome, getPokemonNewTeam, getTrainer, removeFromStorage, setPokemonNewHome, setPokemonNewTeam, setPTAActivityToken, setTrainer, setTrainerId } from '../../utils/localStorage';
 import { generateErrorModal, generateNavigationModal } from '../../utils/modalUtil';
 import { completeTrainer, findTrainerInGame } from '../../api/game.api';
-import { refreshTrainer } from '../../api/trainer.api';
+import { refreshInGame } from '../../api/user.api'
 
 export default {
     name: "IncompleteTrainer",
@@ -144,16 +144,12 @@ export default {
                 .catch(generateErrorModal)
         },
         async refreshTrainer(){
-            await refreshTrainer()
+            await refreshInGame()
             .then(response => {
                 this.isComplete = response.data.trainer.isComplete
                 setPTAActivityToken(response.headers['pta-activity-token']);
-                if (response.data.trainer.isGM){
-                    this.$router.push('/gm');
-                    return;
-                }
                 setTrainer(response.data.trainer);
-                this.trainer = getTrainer();
+                this.trainer = response.data.trainer;
             })
             .catch(error => {
                 removeFromStorage();

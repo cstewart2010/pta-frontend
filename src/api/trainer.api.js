@@ -6,34 +6,6 @@ import { getGameId, getUserCredentials } from '../utils/localStorage';
 const TRAINER_RESOURCE = `${BASE_URL}/api/v1/trainer`
 
 /**
- * Refreshes the game master's tokens
- * @returns a game master
- */
-export async function refreshGM(){
-    const [gmId, activityToken, sessionAuth] = getUserCredentials();
-    const gameId = getGameId();
-    nullChecker(gmId, 'gmId');
-    nullChecker(activityToken, 'activityToken');
-    nullChecker(sessionAuth, 'sessionAuth');
-    nullChecker(gameId, 'gameId');
-
-    return await requestHandler(`${TRAINER_RESOURCE}/refreshGM?gameMasterId=${gmId}&gameId=${gameId}`, METHODS.GET, {activityToken, sessionAuth});
-}
-
-/**
- * Refreshes the trainer's tokens
- * @returns the trainer
- */
-export async function refreshTrainer(){
-    const [trainerId, activityToken, sessionAuth] = getUserCredentials();
-    nullChecker(trainerId, 'trainerId');
-    nullChecker(activityToken, 'activityToken');
-    nullChecker(sessionAuth, 'sessionAuth');
-
-    return await requestHandler(`${TRAINER_RESOURCE}/refreshTrainer?trainerId=${trainerId}`, METHODS.GET, {activityToken, sessionAuth});
-}
-
-/**
  * Queries the database for all trainers in a game using the game id
  * @param {String} gameId The game session's UUID
  * @returns all trainers in the game
@@ -41,7 +13,7 @@ export async function refreshTrainer(){
 export async function getTrainers(gameId){
     nullChecker(gameId, 'gameId');
 
-    return await requestHandler(`${TRAINER_RESOURCE}/trainers?gameId=${gameId}`, METHODS.GET);
+    return await requestHandler(`${TRAINER_RESOURCE}/${gameId}/trainers`, METHODS.GET);
 }
 
 /**
@@ -54,7 +26,7 @@ export async function getTrainer(gameId,username){
     nullChecker(gameId, 'gameId');
     nullChecker(username, 'username');
 
-    return await requestHandler(`${TRAINER_RESOURCE}/trainers?gameId=${gameId}&trainerName=${username}`, METHODS.GET);
+    return await requestHandler(`${TRAINER_RESOURCE}/${gameId}/trainers?trainerName=${username}`, METHODS.GET);
 }
 
 /**
@@ -64,10 +36,11 @@ export async function getTrainer(gameId,username){
  * @returns a Pokemon
  */
 export async function getTrainerMon(trainerId, pokemonId){
+    const gameId = getGameId();
     nullChecker(trainerId, 'trainerId');
     nullChecker(pokemonId, 'pokemonId');
 
-    return await requestHandler(`${TRAINER_RESOURCE}/${trainerId}/${pokemonId}`, METHODS.GET);
+    return await requestHandler(`${TRAINER_RESOURCE}/${gameId}/${trainerId}/${pokemonId}`, METHODS.GET);
 }
 
 /**
@@ -80,7 +53,8 @@ export async function getTrainerMon(trainerId, pokemonId){
  * @param {String} nickname the pokemon's nickname
  * @returns a Pokemon
  */
-export async function addPokemon(trainerId, pokemon, nature, gender, status, nickname){
+export async function addPokemon(trainerId, pokemon, nature, gender, status, nickname = null){
+    const gameId = getGameId();
     const [gmId, activityToken, sessionAuth] = getUserCredentials();
     nullChecker(trainerId, 'trainerId');
     nullChecker(gmId, 'gmId');
@@ -97,52 +71,17 @@ export async function addPokemon(trainerId, pokemon, nature, gender, status, nic
             }
         })
 
-    let endpoint = `${TRAINER_RESOURCE}/${trainerId}?gameMaster=${gmId}`;    
-    if (nickname){
-        endpoint = `${endpoint}&nickname=${nickname}`;
-    }
+    let endpoint = `${TRAINER_RESOURCE}/${gameId}/${gmId}/${trainerId}`;
 
     const data = {
         pokemon,
         nature,
         gender,
-        status
+        status,
+        nickname
     }
 
     return await requestHandler(endpoint, METHODS.POST, {activityToken, sessionAuth, data});
-}
-
-/**
- * Assigns a trainer's IsOnline status to true
- * @param {String} gameId The game session's UUID
- * @param {String} trainerName The trainer's username
- * @param {String} password The trainer's password
- * @returns the trainer and their tokens
- */
-export async function userLogin(gameId, trainerName, password){
-    nullChecker(gameId, 'gameId');
-    nullChecker(trainerName, 'trainerName');
-    nullChecker(password, 'password');
-
-    const data = {
-        trainerName,
-        password,
-    }
-
-    return await requestHandler(`${TRAINER_RESOURCE}/login?gameId=${gameId}`, METHODS.PUT, {data});
-}
-
-/**
- * Assigns a trainer's IsOnline status to false
- * @returns the trainer and their tokens
- */
-export async function userLogout(){
-    const [trainerId, activityToken, sessionAuth] = getUserCredentials();
-    nullChecker(trainerId, 'trainerId');
-    nullChecker(activityToken, 'activityToken');
-    nullChecker(sessionAuth, 'sessionAuth');
-
-    return await requestHandler(`${TRAINER_RESOURCE}/${trainerId}/logout`, METHODS.PUT, {activityToken, sessionAuth});
 }
 
 /**
@@ -150,13 +89,14 @@ export async function userLogout(){
  * @param {string} honor the honor to add
  */
 export async function addGroupHonor(honor){
+    const gameId = getGameId();
     const [gmId, activityToken, sessionAuth] = getUserCredentials();
     nullChecker(gmId, 'gmId');
     nullChecker(honor, 'honor');
     nullChecker(activityToken, 'activityToken');
     nullChecker(sessionAuth, 'sessionAuth');
 
-    return await requestHandler(`${TRAINER_RESOURCE}/${gmId}/groupHonor`, METHODS.PUT, {activityToken, sessionAuth, data: {honor}});
+    return await requestHandler(`${TRAINER_RESOURCE}/${gameId}/${gmId}/groupHonor`, METHODS.PUT, {activityToken, sessionAuth, data: {honor}});
 }
 
 /**
@@ -165,6 +105,7 @@ export async function addGroupHonor(honor){
  * @param {string} trainerId The trainer to grant the honor to
  */
 export async function addHonor(honor, trainerId){
+    const gameId = getGameId();
     const [gmId, activityToken, sessionAuth] = getUserCredentials();
     nullChecker(gmId, 'gmId');
     nullChecker(trainerId, 'trainerId');
@@ -172,7 +113,7 @@ export async function addHonor(honor, trainerId){
     nullChecker(activityToken, 'activityToken');
     nullChecker(sessionAuth, 'sessionAuth');
 
-    return await requestHandler(`${TRAINER_RESOURCE}/${gmId}/honor`, METHODS.PUT, {activityToken, sessionAuth, data: {honor, trainerId}});
+    return await requestHandler(`${TRAINER_RESOURCE}/${gameId}/${gmId}/honor`, METHODS.PUT, {activityToken, sessionAuth, data: {honor, trainerId}});
 }
 
 /**
@@ -180,13 +121,14 @@ export async function addHonor(honor, trainerId){
  * @param {any} itemPairs The key/value pairs for the items
  */
 export async function addItems(itemPairs){
+    const gameId = getGameId();
     const [trainerId, activityToken, sessionAuth] = getUserCredentials();
     nullChecker(trainerId, 'trainerId');
     nullChecker(itemPairs, 'itemPairs');
     nullChecker(activityToken, 'activityToken');
     nullChecker(sessionAuth, 'sessionAuth');
 
-    return await requestHandler(`${TRAINER_RESOURCE}/${trainerId}/addItems`, METHODS.PUT, {activityToken, data: itemPairs, sessionAuth});
+    return await requestHandler(`${TRAINER_RESOURCE}/${gameId}/${trainerId}/addItems`, METHODS.PUT, {activityToken, data: itemPairs, sessionAuth});
 }
 
 /**
@@ -194,13 +136,14 @@ export async function addItems(itemPairs){
  * @param {any} itemPairs The key/value pairs for the items
  */
 export async function removeItems(itemPairs){
+    const gameId = getGameId();
     const [trainerId, activityToken, sessionAuth] = getUserCredentials();
     nullChecker(trainerId, 'trainerId');
     nullChecker(itemPairs, 'itemPairs');
     nullChecker(activityToken, 'activityToken');
     nullChecker(sessionAuth, 'sessionAuth');
 
-    return await requestHandler(`${TRAINER_RESOURCE}/${trainerId}/removeItems`, METHODS.PUT, {activityToken, data: itemPairs, sessionAuth});
+    return await requestHandler(`${TRAINER_RESOURCE}/${gameId}/${trainerId}/removeItems`, METHODS.PUT, {activityToken, data: itemPairs, sessionAuth});
 }
 
 /**
@@ -209,11 +152,12 @@ export async function removeItems(itemPairs){
  * @returns A generic message
  */
 export async function deleteTrainer(trainerId){
+    const gameId = getGameId();
     const [gmId, activityToken, sessionAuth] = getUserCredentials();
     nullChecker(trainerId, 'trainerId');
     nullChecker(gmId, 'gmId');
     nullChecker(activityToken, 'activityToken');
     nullChecker(sessionAuth, 'sessionAuth');
 
-    return await requestHandler(`${TRAINER_RESOURCE}/${trainerId}?gameMasterId=${gmId}`, METHODS.DELETE, {activityToken, sessionAuth});
+    return await requestHandler(`${TRAINER_RESOURCE}/${gameId}/${gmId}/${trainerId}`, METHODS.DELETE, {activityToken, sessionAuth});
 }

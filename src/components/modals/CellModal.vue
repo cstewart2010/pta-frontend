@@ -96,10 +96,13 @@ export default {
     data(){
         return {
             isGM: getIsGM(),
-            self: getTrainer().trainerName
+            self: {}
         }
     },
     async beforeMount(){
+        if (!this.isGM){
+            this.self = getTrainer().trainerName;
+        }
         if (this.participant.type == "Trainer"){
             await findTrainerInGame(getGameId(), this.participant.participantId)
                 .then(response => {

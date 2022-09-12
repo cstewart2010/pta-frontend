@@ -4,6 +4,8 @@ const IS_AUTHENTICATE = "isAuthenticated";
 const IS_GM = "isGM";
 const SESSION_AUTH = "ptaSessionAuth";
 const TRAINER = "trainer";
+const USER = "user";
+const USER_ID = "userId";
 const TRAINERS = "trainers";
 const TRAINER_ID = "trainerId";
 const GAMEMASTER_ID = "gmId";
@@ -20,7 +22,7 @@ const CURRENT_HP = "currentHP"
  */
 export function getUserCredentials(){
     return [
-        getIsGM() ? getGameMasterId() : getTrainerId(),
+        getUserId(),
         getPTAActivityToken(),
         getSessionAuth() 
     ]
@@ -51,7 +53,7 @@ export function getIsAuthenticate(){
  * @returns true if the user is a gm
  */
 export function getIsGM(){
-    return getParsedItem(IS_GM);
+    return getParsedItem(IS_GM) === true;
 }
 
 /**
@@ -134,10 +136,24 @@ export function getGameMasterId(){
 }
 
 /**
+ * @returns the user's gmuserId
+ */
+export function getUserId(){
+    return localStorage.getItem(USER_ID);
+}
+
+/**
  * @returns trainer's current hp
  */
 export function getCurrentHP(){
     return getParsedItem(CURRENT_HP);
+}
+
+/**
+ * @returns the user data
+ */
+export function getUser(){
+    return getParsedItem(USER)
 }
 
 /**
@@ -156,22 +172,16 @@ export function getCellParticipant(id){
 
 /**
  * Sets the users initial credentials on sign up or login
- * @param {String} trainerId the trainer's id
- * @param {import("axios").AxiosResponse<any,any>} response the response to build the initials credentials from
+ * @param {any} user the user data
+ * @param {import("axios").AxiosResponseHeaders} headers the response to build the initials credentials from
  * @param {Boolean} isGM whether the user is a game master
  */
-export function setInitialCredentials(trainerId, response, isGM){
-    if (isGM){
-        setGameMasterId(trainerId);
-    }
-    else{
-        setTrainerId(trainerId);
-    }
-    setPTAActivityToken(response.headers['pta-activity-token']);
-    setSessionAuth(response.headers['pta-session-auth']);
+export function setInitialCredentials(user, headers){
+    setUser(user);
+    setUserId(user.userId);
+    setPTAActivityToken(headers['pta-activity-token']);
+    setSessionAuth(headers['pta-session-auth']);
     setIsAuthenticate(true);
-    setGameId(response.gameId);
-    setIsGM(isGM);
 }
 
 /**
@@ -229,12 +239,20 @@ export function setSessionAuth(sessionAuth){
 export function setTrainerId(trainerId){
     localStorage.setItem(TRAINER_ID, trainerId);
 }
+
 /**
  * Adds the game master's gmId to local storage
  * @param {String} gmId 
  */
 export function setGameMasterId(gmId){
     localStorage.setItem(GAMEMASTER_ID, gmId);
+}
+/**
+ * Adds the user's userId to local storage
+ * @param {String} userId 
+ */
+export function setUserId(userId){
+    localStorage.setItem(USER_ID, userId);
 }
 
 /**
@@ -301,6 +319,14 @@ export function setCurrentHP(hp){
     localStorage.setItem(CURRENT_HP, JSON.stringify(hp));
 }
 
+/**
+ * Adds the current user to local storage
+ * @param {any} user the current user to set
+ */
+export function setUser(user){
+    localStorage.setItem(USER, JSON.stringify(user));
+}
+
 
 /**
  * Adds the current npc's hp to local storage
@@ -318,11 +344,19 @@ export function setCellParticipant(id, participant){
     localStorage.setItem(id, JSON.stringify(participant));
 }
 
+export function removeGameId(){
+    localStorage.removeItem(GAME_ID);
+}
+
 /**
  * Removes trainer data from local storage
  */
 export function removeTrainer(){
     localStorage.removeItem(TRAINER)
+}
+
+export function removeTrainers(){
+    localStorage.removeItem(TRAINERS);
 }
 
 /**
