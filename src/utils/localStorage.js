@@ -15,6 +15,7 @@ const POKEMON_HOME = "pokemonHome"
 const POKEMON_NEW_TEAM = "pokemonNewTeam"
 const POKEMON_NEW_HOME = "pokemonNewHome"
 const CURRENT_HP = "currentHP"
+const IS_ADMIN = "isAdmin"
 
 /**
  * Gets a logged in user's credentials
@@ -168,6 +169,10 @@ export function getUser(){
  */
 export function getCellParticipant(id){
     return getParsedItem(id);
+}
+
+export function getIsAdmin(){
+    return getParsedItem(IS_ADMIN)
 }
 
 /**
@@ -342,6 +347,10 @@ export function setUser(user){
  */
 export function setCellParticipant(id, participant){
     localStorage.setItem(id, JSON.stringify(participant));
+}
+
+export function setIsAdmin(isAdmin){
+    localStorage.setItem(IS_ADMIN, JSON.stringify(isAdmin));
 }
 
 export function removeGameId(){

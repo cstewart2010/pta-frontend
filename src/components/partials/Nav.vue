@@ -7,6 +7,9 @@
     </button>
     <div class="collapse navbar-collapse" id="navbarNav">
       <ul class="navbar-nav">
+        <li class="nav-item" v-if="isAdmin">
+          <router-link to="/missionControl" class="nav-link">Mission Control</router-link>
+        </li>
         <li class="nav-item">
           <router-link to="/" class="nav-link">Landing</router-link>
         </li>
@@ -44,7 +47,7 @@
 </nav>
 </template>
 <script>
-import { getGameId, getIsAuthenticate, getIsGM, removeFromStorage, setInitialCredentials } from '../../utils/localStorage';
+import { getGameId, getIsAdmin, getIsAuthenticate, getIsGM, removeFromStorage, setInitialCredentials, setIsAdmin } from '../../utils/localStorage';
 import { login, logout } from '../../api/user.api';
 import { generateErrorModal } from '../../utils/modalUtil';
   export default {
@@ -55,33 +58,35 @@ import { generateErrorModal } from '../../utils/modalUtil';
         isGM: false,
         gameId: getGameId(),
         username: '',
-        password: ''
+        password: '',
+        isAdmin: false
       }
     },
     mounted:function(){
       this.needsToAuthenticate = !getIsAuthenticate();
       this.isGM = getIsGM() === true;
+      this.isAdmin = getIsAdmin() === true;
     },
     methods: {
       async login(){
         console.log(this.username)
         await login(this.username, this.password)
           .then(response => {
+            setIsAdmin(response.data.isAdmin);
             this.pushToNext(response.data.user, response.headers);
           })
           .catch(generateErrorModal);
       },
       async logout(){
         await logout()
-          .then(() => {
+          .catch(error => {
+            console.log(error);
+          })
+          .finally(() => {
             removeFromStorage();
             this.needsToAuthenticate = true
+            this.isAdmin = false;
             window.location.href = "/"
-          })
-          .catch(error => {
-            removeFromStorage();
-            window.location.href = "/"
-            console.log(error);
           });
       },
       pushToNext(user, headers){

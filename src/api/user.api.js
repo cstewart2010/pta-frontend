@@ -4,6 +4,22 @@ import { requestHandler, nullChecker } from './axiosHandler';
 import { getGameId, getIsGM, getUserCredentials } from '../utils/localStorage';
 const USER_RESOURCE = `${BASE_URL}/api/v1/user`
 
+export async function getUsername(userId){
+    return await requestHandler(`${USER_RESOURCE}/${userId}`, METHODS.GET);
+}
+
+export async function getUsers(offset, limit){
+    const [userId, activityToken, sessionAuth] = getUserCredentials();
+
+    return await requestHandler(`${USER_RESOURCE}/${userId}/admin/allUsers?offset=${offset}&limit=${limit}`, METHODS.GET, {activityToken, sessionAuth})
+}
+
+export async function forceGetMessage(messageId){
+    const [userId, activityToken, sessionAuth] = getUserCredentials();
+
+    return await requestHandler(`${USER_RESOURCE}/${userId}/${messageId}/admin/message`, METHODS.GET, {activityToken, sessionAuth});
+}
+
 export async function getMessage(messageId){
     const [userId, activityToken, sessionAuth] = getUserCredentials();
     nullChecker(messageId, 'messageId');
@@ -55,4 +71,16 @@ export async function logout(){
     const [userId, activityToken, sessionAuth] = getUserCredentials();
 
     return await requestHandler(`${USER_RESOURCE}/${userId}/logout`, METHODS.PUT, {activityToken, sessionAuth});
+}
+
+export async function deleteUser(){
+    const [userId, activityToken, sessionAuth] = getUserCredentials();
+    
+    return await requestHandler(`${USER_RESOURCE}/${userId}`, METHODS.DELETE, {activityToken, sessionAuth});
+}
+
+export async function forceDeleteUser(userId){
+    const [adminId, activityToken, sessionAuth] = getUserCredentials();
+    
+    return await requestHandler(`${USER_RESOURCE}/${adminId}/${userId}/admin`, METHODS.DELETE, {activityToken, sessionAuth});
 }

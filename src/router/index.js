@@ -65,6 +65,11 @@ const routes = [
     name: 'Encounter',
     component: () => import('../views/Encounter.vue'),
     props: true
+  },
+  {
+    path: '/missionControl',
+    name: 'MissionControl',
+    component: () => import('../views/MissionControl.vue'),
   }
 ]
 
