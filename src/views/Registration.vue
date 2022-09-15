@@ -23,7 +23,7 @@ export default {
       Login,
       SignUp
     },
-    beforeMount:function(){
+    beforeMount() {
         if (getIsAuthenticate()){
             this.$router.push(`/`);
         }
