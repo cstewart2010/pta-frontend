@@ -5,7 +5,7 @@
   <div v-else>
     <div>{{user.username.toUpperCase()}}</div>
     <div>User since {{date.toLocaleString()}}</div>
-    <div>Member of {{user.games.length}} {{conjugation}}</div>
+    <div>Member of {{games}} {{conjugation}}</div>
   </div>
 </template>
 
@@ -17,13 +17,15 @@ export default {
     return {
       user: getUser(),
       date: new Date(),
+      games: 0,
       conjugation: 'games'
     }
   },
   mounted(){
     if (this.user){
-      this.date = new Date(this.user.dateCreated + 'Z');
-      if (this.user.games.length == 1){
+      this.date = new Date(this.user.dateCreated);
+      this.games = this.user.games.length;
+      if (this.games == 1){
         this.conjugation = 'game'
       }
     }

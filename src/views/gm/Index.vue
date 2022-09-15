@@ -55,20 +55,20 @@
                     </div>
                 </div>
                 <div class="input-group my-1">
-                        <span class="input-group-text">Add a Npc</span>
-                        <input class="form-control" v-model="npcName">
-                        <select class="form-select" v-model="npcClasses" multiple>
-                            <option v-for="trainerClass in allClasses" :key="trainerClass" :value="trainerClass">
-                                {{trainerClass}}
-                            </option>
-                        </select>
-                        <select class="form-select" v-model="npcFeats" multiple>
-                            <option v-for="feat in allFeats" :key="feat" :value="feat">
-                                {{feat}}
-                            </option>
-                        </select>
-                        <button class="btn btn-secondary" @click="onCreateNewNpc">Add Npc</button>
-                    </div>
+                    <span class="input-group-text">Add a Npc</span>
+                    <input class="form-control" v-model="npcName">
+                    <select class="form-select" v-model="npcClasses" multiple>
+                        <option v-for="trainerClass in allClasses" :key="trainerClass" :value="trainerClass">
+                            {{trainerClass}}
+                        </option>
+                    </select>
+                    <select class="form-select" v-model="npcFeats" multiple>
+                        <option v-for="feat in allFeats" :key="feat" :value="feat">
+                            {{feat}}
+                        </option>
+                    </select>
+                    <button class="btn btn-secondary" @click="onCreateNewNpc">Add Npc</button>
+                </div>
             </div>
             <div id="encounters" class="my-3">
                 <h3 class="text-primary">Encounters</h3>
@@ -124,7 +124,7 @@
 
 <script>
 import { addGroupHonor, addHonor } from '../../api/trainer.api';
-import { getIsAuthenticate, getTrainers, setTrainers, removeFromStorage, setPTAActivityToken, setIsGM, getIsGM, removeTrainer } from '../../utils/localStorage';
+import { getTrainers, setTrainers, removeFromStorage, setPTAActivityToken, setIsGM, getIsGM, removeTrainer } from '../../utils/localStorage';
 import { generateErrorModal, generateNavigationModal } from '../../utils/modalUtil';
 import { refreshInGame } from '../../api/user.api'
 import IncompleteTrainer from '../../components/trainer/IncompleteTrainer.vue'
@@ -172,11 +172,6 @@ export default {
         DeleteNpc
     },
     beforeMount: async function(){
-        if (!getIsAuthenticate()){
-            window.location.href = '/'
-            return
-        }
-        
         await refreshInGame()
         .then(async response => {
             var wasNotGM = !getIsGM();
@@ -184,7 +179,7 @@ export default {
             setPTAActivityToken(response.headers['pta-activity-token']);
             if (wasNotGM){
                 setIsGM(true);
-                window.location.href = '/gm'
+                location.reload();
             }
             this.trainers = getTrainers();
             this.regularTrainers = this.trainers.filter(trainer => !trainer.isGM)

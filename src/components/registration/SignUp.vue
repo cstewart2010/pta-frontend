@@ -2,16 +2,16 @@
     <h3>Sign Up</h3>
     <form @submit.prevent="signUp">
         <div class="input-group my-2">
-            <span class="input-group-text w-25">Username:</span>
-            <input type="text" name="trainerName" v-model="signUpName">
+            <span class="input-group-text">Username:</span>
+            <input class="form-control" type="text" name="trainerName" v-model="signUpName">
         </div>
         <div class="input-group my-2">
-            <span class="input-group-text w-25">Password:</span>
-            <input type="password" name="password" v-model="signUpPassword">
+            <span class="input-group-text">Password:</span>
+            <input class="form-control" type="password" name="password" v-model="signUpPassword">
         </div>
         <div class="input-group my-2">
-            <span class="input-group-text w-25">Confirm Password:</span>
-            <input type="password" name="confirmUserPassword" v-model="confirmUserPassword">
+            <span class="input-group-text">Confirm Password:</span>
+            <input class="form-control" type="password" name="confirmUserPassword" v-model="confirmUserPassword">
         </div>
         <button type="submit" class="btn btn-primary my-2">Sign up</button>
     </form>

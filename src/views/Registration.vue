@@ -2,10 +2,10 @@
     <div class="row">
         <h2>User Portal</h2>
         <div class="row">
-            <div class="col-6">
+            <div class="col-lg col-12 my-2">
                 <login />
             </div>
-            <div class="col-6">
+            <div class="col-lg col-12 my-2">
                 <sign-up />
             </div>
         </div>
@@ -25,7 +25,6 @@ export default {
     },
     beforeMount:function(){
         if (getIsAuthenticate()){
-            // validate trainer credentials
             this.$router.push(`/`);
         }
     }

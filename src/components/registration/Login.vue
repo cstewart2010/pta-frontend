@@ -2,12 +2,12 @@
     <h3>Log in</h3>
     <form  @submit.prevent="login">
         <div class="input-group my-2">
-            <span class="input-group-text w-25">Username:</span>
-            <input type="text" name="trainerName" v-model="trainerName">
+            <span class="input-group-text">Username:</span>
+            <input class="form-control" type="text" name="trainerName" v-model="trainerName">
         </div>
         <div class="input-group my-2">
-            <span class="input-group-text w-25">Password:</span>
-            <input type="password" name="password" v-model="password">
+            <span class="input-group-text">Password:</span>
+            <input class="form-control" type="password" name="password" v-model="password">
         </div>
         <button type="submit" class="btn btn-primary my-2">Sign in</button>
     </form>

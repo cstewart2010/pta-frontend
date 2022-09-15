@@ -13,7 +13,7 @@
 
 <script>
 import { refreshInGame } from '../../api/user.api'
-import { getIsAuthenticate, getTrainer, removeFromStorage, setTrainer, setPTAActivityToken, setIsGM, setGameMasterId, setTrainerId } from '../../utils/localStorage';
+import { getTrainer, removeFromStorage, setTrainer, setPTAActivityToken, setIsGM, setGameMasterId, setTrainerId } from '../../utils/localStorage';
 import IncompleteTrainer from '../../components/trainer/IncompleteTrainer.vue';
 import { generateNavigationModal } from '../../utils/modalUtil';
 import Journal from '../Journal.vue'
@@ -31,11 +31,6 @@ export default {
         Journal
     },
     beforeMount:async function(){
-        if (!getIsAuthenticate()){
-            this.$router.push('/');
-            return
-        }
-
         await refreshInGame()
         .then(response => {
             this.isComplete = response.data.trainer.isComplete
@@ -44,7 +39,7 @@ export default {
                 setGameMasterId(response.data.trainer.trainerId);
                 setTrainerId(null);
                 setIsGM(true);
-                location.href = '/gm';
+                location.reload();
                 return;
             }
             setTrainer(response.data.trainer);

@@ -13,6 +13,9 @@ export async function findAllGames() {
     return await requestHandler(`${GAME_RESOURCE}/user/${userId}`, METHODS.GET, {activityToken, sessionAuth});
 }
 
+/**
+ * @returns All games associated with the user
+ */
 export async function findAllUserGames(){
     const [userId, activityToken, sessionAuth] = getUserCredentials();
     return await requestHandler(`${GAME_RESOURCE}/user/games/${userId}`, METHODS.GET, {activityToken, sessionAuth});
@@ -165,6 +168,11 @@ export async function addPlayerToGame(gameId, username, userId){
     return await requestHandler(`${GAME_RESOURCE}/${gameId}/${userId}/newUser?username=${username}`, METHODS.POST);
 }
 
+/**
+ * Adds a log
+ * @param {string} log 
+ * @returns 200 status
+ */
 export async function postLog(log){
     const [trainerId, activityToken, sessionAuth] = getUserCredentials();
     const gameId = getGameId();
@@ -177,6 +185,12 @@ export async function postLog(log){
     return await requestHandler(endpoint, METHODS.POST, {activityToken, sessionAuth, data: log});
 }
 
+/**
+ * Allows the user to participate in the game
+ * @param {string} gameId 
+ * @param {string} trainerId 
+ * @returns 200 status
+ */
 export async function allowUser(gameId, trainerId){
     nullChecker(gameId, 'gameId');
     nullChecker(trainerId, 'trainerId');
@@ -186,6 +200,12 @@ export async function allowUser(gameId, trainerId){
     return await requestHandler(endpoint, METHODS.POST, {activityToken, sessionAuth});
 }
 
+/**
+ * Prevents the user from participating in the game
+ * @param {string} gameId 
+ * @param {string} trainerId 
+ * @returns 200 status
+ */
 export async function disallowUser(gameId, trainerId){
     nullChecker(gameId, 'gameId');
     nullChecker(trainerId, 'trainerId');

@@ -10,7 +10,7 @@
 </template>
 
 <script>
-import { getGameId, getIsGM, getUserId } from '../utils/localStorage'
+import { getGameId, getIsGM } from '../utils/localStorage'
 import Trainer from './trainer/Index.vue';
 import GameMaster from './gm/Index.vue'
 export default {
@@ -21,10 +21,13 @@ export default {
     },
     data() {
         return {
-            userId: getUserId(),
-            gameId: getGameId(),
-            isGM: getIsGM()
+            gameId: '',
+            isGM: false
         }
     },
+    beforeMount(){
+        this.gameId = getGameId();
+        this.isGM = getIsGM();
+    }
 }
 </script>

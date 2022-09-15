@@ -2,7 +2,7 @@
 <div v-if="isActuallyAdmin">
     <div class="row" v-for="(user, index) in users" :key="index">
         <div class="col-4">
-            {{user.username}} (User since {{new Date(user.dateCreated + 'Z').toLocaleString()}})
+            {{user.username}} (User since {{new Date(user.dateCreated).toLocaleString()}})
         </div>
         <div class="col">
             <select class="form-select">

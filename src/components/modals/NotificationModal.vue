@@ -22,7 +22,7 @@
 
 <script>
 import { findTrainerInGame } from '../../api/game.api';
-import { getUserId, setGameId, setTrainer, setTrainerId } from '../../utils/localStorage';
+import { getUserId, setGameId, setIsGM, setTrainer } from '../../utils/localStorage';
 import { generateErrorModal } from '../../utils/modalUtil';
 
 export default {
@@ -45,10 +45,10 @@ export default {
                 await findTrainerInGame(this.gameId, getUserId())
                     .then(response => {
                         setTrainer(response.data.trainer);
-                        setTrainerId(this.trainerId);
+                        setIsGM(response.data.trainer.isGM);
+                        window.location.href = "/";
                     })
                     .catch(generateErrorModal);
-                window.location.href = "/";
             }
         }
     }
