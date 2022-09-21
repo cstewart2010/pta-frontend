@@ -204,37 +204,45 @@ export default {
     methods: {
         async updateMap(){
             this.encounter = await this.getEncounter();
-            this.activeParticipants = this.encounter.activeParticipants;
             if (!this.encounter.name){
+                this.encounterMap = []
                 return;
             }
+            this.activeParticipants = this.encounter.activeParticipants;
             this.needToJoin = !(this.isGM || this.encounter.activeParticipants.some(participant => participant.participantId == getTrainerId()))
             for (const participant of this.encounter.activeParticipants) {
                 if (this.encounterMap[participant.position.x][participant.position.y].participant.participantId != participant.participantId){
                     console.log(this.encounterMap[participant.position.x][participant.position.y].participant)
-                    console.log(participant)
                     this.removeClones(participant.participantId);
                     const source = await this.setACellParticipant(participant);
                     this.encounterMap[participant.position.x][participant.position.y].participant = participant;
                     this.encounterMap[participant.position.x][participant.position.y].alt = participant.name;
                     this.encounterMap[participant.position.x][participant.position.y].modalSize = 'modal-fullscreen'
-                    if (participant.type == "Pokemon"){
-                        if (source.isShiny){
-                            this.encounterMap[participant.position.x][participant.position.y].url = `https://play.pokemonshowdown.com/sprites/ani-shiny/${source.shinyPortrait}.gif`
-                        }
-                        else{
-                            this.encounterMap[participant.position.x][participant.position.y].url = `https://play.pokemonshowdown.com/sprites/ani/${source.shinyPortrait}.gif`
-                        }
-                        this.encounterMap[participant.position.x][participant.position.y].color = "bg-success"
-                    }
-                    else {
-                        this.encounterMap[participant.position.x][participant.position.y].url = `http://play.pokemonshowdown.com/sprites/trainers/${source.sprite}.png`
-                        if (participant.type == "Trainer"){
+                    switch (participant.type){
+                        case "Trainer":
+                            this.encounterMap[participant.position.x][participant.position.y].url = `http://play.pokemonshowdown.com/sprites/trainers/${source.sprite}.png`
                             this.encounterMap[participant.position.x][participant.position.y].color = "bg-dark"
-                        }
-                        else {
+                            break;
+                        case "Pokemon":
+                            this.encounterMap[participant.position.x][participant.position.y].url = this.getPokemonGif(source.isShiny, source.normalPortrai, source.shinyPortrait);
+                            this.encounterMap[participant.position.x][participant.position.y].color = "bg-success"
+                            break;
+                        case "EnemyNpc":
+                            this.encounterMap[participant.position.x][participant.position.y].url = `http://play.pokemonshowdown.com/sprites/trainers/${source.sprite}.png`
+                            this.encounterMap[participant.position.x][participant.position.y].color = "bg-danger"
+                            break;
+                        case "EnemyPokemon":
+                            this.encounterMap[participant.position.x][participant.position.y].url = this.getPokemonGif(source.isShiny, source.normalPortrai, source.shinyPortrait);
+                            this.encounterMap[participant.position.x][participant.position.y].color = "bg-danger"
+                            break;
+                        case "NeutralNpc":
+                            this.encounterMap[participant.position.x][participant.position.y].url = `http://play.pokemonshowdown.com/sprites/trainers/${source.sprite}.png`
                             this.encounterMap[participant.position.x][participant.position.y].color = "bg-secondary"
-                        }
+                            break;
+                        case "NeutralPokemon":
+                            this.encounterMap[participant.position.x][participant.position.y].url = this.getPokemonGif(source.isShiny, source.normalPortrai, source.shinyPortrait);
+                            this.encounterMap[participant.position.x][participant.position.y].color = "bg-secondary"
+                            break;
                     }
                 }
             }
@@ -244,6 +252,13 @@ export default {
             }, 5000);
             this.fontColor = 'text-muted'
             this.isDisabled = true
+        },
+        getPokemonGif(isShiny, normalPortrait, shinyPortrait){
+            if (isShiny){
+                return `https://play.pokemonshowdown.com/sprites/ani-shiny/${shinyPortrait}.gif`;
+            }
+
+            return `https://play.pokemonshowdown.com/sprites/ani/${normalPortrait}.gif`
         },
         async getEncounter(){
             return await getActiveEncounter(this.gameId)
