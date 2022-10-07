@@ -1,0 +1,84 @@
+<template>
+    <div class="row">
+        <div class="col-12 mb-2">
+            <div class="input-group">
+                <span class="input-group-text">Origin</span>
+                <select class="form-select text-center" name="origin" v-model="selectedOrigin" @change="updateOrigin" :disabled="isComplete">
+                    <option value=""></option>
+                    <option v-for="(origin, index) in origins" :key="index" :id="origin" :value="origin.replace('/', '_')">
+                        {{origin}}
+                    </option>
+                </select>
+            </div>
+        </div>
+        <div class="col-12">
+            <div class="text-center">{{selectedOrigin}} Specialty</div>
+            <div class="text-center">
+                <p>Starting Equipment: {{originData.equipment}}</p>
+                <p>Starting pokemon: {{originData.startingPokemon}}</p>
+                <div v-if="originData.feature">
+                    <p>Origin Feature: {{originData.feature.name}}</p>
+                    <p>{{originData.feature.effects}}</p>
+                    <p>
+                        Starting Savings: {{money}}¥
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</template>
+
+<script>
+import { getAllOrigins, getOrigin } from '../../../api/dex.api';
+import { getTrainer, setTrainer } from '../../../utils/localStorage';
+import { generateErrorModal } from '../../../utils/modalUtil';
+export default {
+    name: 'TrainerOrigin',
+    data(){
+        return {
+            origins: [],
+            selectedOrigin: '',
+            originData: {},
+            money: 0,
+        }
+    },
+    async beforeMount(){
+        await getAllOrigins()
+            .then(response => {
+                this.origins = response.data.results.map(item => item.name)
+            })
+            .catch(generateErrorModal);
+
+        const trainer = getTrainer();
+        this.selectedOrigin = trainer.origin
+        this.money = trainer.money
+        await this.updateOrigin();
+    },
+    methods: {
+        async updateOrigin(){
+            if (this.selectedOrigin.length > 0){
+                await getOrigin(this.selectedOrigin.replace('/', '_'))
+                    .then(response => {
+                        this.updateTrainer('origin', this.selectedOrigin);
+                        this.money = response.data.savings;
+                        this.originData = response.data
+                        this.updateTrainer('money', this.money);
+                    })
+                    .catch(generateErrorModal);
+            }
+            else {
+                this.updateTrainer('origin', this.selectedOrigin);
+                this.money = 0;
+                this.originData = ''
+                this.updateTrainer('money', this.money);
+            }
+        },
+        updateTrainer(section, value){
+            const trainer = getTrainer()
+            this.trainerStats = trainer.trainerStats
+            trainer[section] = value;
+            setTrainer(trainer);
+        }
+    }
+}
+</script>
