@@ -125,6 +125,7 @@ export default {
         switchSheet(sheet){
             this.sheet = sheet;
             localStorage.setItem('savedSheet', sheet);
+            location.href = '/#';
         },
         async saveChange(){
             const trainer = getTrainer();
