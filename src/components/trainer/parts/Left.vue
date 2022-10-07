@@ -1,6 +1,6 @@
 <template>
     <div class="row">
-        <div class="col-md-8">
+        <div class="col-md-7">
             <generic-data />
             <trainer-stats />
             <trainer-skills />
