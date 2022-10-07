@@ -1,7 +1,7 @@
 <template>
-    <div v-if="encounter.encounterId != null">
-        <h1>{{encounter.name}} Map 
-            <button class="btn btn-lg" @click="updateMap" :disabled="isDisabled"><i :class="`fa fa-refresh ${fontColor}`" aria-hidden="true"></i></button>
+    <div v-if="encounter">
+        <h1>{{encounter.Name}} Map 
+            <button class="btn btn-lg" @click="refresh" :disabled="isDisabled"><i :class="`fa fa-refresh ${fontColor}`" aria-hidden="true"></i></button>
         </h1>
         <div class="input-group my-1 col-2" v-if="!isGM">
             <span class="input-group-text">Send out pokemon</span>
@@ -51,9 +51,9 @@
                     <option value=""></option>
                     <option
                         v-for="activeParticipant in activeParticipants"
-                        :key="activeParticipant.participantId"
-                        :value="activeParticipant.participantId">
-                        ({{activeParticipant.type}}) {{activeParticipant.name}}
+                        :key="activeParticipant.ParticipantId"
+                        :value="activeParticipant.ParticipantId">
+                        ({{activeParticipant.Type}}) {{activeParticipant.Name}}
                     </option>
                 </select>
                 <button class="btn btn-danger" @click="removeFromEncounter">Remove</button>
@@ -93,7 +93,8 @@
                         :y="columnIndex"
                         :modalSize="cellData.modalSize"
                         :trainerMons="trainerMons"
-                        :participants="activeParticipants" />
+                        :participants="activeParticipants"
+                        :socket="socket" />
                 </button>
             </div>
         </div>
@@ -119,7 +120,8 @@
                         :y="columnIndex"
                         :modalSize="cellData.modalSize"
                         :trainerMons="trainerMons"
-                        :participants="activeParticipants" />
+                        :participants="activeParticipants"
+                        :socket="socket" />
                 </button>
             </div>
         </div>
@@ -128,7 +130,7 @@
 
 <script>
 import { getGameId, getIsGM, getTrainer, getTrainerId, setCellParticipant, } from '../utils/localStorage'
-import { addToActiveEncounter, getActiveEncounter, removeFromActiveEncounter } from '../api/encounter.api'
+import { addToActiveEncounter, getActiveEncounterWebSocket, removeFromActiveEncounter } from '../api/encounter.api'
 import { generateErrorModal } from '../utils/modalUtil'
 import CellModal from '../components/modals/CellModal.vue'
 import { getGamePokemon } from '../api/pokemon.api'
@@ -163,7 +165,7 @@ export default {
             pokemonToAdd: "",
             trainerMons: [],
             gameId: getGameId(),
-            encounter: {},
+            encounter: null,
             needToJoin: true,
             x: 0,
             y: 0,
@@ -177,6 +179,7 @@ export default {
             selectedNpc: {},
             fontColor: '',
             isDisabled: false,
+            socket: getActiveEncounterWebSocket()
         }
     },
     async mounted(){
@@ -198,50 +201,66 @@ export default {
                     this.npcs = response.data;
                 });
             }
-            this.updateMap();
+
+            console.log(this.socket.readyState)
+
+            this.socket.onmessage = (event) => {
+                this.encounter = JSON.parse(event.data);
+                this.updateMap();
+            }
+
+            this.socket.onerror = event => {
+                console.log(event);
+            }
+            
+            setTimeout(() => this.socket.send(""), 5000);
         }
     },
+    unmounted(){
+        this.socket.close()
+    },
     methods: {
+        refresh(){
+            this.socket.send("");
+        },
         async updateMap(){
-            this.encounter = await this.getEncounter();
-            if (!this.encounter.name){
+            if (!this.encounter){
                 this.encounterMap = []
                 return;
             }
-            this.activeParticipants = this.encounter.activeParticipants;
-            this.needToJoin = !(this.isGM || this.encounter.activeParticipants.some(participant => participant.participantId == getTrainerId()))
-            for (const participant of this.encounter.activeParticipants) {
-                if (this.encounterMap[participant.position.x][participant.position.y].participant.participantId != participant.participantId){
-                    console.log(this.encounterMap[participant.position.x][participant.position.y].participant)
-                    this.removeClones(participant.participantId);
+            this.activeParticipants = this.encounter.ActiveParticipants;
+            this.needToJoin = !(this.isGM || this.encounter.ActiveParticipants.some(participant => participant.ParticipantId == getTrainerId()))
+            for (const participant of this.encounter.ActiveParticipants) {
+                if (this.encounterMap[participant.Position.X][participant.Position.Y].participant.ParticipantId != participant.ParticipantId){
+                    this.removeClones(participant.ParticipantId);
                     const source = await this.setACellParticipant(participant);
-                    this.encounterMap[participant.position.x][participant.position.y].participant = participant;
-                    this.encounterMap[participant.position.x][participant.position.y].alt = participant.name;
-                    this.encounterMap[participant.position.x][participant.position.y].modalSize = 'modal-fullscreen'
-                    switch (participant.type){
+                    this.encounterMap[participant.Position.X][participant.Position.Y].participant = participant;
+                    this.encounterMap[participant.Position.X][participant.Position.Y].alt = participant.Name;
+                    this.encounterMap[participant.Position.X][participant.Position.Y].modalSize = 'modal-fullscreen'
+                    switch (participant.Type){
                         case "Trainer":
-                            this.encounterMap[participant.position.x][participant.position.y].url = `http://play.pokemonshowdown.com/sprites/trainers/${source.sprite}.png`
-                            this.encounterMap[participant.position.x][participant.position.y].color = "bg-dark"
+                            this.encounterMap[participant.Position.X][participant.Position.Y].url = `http://play.pokemonshowdown.com/sprites/trainers/${source.sprite}.png`
+                            this.encounterMap[participant.Position.X][participant.Position.Y].color = "bg-dark"
                             break;
                         case "Pokemon":
-                            this.encounterMap[participant.position.x][participant.position.y].url = this.getPokemonGif(source.isShiny, source.normalPortrai, source.shinyPortrait);
-                            this.encounterMap[participant.position.x][participant.position.y].color = "bg-success"
+                            this.encounterMap[participant.Position.X][participant.Position.Y].url = this.getPokemonGif(source.isShiny, source.normalPortrai, source.shinyPortrait);
+                            this.encounterMap[participant.Position.X][participant.Position.Y].color = "bg-success"
                             break;
                         case "EnemyNpc":
-                            this.encounterMap[participant.position.x][participant.position.y].url = `http://play.pokemonshowdown.com/sprites/trainers/${source.sprite}.png`
-                            this.encounterMap[participant.position.x][participant.position.y].color = "bg-danger"
+                            this.encounterMap[participant.Position.X][participant.Position.Y].url = `http://play.pokemonshowdown.com/sprites/trainers/${source.sprite}.png`
+                            this.encounterMap[participant.Position.X][participant.Position.Y].color = "bg-danger"
                             break;
                         case "EnemyPokemon":
-                            this.encounterMap[participant.position.x][participant.position.y].url = this.getPokemonGif(source.isShiny, source.normalPortrai, source.shinyPortrait);
-                            this.encounterMap[participant.position.x][participant.position.y].color = "bg-danger"
+                            this.encounterMap[participant.Position.X][participant.Position.Y].url = this.getPokemonGif(source.isShiny, source.normalPortrai, source.shinyPortrait);
+                            this.encounterMap[participant.Position.X][participant.Position.Y].color = "bg-danger"
                             break;
                         case "NeutralNpc":
-                            this.encounterMap[participant.position.x][participant.position.y].url = `http://play.pokemonshowdown.com/sprites/trainers/${source.sprite}.png`
-                            this.encounterMap[participant.position.x][participant.position.y].color = "bg-secondary"
+                            this.encounterMap[participant.Position.X][participant.Position.Y].url = `http://play.pokemonshowdown.com/sprites/trainers/${source.sprite}.png`
+                            this.encounterMap[participant.Position.X][participant.Position.Y].color = "bg-secondary"
                             break;
                         case "NeutralPokemon":
-                            this.encounterMap[participant.position.x][participant.position.y].url = this.getPokemonGif(source.isShiny, source.normalPortrai, source.shinyPortrait);
-                            this.encounterMap[participant.position.x][participant.position.y].color = "bg-secondary"
+                            this.encounterMap[participant.Position.X][participant.Position.Y].url = this.getPokemonGif(source.isShiny, source.normalPortrai, source.shinyPortrait);
+                            this.encounterMap[participant.Position.X][participant.Position.Y].color = "bg-secondary"
                             break;
                     }
                 }
@@ -259,11 +278,6 @@ export default {
             }
 
             return `https://play.pokemonshowdown.com/sprites/ani/${normalPortrait}.gif`
-        },
-        async getEncounter(){
-            return await getActiveEncounter(this.gameId)
-                .then(response => response.data)
-                .catch(generateErrorModal)
         },
         async join(){
             if (this.x > this.length || this.x < 0){
@@ -294,8 +308,8 @@ export default {
             for (const row of this.encounterMap){
                 for (const cell of row){
                     const participant = cell.participant
-                    if (participant.participantId == participantId){
-                        this.encounterMap[participant.position.x][participant.position.y] = {
+                    if (participant.ParticipantId == participantId){
+                        this.encounterMap[participant.Position.X][participant.Position.Y] = {
                             color: null,
                             participant: {}
                         }
@@ -387,25 +401,27 @@ export default {
             .catch(generateErrorModal)
         },
         async setACellParticipant(participant){
-            switch (participant.type){
+            switch (participant.Type){
                 case "Trainer":
-                    return await findTrainerInGame(getGameId(), participant.participantId)
+                    return await findTrainerInGame(getGameId(), participant.ParticipantId)
                         .then(response => {
-                            setCellParticipant(participant.participantId, response.data.trainer)
+                            setCellParticipant(participant.ParticipantId, response.data.trainer)
                             return response.data.trainer;
                         })
                         .catch(console.log);
-                case "Pokemon":
-                    return await getGamePokemon(participant.participantId)
+                case "EnemyPokemon":
+                case "NeutralPokemon":
+                    return await getGamePokemon(participant.ParticipantId)
                         .then(response => {
-                            setCellParticipant(participant.participantId, response.data)
+                            setCellParticipant(participant.ParticipantId, response.data)
                             return response.data;
                         })
                         .catch(console.log);
-                case "Npc":
-                    return await getNpc(participant.participantId)
+                case "EnemyNpc":
+                case "NeutralNpc":
+                    return await getNpc(participant.ParticipantId)
                         .then(response => {
-                            setCellParticipant(participant.participantId, response.data)
+                            setCellParticipant(participant.ParticipantId, response.data)
                             return response.data;
                         })
                         .catch(console.log);
@@ -418,7 +434,7 @@ export default {
             }
         },
         changeDisplay(cellData){
-            if (cellData.participant.participantId == this.participantId){
+            if (cellData.participant.ParticipantId == this.participantId){
                 if (this.displaySection){
                     this.displaySection = null
                 }
@@ -428,7 +444,7 @@ export default {
             }
             else {
                 this.displaySection = cellData.participant.type
-                this.participantId = cellData.participant.participantId
+                this.participantId = cellData.participant.ParticipantId
 
                 if (this.displaySection == 'Npc'){
                     this.selectedNpc = this.npcs.find(npc => npc.npcId == this.participantId);
