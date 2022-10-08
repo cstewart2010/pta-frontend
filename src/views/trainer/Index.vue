@@ -1,13 +1,6 @@
 <template>
     <div class="pb-5 mb-5">
-        <div class="row">
-            <div class="col-9 border-end">
-                <incomplete-trainer />
-            </div>
-            <div class="col m-2">
-                <journal />
-            </div>
-        </div>
+        <incomplete-trainer />
     </div>
 </template>
 
@@ -16,7 +9,6 @@ import { refreshInGame } from '../../api/user.api'
 import { getTrainer, removeFromStorage, setTrainer, setPTAActivityToken, setIsGM, setGameMasterId, setTrainerId } from '../../utils/localStorage';
 import IncompleteTrainer from '../../components/trainer/IncompleteTrainer.vue';
 import { generateNavigationModal } from '../../utils/modalUtil';
-import Journal from '../Journal.vue'
 
 export default {
     name: 'TrainerPortal',
@@ -27,8 +19,7 @@ export default {
         }
     },
     components: {
-        IncompleteTrainer,
-        Journal
+        IncompleteTrainer
     },
     beforeMount:async function(){
         await refreshInGame()
