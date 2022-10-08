@@ -4,12 +4,12 @@
             <div class="modal-content">
                 <div class="modal-header d-block">
                     <h5 class="modal-title" :id="`cellModalLabel_${x}_${y}`">
-                        <span v-if="participant.name">{{participant.name}}</span>
+                        <span v-if="participant.Name">{{participant.Name}}</span>
                         <span v-else>Empty Cell Block</span>
                     </h5>
                 </div>
                 <div class="modal-body">
-                    <div v-if="participant.type == null">
+                    <div v-if="participant.Type == null">
                         <div class="container">
                             Would you like to move to cell ({{x}},{{y}})?
                             <div class="row" v-if="isGM">
@@ -19,8 +19,8 @@
                                     data-bs-dismiss="modal"
                                     v-for="(activeParticipant, index) in participants"
                                     :key="index"
-                                    @click="move(activeParticipant.participantId)">
-                                    {{activeParticipant.name}}
+                                    @click="move(activeParticipant.ParticipantId)">
+                                    {{activeParticipant.Name}}
                                 </button>
                             </div>
                             <div class="row" v-else>
@@ -43,14 +43,14 @@
                             </div>
                         </div>
                     </div>
-                    <div v-else-if="participant.type == 'Trainer'">
-                        <trainer-sheet :trainerId="participant.participantId" />
+                    <div v-else-if="participant.Type == 'Trainer'">
+                        <trainer-sheet :trainerId="participant.ParticipantId" />
                     </div>
-                    <div v-else-if="participant.type == 'Pokemon'">
-                        <pokemon-sheet :pokemonId="participant.participantId" />
+                    <div v-else-if="participant.Type.includes('Pokemon')">
+                        <pokemon-sheet :pokemonId="participant.ParticipantId" />
                     </div>
-                    <div v-else-if="participant.type == 'Npc'">
-                        <npc-sheet :npcId="participant.participantId" />
+                    <div v-else-if="participant.Type.includes('Npc')">
+                        <npc-sheet :npcId="participant.ParticipantId" />
                     </div>
                 </div>
                 <div class="modal-footer">
@@ -91,46 +91,55 @@ export default {
         },
         participants: {
             default: []
+        },
+        socket: {
+            default: {}
         }
     },
     data(){
         return {
             isGM: getIsGM(),
-            self: {}
+            self: {},
+            gameId: getGameId()
         }
     },
     async beforeMount(){
         if (!this.isGM){
             this.self = getTrainer().trainerName;
         }
-        if (this.participant.type == "Trainer"){
-            await findTrainerInGame(getGameId(), this.participant.participantId)
-                .then(response => {
-                    setCellParticipant(this.participant.participantId, response.data.trainer)
-                })
-                .catch(console.log);
-        }
-        else if (this.participant.type == "Pokemon"){
-            await getGamePokemon(this.participant.participantId)
-                .then(response => {
-                    setCellParticipant(this.participant.participantId, response.data)
-                })
-                .catch(console.log);
+        if (this.participant.Type){
+            if (this.participant.Type == "Trainer"){
+                await findTrainerInGame(this.gameId, this.participant.ParticipantId)
+                    .then(response => {
+                        setCellParticipant(this.participant.ParticipantId, response.data.trainer)
+                    })
+                    .catch(console.log);
+            }
+            else if (this.participant.Type.includes("Pokemon")){
+                await getGamePokemon(this.participant.ParticipantId)
+                    .then(response => {
+                        setCellParticipant(this.participant.ParticipantId, response.data)
+                    })
+                    .catch(console.log);
+            }
         }
     },
     methods: {
         async moveTrainer(){
             await updateTrainerPosition(this.x, this.y)
+                .then(() => this.socket.send(""))
                 .catch(generateErrorModal);
         },
         async movePokemon(pokemon){
-            if (this.participants.some(participant => participant.participantId == pokemon.pokemonId)){
+            if (this.participants.some(participant => participant.ParticipantId == pokemon.pokemonId)){
                 updatePokemonPosition(pokemon.pokemonId, this.x, this.y)
+                    .then(() => this.socket.send(""))
                     .catch(generateErrorModal);
             }
         },
         async move(participantId){
             updateParticipantPosition(participantId, this.x, this.y)
+                .then(() => this.socket.send(""))
                 .catch(generateErrorModal);
         }
     }
