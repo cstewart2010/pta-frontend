@@ -5,13 +5,11 @@ import { getGameId, getUserCredentials } from '../utils/localStorage';
 const ENCOUNTER_RESOURCE = `${BASE_URL}/api/v1/encounter`
 
 /**
- * @param {string} gameId The gameId for the encounter
  * @returns The encounter
  */
-export async function getActiveEncounter(gameId){
-    nullChecker(gameId, 'gameId');
-
-    return await requestHandler(`${ENCOUNTER_RESOURCE}/${gameId}`, METHODS.GET);
+export function getActiveEncounterWebSocket(){
+    const gameId = getGameId();
+    return new WebSocket(`${ENCOUNTER_RESOURCE.replace("https", "wss")}/${gameId}`);
 }
 
 /**
