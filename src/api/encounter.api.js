@@ -71,6 +71,19 @@ export async function removeFromActiveEncounter(participantId){
     return await requestHandler(`${ENCOUNTER_RESOURCE}/${gameId}/${gameMasterId}/${participantId}/remove`, METHODS.PUT, {activityToken, sessionAuth});
 }
 
+export async function catchPokemon(pokemonId, catchRate, pokeball, nickname){
+    const gameId = getGameId();
+    const [trainerId, activityToken, sessionAuth] = getUserCredentials();
+    nullChecker(trainerId, 'gameMasterId');
+    nullChecker(pokemonId, 'participantId');
+    nullChecker(activityToken, 'activityToken');
+    nullChecker(sessionAuth, 'sessionAuth');
+    nullChecker(catchRate, 'catchRate');
+    nullChecker(pokeball, 'pokeball');
+
+    return await requestHandler(`${ENCOUNTER_RESOURCE}/${gameId}/${trainerId}/${pokemonId}/catch?catchRate=${catchRate}&pokeball=${pokeball.replace(" ", "")}&nickname=${nickname}`, METHODS.PUT, {activityToken, sessionAuth})
+}
+
 /**
  * Updates the participants position on the map
  * @param {string} participantId The participant to change

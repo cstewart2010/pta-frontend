@@ -125,10 +125,12 @@ export async function importGame(importFile){
  * @param {String} nature the pokemon's nature
  * @param {String} gender the pokemon's gender
  * @param {String} status the pokemon's status
+ * @param {String} form the pokemon's form
  * @param {String} nickname the pokemon's nickname
+ * @param {Boolean} forceShiny the pokemon's nickname
  * @returns 
  */
-export async function createWildPokemon(pokemon, nature, gender, status, nickname){
+export async function createWildPokemon(pokemon, nature, gender, status, form, nickname, forceShiny){
     const [gameMasterId, activityToken, sessionAuth] = getUserCredentials();
     nullChecker(gameMasterId, 'gameMasterId');
     nullChecker(pokemon, 'pokemon');
@@ -148,7 +150,9 @@ export async function createWildPokemon(pokemon, nature, gender, status, nicknam
         nature,
         gender,
         status,
-        nickname
+        form,
+        nickname,
+        forceShiny: forceShiny === true
     }
     return await requestHandler(`${GAME_RESOURCE}/${gameMasterId}/wild`, METHODS.POST, {activityToken, sessionAuth, data});
 }
