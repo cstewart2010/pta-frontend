@@ -67,7 +67,7 @@ import { findTrainerInGame } from '../../api/game.api'
 import TrainerSheet from '../encounter/TrainerSheet.vue'
 import PokemonSheet from '../encounter/PokemonSheet.vue'
 import NpcSheet from '../encounter/NpcSheet.vue'
-import { updateParticipantPosition, updatePokemonPosition, updateTrainerPosition } from '../../api/encounter.api'
+import { addToActiveEncounter, updateParticipantPosition, updatePokemonPosition, updateTrainerPosition } from '../../api/encounter.api'
 import { generateErrorModal } from '../../utils/modalUtil'
 import { getGamePokemon } from '../../api/pokemon.api'
 export default {
@@ -126,9 +126,26 @@ export default {
     },
     methods: {
         async moveTrainer(){
-            await updateTrainerPosition(this.x, this.y)
-                .then(() => this.socket.send(""))
-                .catch(generateErrorModal);
+            var trainer = getTrainer();
+            if (this.participants.some(participant => participant.ParticipantId == trainer.trainerId)){
+                await updateTrainerPosition(this.x, this.y)
+                    .then(() => this.socket.send(""))
+                    .catch(generateErrorModal);
+            }
+            else {
+                await addToActiveEncounter({
+                    participantId: trainer.trainerId,
+                    name: trainer.trainerName,
+                    health: "Feeling fresh!",
+                    type: "Trainer",
+                    position: {
+                        x: this.x,
+                        y: this.y
+                    },
+                    speed: trainer.trainerStats.speed
+                })
+                .catch(generateErrorModal)
+            }
         },
         async movePokemon(pokemon){
             if (this.participants.some(participant => participant.ParticipantId == pokemon.pokemonId)){
@@ -136,9 +153,23 @@ export default {
                     .then(() => this.socket.send(""))
                     .catch(generateErrorModal);
             }
+            else {
+                await addToActiveEncounter({
+                    participantId: pokemon.pokemonId,
+                    name: pokemon.nickname,
+                    health: "Feeling fresh!",
+                    type: "Pokemon",
+                    position: {
+                        x: this.x,
+                        y: this.y
+                    },
+                    speed: pokemon.pokemonStats.speed
+                })
+                .catch(generateErrorModal)
+            }
         },
         async move(participantId){
-            updateParticipantPosition(participantId, this.x, this.y)
+            await updateParticipantPosition(participantId, this.x, this.y)
                 .then(() => this.socket.send(""))
                 .catch(generateErrorModal);
         }
