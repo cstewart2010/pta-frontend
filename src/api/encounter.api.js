@@ -81,7 +81,7 @@ export async function catchPokemon(pokemonId, catchRate, pokeball, nickname){
     nullChecker(catchRate, 'catchRate');
     nullChecker(pokeball, 'pokeball');
 
-    return await requestHandler(`${ENCOUNTER_RESOURCE}/${gameId}/${trainerId}/${pokemonId}/catch?catchRate=${catchRate}&pokeball=${pokeball.replace(" ", "")}&nickname=${nickname}`, METHODS.PUT, {activityToken, sessionAuth})
+    return await requestHandler(`${ENCOUNTER_RESOURCE}/${gameId}/${trainerId}/${pokemonId}/catch?catchRate=${catchRate}&pokeball=${pokeball.replace(" ", "_")}&nickname=${nickname}`, METHODS.PUT, {activityToken, sessionAuth})
 }
 
 /**

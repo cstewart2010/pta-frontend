@@ -47,7 +47,7 @@
                         <trainer-sheet :trainerId="participant.ParticipantId" />
                     </div>
                     <div v-else-if="participant.Type.includes('Pokemon')">
-                        <pokemon-sheet :pokemonId="participant.ParticipantId" />
+                        <pokemon-sheet :pokemonId="participant.ParticipantId" :socket="socket" />
                     </div>
                     <div v-else-if="participant.Type.includes('Npc')">
                         <npc-sheet :npcId="participant.ParticipantId" />

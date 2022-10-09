@@ -29,7 +29,7 @@
         </div>
         <div class="row border-bottom border-start">
             <select class="form-select m-1 col text-dark bg-info bg-opacity-25" name="item" style="max-width: 150px" v-model="addedItem">
-                <option v-for="(item, index) in availableItems" :key="index" :id="item" :value="index + 1">
+                <option v-for="(item, index) in availableItems" :key="index" :id="item" :value="item">
                     {{item}}
                 </option>
             </select>
@@ -66,8 +66,7 @@ export default {
     beforeMount: async function(){
         await getAllPokeballItems()
             .then(response => {
-                this.items = getTrainer().items
-            .filter(item => item.type == 'Pokeball')
+                this.items = getTrainer().items.filter(item => item.type == 'Pokeball')
                 this.availableItems = response.data.results.map(item => item.name)
             })
     },

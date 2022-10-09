@@ -100,7 +100,7 @@ export async function getPossibleEvolutions(pokemonId){
     nullChecker(sessionAuth, 'sessionAuth');
     
     const endpoint = `${POKEMON_RESOURCE}/${gameId}/${trainerId}/${pokemonId}/possibleEvolutions`;
-    return await requestHandler(endpoint, METHODS.PUT, {activityToken, sessionAuth});
+    return await requestHandler(endpoint, METHODS.GET, {activityToken, sessionAuth});
 }
 
 /**

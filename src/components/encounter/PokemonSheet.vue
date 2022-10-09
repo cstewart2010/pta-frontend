@@ -130,8 +130,8 @@
     <hr/>
     <div class="input-group" v-if="!isGM && isWild">
         <span class="input-group-text">Try to catch</span>
-        <input v-model="nickname" type="text">
-        <select v-model="pokeball">
+        <input v-model="nickname" type="text" data-bs-toggle="tooltip" data-bs-placement="top" title="The pokemon's nickname">
+        <select class="form-select" v-model="pokeball">
             <option value=""></option>
             <option v-for="(ball, index) in pokeballs" :key="index" :value="ball">{{ball}}</option>
         </select>
@@ -180,13 +180,13 @@
 </template>
 
 <script>
-import { getAllPokeballItems, getAllPokemonItems, getPokemonItem, getSkillsFeature } from '../../api/dex.api'
+import { getAllPokemonItems, getPokemonItem, getSkillsFeature } from '../../api/dex.api'
 import AddedMove from '../trainer/parts/AddedMove.vue'
 import Passive from '../trainer/parts/Passive.vue'
 import HalvedRowSlot from '../partials/HalvedRowSlot.vue'
 import { changeForm, markAsEvolvable, updateHP } from '../../api/pokemon.api'
 import { generateErrorModal } from '../../utils/modalUtil'
-import { getCellParticipant, getIsGM, getTrainerId, setPTAActivityToken } from '../../utils/localStorage'
+import { getCellParticipant, getIsGM, getTrainer, getTrainerId, setPTAActivityToken } from '../../utils/localStorage'
 import EvolvePokemon from '../modals/EvolvePokemon.vue'
 import { catchPokemon } from '../../api/encounter.api'
 
@@ -196,8 +196,8 @@ export default {
         pokemonId: {
             default: {}
         },
-        isWild: {
-            default: false
+        socket: {
+            default: {}
         }
     },
     data(){
@@ -219,7 +219,8 @@ export default {
             currentTrainerId: getTrainerId(),
             pokeballs: [],
             pokeball: '',
-            nickname: ''
+            nickname: '',
+            isWild: false
         }
     },
     components: {
@@ -230,6 +231,7 @@ export default {
     },
     async beforeMount(){
         this.pokemon = getCellParticipant(this.pokemonId);
+        this.isWild = this.pokemon.trainerId == '00000000-0000-0000-0000-000000000000';
         if (this.isGM){
             await getAllPokemonItems()
                 .then(response => {
@@ -239,10 +241,7 @@ export default {
             this.updateCatchRate();
         }
         else {
-            await getAllPokeballItems()
-                .then(response => {
-                    this.pokeballs = response.data.results.map(item => item.name)
-                })
+            this.pokeballs = getTrainer().items.filter(item => item.type == 'Pokeball').map(item => item.name)
         }
         if (this.pokemon.isShiny){
             this.url = `https://play.pokemonshowdown.com/sprites/ani-shiny/${this.pokemon.shinyPortrait}.gif`
@@ -298,6 +297,7 @@ export default {
         async catchPokemon(){
             var catchRate = this.pokemon.catchRate - this.getModifer();
             await catchPokemon(this.pokemonId, catchRate, this.pokeball, this.nickname)
+                .then(() => this.socket.send(''))
                 .catch(generateErrorModal);
         },
         getModifer(){
