@@ -14,6 +14,9 @@
           <router-link to="/" class="nav-link">Landing</router-link>
         </li>
         <li class="nav-item">
+          <a class="nav-link" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvas-journal" aria-controls="offcanvas-journal" v-if="gameId">Journal</a>
+        </li>
+        <li class="nav-item">
           <router-link to="/about" class="nav-link">About</router-link>
         </li>
         <li class="nav-item" v-if="gameId && isGM==true && needsToAuthenticate==false">
@@ -45,11 +48,21 @@
     </form>
   </div>
 </nav>
+<div class="offcanvas offcanvas-end" data-bs-scroll="true" data-bs-backdrop="false" tabindex="-1" id="offcanvas-journal" aria-labelledby="offcanvas-journalLabel">
+  <div class="offcanvas-header">
+    <h5 class="offcanvas-title" id="offcanvas-journalLabel">Journal</h5>
+    <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+  </div>
+  <div class="offcanvas-body">
+    <journal />
+  </div>
+</div>
 </template>
 <script>
 import { getGameId, getIsAdmin, getIsAuthenticate, getIsGM, removeFromStorage, setInitialCredentials, setIsAdmin } from '../../utils/localStorage';
 import { login, logout } from '../../api/user.api';
 import { generateErrorModal } from '../../utils/modalUtil';
+import Journal from '../../views/Journal.vue'
   export default {
     name: 'Nav',
     data(){
@@ -61,6 +74,9 @@ import { generateErrorModal } from '../../utils/modalUtil';
         password: '',
         isAdmin: false
       }
+    },
+    components: {
+      Journal
     },
     mounted:function(){
       this.needsToAuthenticate = !getIsAuthenticate();
