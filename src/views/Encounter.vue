@@ -3,20 +3,7 @@
         <h1>{{encounter.Name}} Map 
             <button class="btn btn-lg" @click="refresh" :disabled="isDisabled"><i :class="`fa fa-refresh ${fontColor}`" aria-hidden="true"></i></button>
         </h1>
-        <div class="input-group my-1 col-2" v-if="!isGM">
-            <span class="input-group-text">Send out pokemon</span>
-            <select class="form-select" v-model="pokemonToAdd">
-                <option v-for="(pokemon, index) in trainerMons" :key="index" :value="index">
-                    {{pokemon.nickname}}
-                </option>
-            </select>
-            <span class="input-group-text">x-coordinate</span>
-            <input type="number" min="0" :max="length" v-model="x">
-            <span class="input-group-text">y-coordinate</span>
-            <input type="number" min="0" :max="length" v-model="y">
-            <button class="btn btn-secondary" @click="sendOut">Send out</button>
-        </div>
-        <div v-else>
+        <div v-if="isGM">
             <div class="input-group my-2">
                 <span class="input-group-text">Add Npc</span>
                 <select v-model="npcSelection" class="form-select">
@@ -63,14 +50,6 @@
                 <pokemon-sheet :pokemonId="participantId" v-if="displaySection == 'Pokemon'" />
                 <npc-sheet :npcId="participantId" v-if="displaySection == 'Npc'" />
             </section>
-        </div>
-        <div class="input-group my-1 col-2" v-if="needToJoin">
-            <span class="input-group-text">Join the Encounter</span>
-            <span class="input-group-text">x-coordinate</span>
-            <input type="number" min="0" :max="length" v-model="x">
-            <span class="input-group-text">y-coordinate</span>
-            <input type="number" min="0" :max="length" v-model="y">
-            <button class="btn btn-secondary" @click="join">Join</button>
         </div>
         <div v-if="isGM">
             <div class="row" v-for="(row, rowIndex) in encounterMap" :key="rowIndex">
@@ -129,7 +108,7 @@
 </template>
 
 <script>
-import { getGameId, getIsGM, getTrainer, getTrainerId, setCellParticipant, } from '../utils/localStorage'
+import { getGameId, getIsGM, getTrainer, setCellParticipant, } from '../utils/localStorage'
 import { addToActiveEncounter, getActiveEncounterWebSocket, removeFromActiveEncounter } from '../api/encounter.api'
 import { generateErrorModal } from '../utils/modalUtil'
 import CellModal from '../components/modals/CellModal.vue'
@@ -166,7 +145,6 @@ export default {
             trainerMons: [],
             gameId: getGameId(),
             encounter: null,
-            needToJoin: true,
             x: 0,
             y: 0,
             displaySection: null,
@@ -202,8 +180,6 @@ export default {
                 });
             }
 
-            console.log(this.socket.readyState)
-
             this.socket.onmessage = (event) => {
                 this.encounter = JSON.parse(event.data);
                 this.updateMap();
@@ -213,7 +189,20 @@ export default {
                 console.log(event);
             }
             
-            setTimeout(() => this.socket.send(""), 5000);
+            switch (this.socket.readyState){
+                case 0:
+                    setTimeout(() => this.socket.send(""), 5000);
+                    break;
+                case 1:
+                    this.socket.send("");
+                    break;
+                default:
+                    generateErrorModal({
+                        status: 'Failed to connect to websocket',
+                        error: this.socket.readyState
+                    });
+                    break;
+            }
         }
     },
     unmounted(){
@@ -229,7 +218,6 @@ export default {
                 return;
             }
             this.activeParticipants = this.encounter.ActiveParticipants;
-            this.needToJoin = !(this.isGM || this.encounter.ActiveParticipants.some(participant => participant.ParticipantId == getTrainerId()))
             for (const participant of this.encounter.ActiveParticipants) {
                 if (this.encounterMap[participant.Position.X][participant.Position.Y].participant.ParticipantId != participant.ParticipantId){
                     this.removeClones(participant.ParticipantId);
@@ -243,7 +231,7 @@ export default {
                             this.encounterMap[participant.Position.X][participant.Position.Y].color = "bg-dark"
                             break;
                         case "Pokemon":
-                            this.encounterMap[participant.Position.X][participant.Position.Y].url = this.getPokemonGif(source.isShiny, source.normalPortrai, source.shinyPortrait);
+                            this.encounterMap[participant.Position.X][participant.Position.Y].url = this.getPokemonGif(source.isShiny, source.normalPortrait, source.shinyPortrait);
                             this.encounterMap[participant.Position.X][participant.Position.Y].color = "bg-success"
                             break;
                         case "EnemyNpc":
@@ -251,7 +239,7 @@ export default {
                             this.encounterMap[participant.Position.X][participant.Position.Y].color = "bg-danger"
                             break;
                         case "EnemyPokemon":
-                            this.encounterMap[participant.Position.X][participant.Position.Y].url = this.getPokemonGif(source.isShiny, source.normalPortrai, source.shinyPortrait);
+                            this.encounterMap[participant.Position.X][participant.Position.Y].url = this.getPokemonGif(source.isShiny, source.normalPortrait, source.shinyPortrait);
                             this.encounterMap[participant.Position.X][participant.Position.Y].color = "bg-danger"
                             break;
                         case "NeutralNpc":
@@ -259,7 +247,7 @@ export default {
                             this.encounterMap[participant.Position.X][participant.Position.Y].color = "bg-secondary"
                             break;
                         case "NeutralPokemon":
-                            this.encounterMap[participant.Position.X][participant.Position.Y].url = this.getPokemonGif(source.isShiny, source.normalPortrai, source.shinyPortrait);
+                            this.encounterMap[participant.Position.X][participant.Position.Y].url = this.getPokemonGif(source.isShiny, source.normalPortrait, source.shinyPortrait);
                             this.encounterMap[participant.Position.X][participant.Position.Y].color = "bg-secondary"
                             break;
                     }
@@ -279,31 +267,6 @@ export default {
 
             return `https://play.pokemonshowdown.com/sprites/ani/${normalPortrait}.gif`
         },
-        async join(){
-            if (this.x > this.length || this.x < 0){
-                return;
-            }
-            if (this.y > this.length || this.y < 0){
-                return;
-            }
-            if (this.encounterMap[this.x][this.y].participant.id){
-                return;
-            }
-
-            var trainer = getTrainer()
-            await addToActiveEncounter({
-                participantId: trainer.trainerId,
-                name: trainer.trainerName,
-                health: "Feeling fresh!",
-                type: "Trainer",
-                position: {
-                    x: this.x,
-                    y: this.y
-                },
-                speed: trainer.trainerStats.speed
-            })
-            .catch(generateErrorModal)
-        },
         removeClones(participantId){
             for (const row of this.encounterMap){
                 for (const cell of row){
@@ -316,34 +279,6 @@ export default {
                     }
                 }
             }
-        },
-        async sendOut(){
-            if (this.x > this.length || this.x < 0){
-                return;
-            }
-            if (this.y > this.length || this.y < 0){
-                return;
-            }
-            if (this.encounterMap[this.x][this.y].participant.id){
-                return;
-            }
-            if (!this.trainerMons[this.pokemonToAdd]){
-                return;
-            }
-
-            var pokemon = this.trainerMons[this.pokemonToAdd];
-            await addToActiveEncounter({
-                participantId: pokemon.pokemonId,
-                name: pokemon.nickname,
-                health: "Feeling fresh!",
-                type: "Pokemon",
-                position: {
-                    x: this.x,
-                    y: this.y
-                },
-                speed: pokemon.pokemonStats.speed
-            })
-            .catch(generateErrorModal)
         },
         async addNpc(){
             if (this.x > this.length || this.x < 0){
@@ -364,7 +299,7 @@ export default {
                 participantId: npc.npcId,
                 name: npc.trainerName,
                 health: "Feeling fresh!",
-                type: "Npc",
+                type: "EnemyNpc",
                 position: {
                     x: this.x,
                     y: this.y
@@ -391,7 +326,7 @@ export default {
                 participantId: this.npcMonSelection.pokemonId,
                 name: this.npcMonSelection.nickname,
                 health: "Feeling fresh!",
-                type: "Pokemon",
+                type: "EnemyPokemon",
                 position: {
                     x: this.x,
                     y: this.y
@@ -409,6 +344,7 @@ export default {
                             return response.data.trainer;
                         })
                         .catch(console.log);
+                case "Pokemon":
                 case "EnemyPokemon":
                 case "NeutralPokemon":
                     return await getGamePokemon(participant.ParticipantId)
