@@ -128,6 +128,15 @@
         </div>
     </div>
     <hr/>
+    <div class="input-group" v-if="!isGM && isWild">
+        <span class="input-group-text">Try to catch</span>
+        <input v-model="nickname" type="text" data-bs-toggle="tooltip" data-bs-placement="top" title="The pokemon's nickname">
+        <select class="form-select" v-model="pokeball">
+            <option value=""></option>
+            <option v-for="(ball, index) in pokeballs" :key="index" :value="ball">{{ball}}</option>
+        </select>
+        <button class="btn btn-primary" @click="catchPokemon" data-bs-dismiss="modal">Catch {{pokemon.nickname}}</button>
+    </div>
     <div class="row" v-if="isGM">
         <div class="col-12">
             <div class="row">
@@ -177,13 +186,17 @@ import Passive from '../trainer/parts/Passive.vue'
 import HalvedRowSlot from '../partials/HalvedRowSlot.vue'
 import { changeForm, markAsEvolvable, updateHP } from '../../api/pokemon.api'
 import { generateErrorModal } from '../../utils/modalUtil'
-import { getCellParticipant, getIsGM, getTrainerId, setPTAActivityToken } from '../../utils/localStorage'
+import { getCellParticipant, getIsGM, getTrainer, getTrainerId, setPTAActivityToken } from '../../utils/localStorage'
 import EvolvePokemon from '../modals/EvolvePokemon.vue'
+import { catchPokemon } from '../../api/encounter.api'
 
 export default {
     name: 'PokemonSheet',
     props: {
         pokemonId: {
+            default: {}
+        },
+        socket: {
             default: {}
         }
     },
@@ -203,7 +216,11 @@ export default {
                 pokemonStats: {},
                 eggGroups: []
             },
-            currentTrainerId: getTrainerId()
+            currentTrainerId: getTrainerId(),
+            pokeballs: [],
+            pokeball: '',
+            nickname: '',
+            isWild: false
         }
     },
     components: {
@@ -214,6 +231,7 @@ export default {
     },
     async beforeMount(){
         this.pokemon = getCellParticipant(this.pokemonId);
+        this.isWild = this.pokemon.trainerId == '00000000-0000-0000-0000-000000000000';
         if (this.isGM){
             await getAllPokemonItems()
                 .then(response => {
@@ -221,6 +239,9 @@ export default {
                 })
             this.hp = this.pokemon.currentHP;
             this.updateCatchRate();
+        }
+        else {
+            this.pokeballs = getTrainer().items.filter(item => item.type == 'Pokeball').map(item => item.name)
         }
         if (this.pokemon.isShiny){
             this.url = `https://play.pokemonshowdown.com/sprites/ani-shiny/${this.pokemon.shinyPortrait}.gif`
@@ -264,6 +285,22 @@ export default {
             }
         },
         async updateCatchRate(){
+            const modifier = this.getModifer();
+
+            if (this.hp != this.pokemon.currentHp){
+                await updateHP(this.pokemon.pokemonId, this.hp)
+                    .catch(generateErrorModal);
+            }
+
+            this.catchRate = this.pokemon.catchRate + modifier;
+        },
+        async catchPokemon(){
+            var catchRate = this.pokemon.catchRate - this.getModifer();
+            await catchPokemon(this.pokemonId, catchRate, this.pokeball, this.nickname)
+                .then(() => this.socket.send(''))
+                .catch(generateErrorModal);
+        },
+        getModifer(){
             let modifier = -25
             if (this.hp < 0){
                 modifier = 75
@@ -278,12 +315,7 @@ export default {
                 modifier = -10
             }
 
-            if (this.hp != this.pokemon.currentHp){
-                await updateHP(this.pokemon.pokemonId, this.hp)
-                    .catch(generateErrorModal);
-            }
-
-            this.catchRate = this.pokemon.catchRate + modifier;
+            return modifier;
         },
         async readyToEvolve(){
             if (this.isGM){

@@ -5,6 +5,21 @@
         </h1>
         <div v-if="isGM">
             <div class="input-group my-2">
+                <span class="input-group-text">Add Wild Pokemon</span>
+                <input class="form-control" list="datalistOptions" id="pokemonDataList" v-model="wildPokemon" placeholder="Type to search...">
+                <datalist id="datalistOptions" name="pokemon">
+                    <option v-for="(pokemon, index) in pokemonCol" :key="index" :id="pokemon.name+'_'+pokemon.form" :value="pokemon.friendly">
+                        {{index}}
+                    </option>
+                </datalist>
+                <span class="input-group-text">x-coordinate</span>
+                <input type="number" min="0" :max="length" v-model="x">
+                <span class="input-group-text">y-coordinate</span>
+                <input type="number" min="0" :max="length" v-model="y">
+                <input class="form-check-input" type="checkbox" title="Force Shiny" v-model="forceShiny">
+                <button class="btn btn-secondary" @click="addWild">Add</button>
+            </div>
+            <div class="input-group my-2">
                 <span class="input-group-text">Add Npc</span>
                 <select v-model="npcSelection" class="form-select">
                     <option value=""></option>
@@ -108,16 +123,17 @@
 </template>
 
 <script>
-import { getGameId, getIsGM, getTrainer, setCellParticipant, } from '../utils/localStorage'
+import { getGameId, getIsGM, getTrainer, setCellParticipant, setPTAActivityToken, } from '../utils/localStorage'
 import { addToActiveEncounter, getActiveEncounterWebSocket, removeFromActiveEncounter } from '../api/encounter.api'
 import { generateErrorModal } from '../utils/modalUtil'
 import CellModal from '../components/modals/CellModal.vue'
-import { getGamePokemon } from '../api/pokemon.api'
-import { findTrainerInGame } from '../api/game.api'
+import { deletePokemon, getGamePokemon } from '../api/pokemon.api'
+import { createWildPokemon, findTrainerInGame } from '../api/game.api'
 import TrainerSheet from '../components/encounter/TrainerSheet.vue'
 import PokemonSheet from '../components/encounter/PokemonSheet.vue'
 import NpcSheet from '../components/encounter/NpcSheet.vue'
 import { getNpc, getNpcsInGame } from '../api/npc.api'
+import { getAllBasePokemon } from '../api/dex.api'
 export default {
     name: "Encounter",
     components: {
@@ -149,7 +165,10 @@ export default {
             y: 0,
             displaySection: null,
             participantId: '',
+            pokemonCol: {},
             activeParticipants: [],
+            forceShiny: false,
+            wildPokemon: '',
             removalOption: '',
             npcs: [],
             npcSelection: null,
@@ -160,7 +179,7 @@ export default {
             socket: getActiveEncounterWebSocket()
         }
     },
-    async mounted(){
+    async beforeMount(){
         if (this.gameId){
             for (let i = 0; i <= this.length; i++){
                 this.encounterMap[i] = [];
@@ -178,6 +197,17 @@ export default {
                 await getNpcsInGame(this.gameId).then(response => {
                     this.npcs = response.data;
                 });
+                await getAllBasePokemon()
+                    .then(response => {
+                        for (const item of response.data){
+                            let friendly = item.name;
+                            if (item.form != "Base"){
+                                friendly = `${item.form.replace("Base/", "")} ${item.name}`
+                            }
+                            this.pokemonCol[friendly] = item;
+                        }
+                    })
+                    .catch(generateErrorModal);
             }
 
             this.socket.onmessage = (event) => {
@@ -233,6 +263,10 @@ export default {
                         case "Pokemon":
                             this.encounterMap[participant.Position.X][participant.Position.Y].url = this.getPokemonGif(source.isShiny, source.normalPortrait, source.shinyPortrait);
                             this.encounterMap[participant.Position.X][participant.Position.Y].color = "bg-success"
+                            break;
+                        case "WildPokemon":
+                            this.encounterMap[participant.Position.X][participant.Position.Y].url = this.getPokemonGif(source.isShiny, source.normalPortrait, source.shinyPortrait);
+                            this.encounterMap[participant.Position.X][participant.Position.Y].color = "bg-primary"
                             break;
                         case "EnemyNpc":
                             this.encounterMap[participant.Position.X][participant.Position.Y].url = `http://play.pokemonshowdown.com/sprites/trainers/${source.sprite}.png`
@@ -345,6 +379,7 @@ export default {
                         })
                         .catch(console.log);
                 case "Pokemon":
+                case "WildPokemon":
                 case "EnemyPokemon":
                 case "NeutralPokemon":
                     return await getGamePokemon(participant.ParticipantId)
@@ -368,6 +403,35 @@ export default {
                 await removeFromActiveEncounter(this.removalOption)
                     .catch(generateErrorModal)
             }
+        },
+        async addWild(){
+            const pokemon = this.pokemonCol[this.wildPokemon];
+            await createWildPokemon(pokemon.name, '', '', '', pokemon.form, this.nickname, this.forceShiny)
+                .then(async (response)=> {
+                    const pokemonModel = response.data;
+                    await addToActiveEncounter({
+                        participantId: pokemonModel.pokemonId,
+                        name: pokemonModel.nickname,
+                        health: "Feeling fresh!",
+                        type: "WildPokemon",
+                        position: {
+                            x: this.x,
+                            y: this.y
+                        },
+                        speed: pokemonModel.pokemonStats.speed
+                    })
+                    .catch(async () => {
+                        await deletePokemon(pokemonModel.pokemonId)
+                            .then(response => {
+                                setPTAActivityToken(response.headers['pta-activity-token']);
+                            })
+                        generateErrorModal({
+                            status: `There is already a unit at (${this.x},${this.y})`,
+                            reason: `Deleting ${pokemonModel.nickname}`
+                        })
+                    })
+                })
+                .catch(generateErrorModal);
         },
         changeDisplay(cellData){
             if (cellData.participant.ParticipantId == this.participantId){

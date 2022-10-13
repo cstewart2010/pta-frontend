@@ -1,6 +1,6 @@
 import { BASE_URL } from './api.config.json'
 import { METHODS } from './enums.json'
-import { requestHandler, nullChecker, natureChecker, statusChecker, genderChecker } from './axiosHandler';
+import { requestHandler, nullChecker } from './axiosHandler';
 import { getPokemon } from './dex.api';
 import { getGameId, getUserCredentials, getUserId } from '../utils/localStorage';
 const GAME_RESOURCE = `${BASE_URL}/api/v1/game`
@@ -125,32 +125,25 @@ export async function importGame(importFile){
  * @param {String} nature the pokemon's nature
  * @param {String} gender the pokemon's gender
  * @param {String} status the pokemon's status
+ * @param {String} form the pokemon's form
  * @param {String} nickname the pokemon's nickname
+ * @param {Boolean} forceShiny the pokemon's nickname
  * @returns 
  */
-export async function createWildPokemon(pokemon, nature, gender, status, nickname){
+export async function createWildPokemon(pokemon, nature, gender, status, form, nickname, forceShiny){
+    const gameId = getGameId();
     const [gameMasterId, activityToken, sessionAuth] = getUserCredentials();
     nullChecker(gameMasterId, 'gameMasterId');
     nullChecker(pokemon, 'pokemon');
     nullChecker(activityToken, 'activityToken');
     nullChecker(sessionAuth, 'sessionAuth');
-    natureChecker(nature);
-    genderChecker(gender);
-    statusChecker(status);
     await getPokemon(pokemon)
         .catch(() => {
                 throw `Invalid pokemon ${pokemon}`
             })
-
-
-    const data = {
-        pokemon,
-        nature,
-        gender,
-        status,
-        nickname
-    }
-    return await requestHandler(`${GAME_RESOURCE}/${gameMasterId}/wild`, METHODS.POST, {activityToken, sessionAuth, data});
+            
+    const queryString = `pokemon=${pokemon}&nature=${nature}&gender=${gender}&status=${status}&form=${form.replace('/', '_')}&forceShiny=${forceShiny === true}`
+    return await requestHandler(`${GAME_RESOURCE}/${gameId}/${gameMasterId}/wild?${queryString}`, METHODS.POST, {activityToken, sessionAuth});
 }
 
 /**
