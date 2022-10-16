@@ -71,6 +71,18 @@ export async function removeFromActiveEncounter(participantId){
     return await requestHandler(`${ENCOUNTER_RESOURCE}/${gameId}/${gameMasterId}/${participantId}/remove`, METHODS.PUT, {activityToken, sessionAuth});
 }
 
+
+export async function returnToPokeball(pokemonId){
+    const gameId = getGameId();
+    const [trainerId, activityToken, sessionAuth] = getUserCredentials();
+    nullChecker(trainerId, 'trainerId');
+    nullChecker(pokemonId, 'pokemonId');
+    nullChecker(activityToken, 'activityToken');
+    nullChecker(sessionAuth, 'sessionAuth');
+    
+    return await requestHandler(`${ENCOUNTER_RESOURCE}/${gameId}/${trainerId}/${pokemonId}/return`, METHODS.PUT, {activityToken, sessionAuth});
+}
+
 export async function catchPokemon(pokemonId, catchRate, pokeball, nickname){
     const gameId = getGameId();
     const [trainerId, activityToken, sessionAuth] = getUserCredentials();

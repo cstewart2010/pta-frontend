@@ -78,6 +78,12 @@
                 </div>
                 <div class="col-md-2">
                     {{pokemon.nickname}}
+                     <i class="fa-solid fa-xmark" 
+                        @click="returnToPokeball" 
+                        data-bs-dismiss="modal" 
+                        v-if="pokemon.trainerId == currentTrainerId"
+                        :title="`Return ${pokemon.nickname} to pokeball`"
+                        data-bs-toggle="tooltip"></i>
                     <hr>
                     <img class="img-fluid" :src="url" :alt="pokemon.nickname">
                 </div>
@@ -186,9 +192,9 @@ import Passive from '../trainer/parts/Passive.vue'
 import HalvedRowSlot from '../partials/HalvedRowSlot.vue'
 import { changeForm, markAsEvolvable, updateHP } from '../../api/pokemon.api'
 import { generateErrorModal } from '../../utils/modalUtil'
-import { getCellParticipant, getIsGM, getTrainer, getTrainerId, setPTAActivityToken } from '../../utils/localStorage'
+import { getCellParticipant, getIsGM, getTrainer, setPTAActivityToken } from '../../utils/localStorage'
 import EvolvePokemon from '../modals/EvolvePokemon.vue'
-import { catchPokemon } from '../../api/encounter.api'
+import { catchPokemon, returnToPokeball } from '../../api/encounter.api'
 
 export default {
     name: 'PokemonSheet',
@@ -216,7 +222,7 @@ export default {
                 pokemonStats: {},
                 eggGroups: []
             },
-            currentTrainerId: getTrainerId(),
+            currentTrainerId: null,
             pokeballs: [],
             pokeball: '',
             nickname: '',
@@ -241,6 +247,8 @@ export default {
             this.updateCatchRate();
         }
         else {
+            const trainer = getTrainer()
+            this.currentTrainerId = trainer.trainerId
             this.pokeballs = getTrainer().items.filter(item => item.type == 'Pokeball').map(item => item.name)
         }
         if (this.pokemon.isShiny){
@@ -297,6 +305,11 @@ export default {
         async catchPokemon(){
             var catchRate = this.pokemon.catchRate - this.getModifer();
             await catchPokemon(this.pokemonId, catchRate, this.pokeball, this.nickname)
+                .then(() => this.socket.send(''))
+                .catch(generateErrorModal);
+        },
+        async returnToPokeball(){
+            await returnToPokeball(this.pokemonId)
                 .then(() => this.socket.send(''))
                 .catch(generateErrorModal);
         },
