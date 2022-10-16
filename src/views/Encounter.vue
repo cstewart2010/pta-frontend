@@ -181,15 +181,6 @@ export default {
     },
     async beforeMount(){
         if (this.gameId){
-            for (let i = 0; i <= this.length; i++){
-                this.encounterMap[i] = [];
-                for (let j = 0; j <= this.length; j++){
-                    this.encounterMap[i][j] = {
-                        color: null,
-                        participant: {}
-                    }
-                }
-            }
             if (!this.isGM){
                 this.trainerMons = getTrainer().pokemonTeam
             }
@@ -243,8 +234,9 @@ export default {
             this.socket.send("");
         },
         async updateMap(){
+            this.initializeMap()
             if (!this.encounter){
-                this.encounterMap = []
+                // this.encounterMap = []
                 return;
             }
             this.activeParticipants = this.encounter.ActiveParticipants;
@@ -449,6 +441,17 @@ export default {
                 if (this.displaySection == 'Npc'){
                     this.selectedNpc = this.npcs.find(npc => npc.npcId == this.participantId);
                     console.log(this.selectedNpc);
+                }
+            }
+        },
+        initializeMap(){
+            for (let i = 0; i <= this.length; i++){
+                this.encounterMap[i] = [];
+                for (let j = 0; j <= this.length; j++){
+                    this.encounterMap[i][j] = {
+                        color: null,
+                        participant: {}
+                    }
                 }
             }
         }
