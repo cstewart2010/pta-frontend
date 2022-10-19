@@ -13,6 +13,13 @@ export function getActiveEncounterWebSocket(){
 }
 
 /**
+ * @returns Environment collection
+ */
+export async function getEnvironments(){
+    return await requestHandler(ENCOUNTER_RESOURCE, METHODS.GET);
+}
+
+/**
  * @returns All encounter associated with the current gameId
  */
 export async function getAllEncounters(){
@@ -43,6 +50,22 @@ export async function createEncounter(name, type){
         type
     };
     return await requestHandler(`${ENCOUNTER_RESOURCE}/${gameId}/${gameMasterId}`, METHODS.POST, {activityToken, sessionAuth, data});
+}
+
+/**
+ * Sets the setting's environment
+ * @param {String} environment the updated environmnet
+ * @returns 200
+ */
+export async function setEnvironment(environment){
+    const gameId = getGameId();
+    const [gameMasterId, activityToken, sessionAuth] = getUserCredentials();
+    nullChecker(gameMasterId, 'gameMasterId');
+    nullChecker(environment, 'environment');
+    nullChecker(activityToken, 'activityToken');
+    nullChecker(sessionAuth, 'sessionAuth');
+
+    return await requestHandler(`${ENCOUNTER_RESOURCE}/${gameId}/${gameMasterId}/environment?environments=${environment}`, METHODS.PUT, {activityToken, sessionAuth});
 }
 
 /**
