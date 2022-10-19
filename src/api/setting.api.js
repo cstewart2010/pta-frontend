@@ -2,7 +2,7 @@ import { BASE_URL } from './api.config.json'
 import { METHODS } from './enums.json'
 import { requestHandler, nullChecker } from './axiosHandler';
 import { getGameId, getUserCredentials } from '../utils/localStorage';
-const ENCOUNTER_RESOURCE = `${BASE_URL}/api/v1/encounter`
+const ENCOUNTER_RESOURCE = `${BASE_URL}/api/v1/setting`
 
 /**
  * @returns The encounter

@@ -194,7 +194,7 @@ import { changeForm, markAsEvolvable, updateHP } from '../../api/pokemon.api'
 import { generateErrorModal } from '../../utils/modalUtil'
 import { getCellParticipant, getIsGM, getTrainer, setPTAActivityToken } from '../../utils/localStorage'
 import EvolvePokemon from '../modals/EvolvePokemon.vue'
-import { catchPokemon, returnToPokeball } from '../../api/encounter.api'
+import { catchPokemon, returnToPokeball } from '../../api/setting.api'
 
 export default {
     name: 'PokemonSheet',

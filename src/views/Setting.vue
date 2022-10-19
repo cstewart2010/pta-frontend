@@ -1,7 +1,11 @@
 <template>
     <div v-if="encounter">
-        <h1>{{encounter.Name}} Map 
-            <button class="btn btn-lg" @click="refresh" :disabled="isDisabled"><i :class="`fa fa-refresh ${fontColor}`" aria-hidden="true"></i></button>
+        <h1>
+            <small class="text-muted">{{encounter.Type}}</small>
+            {{encounter.Name}}
+            <button class="btn btn-lg" @click="refresh" v-if="isEnabled"
+                ><i :class="`fa fa-refresh ${fontColor}`" aria-hidden="true"></i>
+            </button>
         </h1>
         <div v-if="isGM">
             <div class="input-group my-2">
@@ -124,7 +128,7 @@
 
 <script>
 import { getGameId, getIsGM, getTrainer, setCellParticipant, setPTAActivityToken, } from '../utils/localStorage'
-import { addToActiveEncounter, getActiveEncounterWebSocket, removeFromActiveEncounter } from '../api/encounter.api'
+import { addToActiveEncounter, getActiveEncounterWebSocket, removeFromActiveEncounter } from '../api/setting.api'
 import { generateErrorModal } from '../utils/modalUtil'
 import CellModal from '../components/modals/CellModal.vue'
 import { deletePokemon, getGamePokemon } from '../api/pokemon.api'
@@ -175,7 +179,7 @@ export default {
             npcMonSelection: null,
             selectedNpc: {},
             fontColor: '',
-            isDisabled: false,
+            isEnabled: true,
             socket: getActiveEncounterWebSocket()
         }
     },
@@ -236,7 +240,6 @@ export default {
         async updateMap(){
             this.initializeMap()
             if (!this.encounter){
-                // this.encounterMap = []
                 return;
             }
             this.activeParticipants = this.encounter.ActiveParticipants;
@@ -281,10 +284,10 @@ export default {
             }
             setTimeout(() => {
                 this.fontColor = ''
-                this.isDisabled = false
+                this.isEnabled = true
             }, 5000);
             this.fontColor = 'text-muted'
-            this.isDisabled = true
+            this.isEnabled = false
         },
         getPokemonGif(isShiny, normalPortrait, shinyPortrait){
             if (isShiny){

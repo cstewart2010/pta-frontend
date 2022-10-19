@@ -19,7 +19,7 @@
 </template>
 
 <script>
-import { deleteEncounter } from '../../api/encounter.api';
+import { deleteEncounter } from '../../api/setting.api';
 import { generateErrorModal } from '../../utils/modalUtil';
 export default {
     name: 'DeleteTrainer',
