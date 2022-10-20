@@ -19,6 +19,22 @@
         <li class="nav-item">
           <router-link to="/about" class="nav-link">About</router-link>
         </li>
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle" href="#" id="other-stuff" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+            Dropdown
+          </a>
+          <ul class="dropdown-menu" aria-labelledby="other-stuff">
+            <li>
+              <router-link class="dropdown-item" to="/documentation">Documentation</router-link>
+            </li>
+            <li>
+              <router-link class="dropdown-item" to="/credits">Credits</router-link>
+            </li>
+            <li>
+              <router-link class="dropdown-item" to="/bug">Report A Bug</router-link>
+            </li>
+          </ul>
+        </li>
         <li class="nav-item" v-if="gameId && isGM==true && needsToAuthenticate==false">
           <router-link to="/trade" class="nav-link">Trade Center</router-link>
         </li>

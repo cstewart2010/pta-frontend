@@ -70,6 +70,21 @@ const routes = [
     path: '/missionControl',
     name: 'MissionControl',
     component: () => import('../views/MissionControl.vue'),
+  },
+  {
+    path: '/documentation',
+    name: 'Documentation',
+    component: () => import('../views/Documentation.vue'),
+  },
+  {
+    path: '/credits',
+    name: 'Credits',
+    component: () => import('../views/Credits.vue'),
+  },
+  {
+    path: '/bug',
+    name: 'BugReport',
+    component: () => import('../views/BugReport.vue'),
   }
 ]
 
