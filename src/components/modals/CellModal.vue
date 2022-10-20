@@ -131,7 +131,7 @@ export default {
             if (selected){
                 await updateTrainerPosition(this.x, this.y)
                     .then(() => this.socket.send(""))
-                    .catch(() => this.errorModel(selected));
+                    .catch(() => this.errorModal(selected));
             }
             else {
                 await addToActiveEncounter({
@@ -153,7 +153,7 @@ export default {
             if (selected){
                 updatePokemonPosition(selected.ParticipantId, this.x, this.y)
                     .then(() => this.socket.send(""))
-                    .catch(() => this.errorModel(selected));
+                    .catch(() => this.errorModal(selected));
             }
             else {
                 await addToActiveEncounter({
@@ -175,7 +175,7 @@ export default {
                 .then(() => this.socket.send(""))
                 .catch(generateErrorModal);
         },
-        errorModel(participant){
+        errorModal(participant){
             const name = participant.Name;
             const speed = participant.Speed;
             const distance = Math.ceil(Math.sqrt(Math.pow(this.x - participant.Position.X, 2) + Math.pow(this.y - participant.Position.Y, 2)));
