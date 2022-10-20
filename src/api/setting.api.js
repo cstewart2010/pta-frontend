@@ -2,7 +2,7 @@ import { BASE_URL } from './api.config.json'
 import { METHODS } from './enums.json'
 import { requestHandler, nullChecker } from './axiosHandler';
 import { getGameId, getUserCredentials } from '../utils/localStorage';
-const ENCOUNTER_RESOURCE = `${BASE_URL}/api/v1/encounter`
+const ENCOUNTER_RESOURCE = `${BASE_URL}/api/v1/setting`
 
 /**
  * @returns The encounter
@@ -10,6 +10,13 @@ const ENCOUNTER_RESOURCE = `${BASE_URL}/api/v1/encounter`
 export function getActiveEncounterWebSocket(){
     const gameId = getGameId();
     return new WebSocket(`${ENCOUNTER_RESOURCE.replace("https", "wss")}/${gameId}`);
+}
+
+/**
+ * @returns Environment collection
+ */
+export async function getEnvironments(){
+    return await requestHandler(ENCOUNTER_RESOURCE, METHODS.GET);
 }
 
 /**
@@ -43,6 +50,22 @@ export async function createEncounter(name, type){
         type
     };
     return await requestHandler(`${ENCOUNTER_RESOURCE}/${gameId}/${gameMasterId}`, METHODS.POST, {activityToken, sessionAuth, data});
+}
+
+/**
+ * Sets the setting's environment
+ * @param {String} environment the updated environmnet
+ * @returns 200
+ */
+export async function setEnvironment(environment){
+    const gameId = getGameId();
+    const [gameMasterId, activityToken, sessionAuth] = getUserCredentials();
+    nullChecker(gameMasterId, 'gameMasterId');
+    nullChecker(environment, 'environment');
+    nullChecker(activityToken, 'activityToken');
+    nullChecker(sessionAuth, 'sessionAuth');
+
+    return await requestHandler(`${ENCOUNTER_RESOURCE}/${gameId}/${gameMasterId}/environment?environments=${environment}`, METHODS.PUT, {activityToken, sessionAuth});
 }
 
 /**

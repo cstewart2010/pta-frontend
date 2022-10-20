@@ -53,7 +53,6 @@ export default {
         await getAllSprites()
             .then(response => {
                 this.sprites = response.data
-                console.log(response.data)
             })
             .catch(generateErrorModal);
     },

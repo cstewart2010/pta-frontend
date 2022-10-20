@@ -56,7 +56,6 @@ export default {
         this.trainerSkills = trainer.trainerSkills
         this.trainerStats = trainer.trainerStats
         this.isComplete = trainer.isComplete
-        await this.updateOrigin();
     },
     methods: {
         updateTalent1(index){

@@ -40,6 +40,7 @@ export default {
             selectedOrigin: '',
             originData: {},
             money: 0,
+            isComplete: false
         }
     },
     async beforeMount(){
@@ -50,6 +51,7 @@ export default {
             .catch(generateErrorModal);
 
         const trainer = getTrainer();
+        this.isComplete = trainer.isComplete;
         this.selectedOrigin = trainer.origin
         this.money = trainer.money
         await this.updateOrigin();

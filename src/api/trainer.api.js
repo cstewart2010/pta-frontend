@@ -2,7 +2,7 @@ import { BASE_URL } from './api.config.json'
 import { METHODS } from './enums.json'
 import { requestHandler, nullChecker, natureChecker, statusChecker, genderChecker } from './axiosHandler';
 import { getPokemon } from './dex.api';
-import { getGameId, getUserCredentials } from '../utils/localStorage';
+import { getGameId, getTrainerId, getUserCredentials } from '../utils/localStorage';
 const TRAINER_RESOURCE = `${BASE_URL}/api/v1/trainer`
 
 /**
@@ -122,13 +122,29 @@ export async function addHonor(honor, trainerId){
  */
 export async function addItems(itemPairs){
     const gameId = getGameId();
-    const [trainerId, activityToken, sessionAuth] = getUserCredentials();
+    const [gameMasterId, activityToken, sessionAuth] = getUserCredentials();
+    const trainerId = getTrainerId();
     nullChecker(trainerId, 'trainerId');
     nullChecker(itemPairs, 'itemPairs');
     nullChecker(activityToken, 'activityToken');
     nullChecker(sessionAuth, 'sessionAuth');
 
-    return await requestHandler(`${TRAINER_RESOURCE}/${gameId}/${trainerId}/addItems`, METHODS.PUT, {activityToken, data: itemPairs, sessionAuth});
+    return await requestHandler(`${TRAINER_RESOURCE}/${gameId}/${gameMasterId}/${trainerId}/addItems`, METHODS.PUT, {activityToken, data: itemPairs, sessionAuth});
+}
+
+/**
+ * Add items to a trainer's bag
+ * @param {any} itemPairs The key/value pairs for the items
+ */
+export async function addItemsAll(itemPairs){
+    const gameId = getGameId();
+    const [gameMasterId, activityToken, sessionAuth] = getUserCredentials();
+    nullChecker(gameMasterId, 'gameMasterId');
+    nullChecker(itemPairs, 'itemPairs');
+    nullChecker(activityToken, 'activityToken');
+    nullChecker(sessionAuth, 'sessionAuth');
+
+    return await requestHandler(`${TRAINER_RESOURCE}/${gameId}/${gameMasterId}/addItems/all`, METHODS.PUT, {activityToken, data: itemPairs, sessionAuth});
 }
 
 /**
@@ -144,6 +160,62 @@ export async function removeItems(itemPairs){
     nullChecker(sessionAuth, 'sessionAuth');
 
     return await requestHandler(`${TRAINER_RESOURCE}/${gameId}/${trainerId}/removeItems`, METHODS.PUT, {activityToken, data: itemPairs, sessionAuth});
+}
+
+/**
+ * Add items to a trainer's bag
+ * @param {any} itemPairs The key/value pairs for the items
+ */
+export async function removeItemsGm(itemPairs){
+    const gameId = getGameId();
+    const [gameMasterId, activityToken, sessionAuth] = getUserCredentials();
+    const trainerId = getTrainerId();
+    nullChecker(trainerId, 'trainerId');
+    nullChecker(itemPairs, 'itemPairs');
+    nullChecker(activityToken, 'activityToken');
+    nullChecker(sessionAuth, 'sessionAuth');
+
+    return await requestHandler(`${TRAINER_RESOURCE}/${gameId}/${gameMasterId}/${trainerId}/removeItems`, METHODS.PUT, {activityToken, data: itemPairs, sessionAuth});
+}
+
+/**
+ * Removes items from a trainer's bag
+ * @param {any} itemPairs The key/value pairs for the items
+ */
+export async function removeItemsAll(itemPairs){
+    const gameId = getGameId();
+    const [gameMasterId, activityToken, sessionAuth] = getUserCredentials();
+    nullChecker(gameMasterId, 'gameMasterId');
+    nullChecker(itemPairs, 'itemPairs');
+    nullChecker(activityToken, 'activityToken');
+    nullChecker(sessionAuth, 'sessionAuth');
+
+    return await requestHandler(`${TRAINER_RESOURCE}/${gameId}/${gameMasterId}/removeItems/all`, METHODS.PUT, {activityToken, data: itemPairs, sessionAuth});
+}
+
+export async function updateMoney(trainerId, addition){
+    
+    const gameId = getGameId();
+    const [gameMasterId, activityToken, sessionAuth] = getUserCredentials();
+    nullChecker(gameMasterId, 'gameMasterId');
+    nullChecker(trainerId, 'trainerId');
+    nullChecker(addition, 'addition');
+    nullChecker(activityToken, 'activityToken');
+    nullChecker(sessionAuth, 'sessionAuth');
+
+    return await requestHandler(`${TRAINER_RESOURCE}/${gameId}/${gameMasterId}/${trainerId}/money?addition=${addition}`, METHODS.PUT, {activityToken, sessionAuth});
+}
+
+export async function updateMoneyAll(addition){
+    
+    const gameId = getGameId();
+    const [gameMasterId, activityToken, sessionAuth] = getUserCredentials();
+    nullChecker(gameMasterId, 'gameMasterId');
+    nullChecker(addition, 'addition');
+    nullChecker(activityToken, 'activityToken');
+    nullChecker(sessionAuth, 'sessionAuth');
+
+    return await requestHandler(`${TRAINER_RESOURCE}/${gameId}/${gameMasterId}/money/all?addition=${addition}`, METHODS.PUT, {activityToken, sessionAuth});
 }
 
 /**

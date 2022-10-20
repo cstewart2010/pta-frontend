@@ -16,17 +16,20 @@
                     <delete-trainer :trainerId="trainer.trainerId" :trainerName="trainer.trainerName" />
                 </div>
             </div>
-            <div class="row" v-if="regularTrainers.length > 0">
-                <div class="input-group my-1">
+            <div v-if="regularTrainers.length > 0">
+                <div class="input-group my-2">
                     <span class="input-group-text">Add a group honor</span>
                     <textarea class="form-control" v-model="groupHonor" cols="30" rows="1" />
                     <button class="btn btn-secondary" @click="onGroupHonor">Add honor</button>
                 </div>
-            </div>
-            <div class="row" v-if="regularTrainers.length > 0">
-                <div class="input-group my-1">
+                <div class="input-group my-2">
+                    <span class="input-group-text">Add money to all</span>
+                    <input type="number" class="form-control" v-model="groupAddition">
+                    <button class="btn btn-secondary" @click="onGroupAddition">Add money</button>
+                </div>
+                <div class="input-group my-2">
                     <span class="input-group-text">Add a single honor</span>
-                    <select class="form-select" v-model="singleRecipient">
+                    <select class="form-select" v-model="singleHonorRecipient">
                         <option value=""></option>
                         <option v-for="trainer in regularTrainers" :key="trainer.trainerId" :value="trainer.trainerId">
                             {{trainer.trainerName}}
@@ -35,13 +38,24 @@
                     <textarea class="form-control" v-model="singleHonor" cols="30" rows="1" />
                     <button class="btn btn-secondary" @click="onSingleHonor">Add honor</button>
                 </div>
+                <div class="input-group my-2">
+                    <span class="input-group-text">Add money to single trainer</span>
+                    <select class="form-select" v-model="singleAdditionRecipient">
+                        <option value=""></option>
+                        <option v-for="trainer in regularTrainers" :key="trainer.trainerId" :value="trainer.trainerId">
+                            {{trainer.trainerName}}
+                        </option>
+                    </select>
+                    <input type="number" class="form-control" v-model="singleAddition">
+                    <button class="btn btn-secondary" @click="onSingleAddition">Add money</button>
+                </div>
             </div>
         </div>
             <section class="m-2" v-if="npcId!=null">
             <incomplete-npc :npcId="npcId" />
         </section>
         <div id="npcs" class="my-3">
-            <h3 class="text-muted">NPCS</h3>
+            <h3 class="text-dark">Npcs</h3>
             <div class="row">
                 <div class="my-1" v-for="npc in npcs" :key="npc.npcId">
                     <button class="btn btn-secondary col-6" @click="updateNpcId(npc.npcId)">
@@ -69,10 +83,17 @@
                 <button class="btn btn-secondary" @click="onCreateNewNpc">Add Npc</button>
             </div>
         </div>
-        <div id="encounters" class="my-3">
-            <h3 class="text-primary">Encounters</h3>
+        <div class="my-3 row" id="shop">
+            <h3 class="text-muted">Shops</h3>
+            <button class="btn btn-primary col mx-2" data-bs-toggle="modal" data-bs-target="#createShopModal">Create Shop</button>
+            <button class="btn btn-primary col mx-2" data-bs-toggle="modal" data-bs-target="#updateShopModal">Update Shop</button>
+            <create-shop />
+            <update-shop />
+        </div>
+        <div id="settings" class="my-3">
+            <h3 class="text-primary">Settings</h3>
             <div class="row">
-                <div class="my-1" v-for="encounter in encounters" :key="encounter.encounterId">
+                <div class="my-1" v-for="encounter in settings" :key="encounter.encounterId">
                     <button class="btn btn-primary col-6" @click="deactivateEncounter(encounter.encounterId)" v-if="encounter.isActive">
                         Deactive {{encounter.name}}
                     </button>
@@ -90,9 +111,8 @@
                 <input type="text" v-model="encounterName">
                 <select class="form-select" v-model="encounterType">
                     <option value="" selected></option>
-                    <option value="Wild">Wild</option>
-                    <option value="Trainer">Trainer</option>
-                    <option value="Hybrid">Hybrid</option>
+                    <option value="Hostile">Hostile</option>
+                    <option value="NonHostile">NonHostile</option>
                 </select>
                 <button class="btn btn-primary" @click="onNewEncounter">Add encounter</button>
             </div>
@@ -118,7 +138,7 @@
 </template>
 
 <script>
-import { addGroupHonor, addHonor } from '../../api/trainer.api';
+import { addGroupHonor, addHonor, updateMoney, updateMoneyAll } from '../../api/trainer.api';
 import { getTrainers, setTrainers, removeFromStorage, setPTAActivityToken, setIsGM, getIsGM, removeTrainer } from '../../utils/localStorage';
 import { generateErrorModal, generateNavigationModal } from '../../utils/modalUtil';
 import { refreshInGame } from '../../api/user.api'
@@ -129,9 +149,11 @@ import DeleteEncounter from '../../components/modals/DeleteEncounter.vue'
 import ExportGame from '../../components/modals/ExportGame.vue'
 import { createNewNpc, getNpcsInGame } from '../../api/npc.api';
 import { getAllGeneralFeatures, getAllTrainerClasses} from '../../api/dex.api';
-import { createEncounter, getAllEncounters, setEncounterToActive, setEncounterToInactive } from '../../api/encounter.api';
+import { createEncounter, getAllEncounters, setEncounterToActive, setEncounterToInactive } from '../../api/setting.api';
 import DeleteNpc from '../../components/modals/DeleteNpc.vue';
 import IncompleteNpc from '../../components/npcs/IncompleteNpc.vue';
+import CreateShop from '../../components/modals/CreateShopModal.vue'
+import UpdateShop from '../../components/modals/UpdateShopModal.vue'
 export default {
     name: 'GMPortal',
     data(){
@@ -141,7 +163,8 @@ export default {
             trainerId: null,
             groupHonor: '',
             singleHonor: '',
-            singleRecipient: '',
+            singleHonorRecipient: '',
+            singleAdditionRecipient: '',
             regularTrainers: [],
             npcName: '',
             npcId: null,
@@ -152,7 +175,9 @@ export default {
             allFeats:[],
             encounterName: '',
             encounterType: '',
-            encounters: []
+            settings: [],
+            singleAddition: 0,
+            groupAddition: 0
         }
     },
     components: {
@@ -162,7 +187,9 @@ export default {
         ExportGame,
         IncompleteTrainer,
         IncompleteNpc,
-        DeleteNpc
+        DeleteNpc,
+        CreateShop,
+        UpdateShop
     },
     beforeMount: async function(){
         await refreshInGame()
@@ -182,7 +209,7 @@ export default {
             });
             await getAllEncounters()
                 .then(response => {
-                    this.encounters = response.data;
+                    this.settings = response.data;
                 });
         })
         .catch(error => {
@@ -235,7 +262,7 @@ export default {
             if (this.singleHonor.length == 0){
                 return;
             }
-            if (this.singleRecipient.length == 0){
+            if (this.singleHonorRecipient.length == 0){
                 return;
             }
             await addHonor(this.singleHonor, this.singleRecipient)
@@ -243,6 +270,14 @@ export default {
                     setPTAActivityToken(response.headers['pta-activity-token']);
                     location.reload();
                 })
+                .catch(generateErrorModal);
+        },
+        async onGroupAddition(){
+            await updateMoneyAll(this.groupAddition)
+                .catch(generateErrorModal);
+        },
+        async onSingleAddition(){
+            await updateMoney(this.singleAdditionRecipient, this.groupAddition)
                 .catch(generateErrorModal);
         },
         async onCreateNewNpc(){

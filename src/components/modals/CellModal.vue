@@ -1,5 +1,5 @@
 <template>
-    <div class="modal fade" :id="`cellModal_${x}_${y}`" tabindex="-1" :aria-labelledby="`cellModalLabel_${x}_${y}`" aria-hidden="true">
+    <div class="modal fade text-center" :id="`cellModal_${x}_${y}`" tabindex="-1" :aria-labelledby="`cellModalLabel_${x}_${y}`" aria-hidden="true">
         <div :class="`modal-dialog ${modalSize}`">
             <div class="modal-content">
                 <div class="modal-header d-block">
@@ -46,6 +46,9 @@
                     <div v-else-if="participant.Type == 'Trainer'">
                         <trainer-sheet :trainerId="participant.ParticipantId" />
                     </div>
+                    <div v-else-if="participant.Type == 'Shop'">
+                        <shop-sheet :shopId="participant.ParticipantId" />
+                    </div>
                     <div v-else-if="participant.Type.includes('Pokemon')">
                         <pokemon-sheet :pokemonId="participant.ParticipantId" :socket="socket" />
                     </div>
@@ -67,11 +70,13 @@ import { findTrainerInGame } from '../../api/game.api'
 import TrainerSheet from '../encounter/TrainerSheet.vue'
 import PokemonSheet from '../encounter/PokemonSheet.vue'
 import NpcSheet from '../encounter/NpcSheet.vue'
-import { addToActiveEncounter, updateParticipantPosition, updatePokemonPosition, updateTrainerPosition } from '../../api/encounter.api'
+import { addToActiveEncounter, updateParticipantPosition, updatePokemonPosition, updateTrainerPosition } from '../../api/setting.api'
 import { generateErrorModal } from '../../utils/modalUtil'
 import { getGamePokemon } from '../../api/pokemon.api'
+import { getShopTrainer } from '../../api/shop.api'
+import ShopSheet from '../encounter/ShopSheet.vue'
 export default {
-  components: { TrainerSheet, PokemonSheet, NpcSheet },
+  components: { TrainerSheet, PokemonSheet, NpcSheet, ShopSheet },
     name: 'CellModal',
     props: {
         participant: {
@@ -100,7 +105,8 @@ export default {
         return {
             isGM: getIsGM(),
             self: {},
-            gameId: getGameId()
+            gameId: getGameId(),
+            inventory: {}
         }
     },
     async beforeMount(){
@@ -112,6 +118,14 @@ export default {
                 await findTrainerInGame(this.gameId, this.participant.ParticipantId)
                     .then(response => {
                         setCellParticipant(this.participant.ParticipantId, response.data.trainer)
+                    })
+                    .catch(console.log);
+            }
+            else if (this.participant.Type == "Shop"){
+                console.log("fgger")
+                await getShopTrainer(this.participant.ParticipantId)
+                    .then(response => {
+                        setCellParticipant(this.participant.ParticipantId, response.data.inventory)
                     })
                     .catch(console.log);
             }
@@ -127,10 +141,11 @@ export default {
     methods: {
         async moveTrainer(){
             var trainer = getTrainer();
-            if (this.participants.some(participant => participant.ParticipantId == trainer.trainerId)){
+            const selected = this.participants.find(participant => participant.ParticipantId == trainer.trainerId);
+            if (selected){
                 await updateTrainerPosition(this.x, this.y)
                     .then(() => this.socket.send(""))
-                    .catch(generateErrorModal);
+                    .catch(() => this.errorModal(selected));
             }
             else {
                 await addToActiveEncounter({
@@ -148,10 +163,11 @@ export default {
             }
         },
         async movePokemon(pokemon){
-            if (this.participants.some(participant => participant.ParticipantId == pokemon.pokemonId)){
-                updatePokemonPosition(pokemon.pokemonId, this.x, this.y)
+            const selected = this.participants.find(participant => participant.ParticipantId == pokemon.pokemonId);
+            if (selected){
+                updatePokemonPosition(selected.ParticipantId, this.x, this.y)
                     .then(() => this.socket.send(""))
-                    .catch(generateErrorModal);
+                    .catch(() => this.errorModal(selected));
             }
             else {
                 await addToActiveEncounter({
@@ -172,6 +188,15 @@ export default {
             await updateParticipantPosition(participantId, this.x, this.y)
                 .then(() => this.socket.send(""))
                 .catch(generateErrorModal);
+        },
+        errorModal(participant){
+            const name = participant.Name;
+            const speed = participant.Speed;
+            const distance = Math.ceil(Math.sqrt(Math.pow(this.x - participant.Position.X, 2) + Math.pow(this.y - participant.Position.Y, 2)));
+            generateErrorModal({
+                status: `Cannot move ${name} to (${this.y}, ${this.x})`,
+                reason: `${name} can only move ${speed} blocks. This position is ${distance} blocks away.`
+            })
         }
     }
 }

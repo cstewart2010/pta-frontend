@@ -1,9 +1,22 @@
 <template>
     <div v-if="encounter">
-        <h1>{{encounter.Name}} Map 
-            <button class="btn btn-lg" @click="refresh" :disabled="isDisabled"><i :class="`fa fa-refresh ${fontColor}`" aria-hidden="true"></i></button>
+        <h1>
+            <small class="text-muted">{{encounter.Type}}</small>
+            {{encounter.Name}}
+            <button class="btn btn-lg" @click="refresh" v-if="isEnabled"
+                ><i :class="`fa fa-refresh ${fontColor}`" aria-hidden="true"></i>
+            </button>
         </h1>
         <div v-if="isGM">
+            <div class="input-group my-2">
+                <span class="input-group-text">Set Environments</span>
+                <select class="form-select" multiple v-model="encounter.Environment">
+                    <option v-for="(environment, index) in environments" :key="index" :value="environment">
+                        {{environment}}
+                    </option>
+                </select>
+                <button class="btn btn-secondary" @click="setEnvironment">Set</button>
+            </div>
             <div class="input-group my-2">
                 <span class="input-group-text">Add Wild Pokemon</span>
                 <input class="form-control" list="datalistOptions" id="pokemonDataList" v-model="wildPokemon" placeholder="Type to search...">
@@ -47,6 +60,20 @@
                 <input type="number" min="0" :max="length" v-model="y">
                 <button class="btn btn-secondary" @click="addNpcMon">Add</button>
             </div>
+            <div class="input-group">
+                <span class="input-group-text">Shops</span>
+                <select class="form-select" v-model="shopSelection">
+                    <option value=""></option>
+                    <option v-for="(shop, index) in shops" :key="index" :value="index + 1">
+                        {{shop.name}}
+                    </option>
+                </select>
+                <span class="input-group-text">x-coordinate</span>
+                <input type="number" min="0" :max="length" v-model="x">
+                <span class="input-group-text">y-coordinate</span>
+                <input type="number" min="0" :max="length" v-model="y">
+                <button class="btn btn-secondary" @click="addShop">Add</button>
+            </div>
             <div class="input-group my-2">
                 <span class="input-group-text">Remove from encounter</span>
                 <select v-model="removalOption" class="form-select">
@@ -66,57 +93,71 @@
                 <npc-sheet :npcId="participantId" v-if="displaySection == 'Npc'" />
             </section>
         </div>
+        <div v-if="encounter.Environment.length > 0">
+            ({{encounter.Environment.join('/')}})
+        </div>
         <div v-if="isGM">
             <div class="row" v-for="(row, rowIndex) in encounterMap" :key="rowIndex">
-                <button :class="'col border border-dark btn grid-cell ' + cellData.color" v-for="(cellData, columnIndex) in row" :key="`${rowIndex}_${columnIndex}`">
+                <button
+                    :class="'col border border-dark btn grid-cell ' + cellData.color"
+                    v-for="(cellData, columnIndex) in row"
+                    :key="`${rowIndex}_${columnIndex}`"
+                    :id="`cell_${rowIndex}_${columnIndex}`"
+                    data-bs-toggle="modal"
+                    :data-bs-target="`#cellModal_${rowIndex}_${columnIndex}`"
+                    @contextmenu.prevent="togglePath(rowIndex,columnIndex,cellData.participant.ParticipantId)">
                     <img class="img-fluid"
                         :src="cellData.url"
                         :alt="cellData.alt"
-                        @click="changeDisplay(cellData)"
                         v-if="cellData.url && cellData.url.length > 0"
                         :title="cellData.alt">
                     <div
                         class=" grid-cell"
-                        data-bs-toggle="modal"
-                        :data-bs-target="`#cellModal_${rowIndex}_${columnIndex}`"
                         v-else>
                     </div>
-                    <cell-modal
-                        :participant="cellData.participant"
-                        :x="rowIndex"
-                        :y="columnIndex"
-                        :modalSize="cellData.modalSize"
-                        :trainerMons="trainerMons"
-                        :participants="activeParticipants"
-                        :socket="socket" />
                 </button>
+                <cell-modal
+                    v-for="(cellData, columnIndex) in row"
+                    :key="`${rowIndex}_${columnIndex}`"
+                    :participant="cellData.participant"
+                    :x="rowIndex"
+                    :y="columnIndex"
+                    :modalSize="cellData.modalSize"
+                    :trainerMons="trainerMons"
+                    :participants="activeParticipants"
+                    :socket="socket" />
             </div>
         </div>
         <div v-else>
             <div class="row" v-for="(row, rowIndex) in encounterMap" :key="rowIndex">
-                <button :class="'col border border-dark btn grid-cell ' + cellData.color" v-for="(cellData, columnIndex) in row" :key="`${rowIndex}_${columnIndex}`">
+                <button
+                    :class="'col border border-dark btn grid-cell ' + cellData.color"
+                    v-for="(cellData, columnIndex) in row"
+                    :key="`${rowIndex}_${columnIndex}`"
+                    :id="`cell_${rowIndex}_${columnIndex}`"
+                    data-bs-toggle="modal"
+                    :data-bs-target="`#cellModal_${rowIndex}_${columnIndex}`"
+                    @contextmenu.prevent="togglePath(rowIndex,columnIndex,cellData.participant.ParticipantId)">
                     <img class="img-fluid"
                         :src="cellData.url"
                         :alt="cellData.alt"
-                        data-bs-toggle="modal"
-                        :data-bs-target="`#cellModal_${rowIndex}_${columnIndex}`"
                         v-if="cellData.url && cellData.url.length > 0"
                         :title="cellData.alt">
                     <div
                         class=" grid-cell"
-                        data-bs-toggle="modal"
-                        :data-bs-target="`#cellModal_${rowIndex}_${columnIndex}`"
                         v-else>
                     </div>
-                    <cell-modal
-                        :participant="cellData.participant"
-                        :x="rowIndex"
-                        :y="columnIndex"
-                        :modalSize="cellData.modalSize"
-                        :trainerMons="trainerMons"
-                        :participants="activeParticipants"
-                        :socket="socket" />
                 </button>
+                <cell-modal
+                    v-for="(cellData, columnIndex) in row"
+                    :key="`${rowIndex}_${columnIndex}`"
+                    :participant="cellData.participant"
+                    :x="rowIndex"
+                    :y="columnIndex"
+                    :modalSize="cellData.modalSize"
+                    :trainerMons="trainerMons"
+                    :participants="activeParticipants"
+                    :socket="socket" />
             </div>
         </div>
     </div>
@@ -124,7 +165,7 @@
 
 <script>
 import { getGameId, getIsGM, getTrainer, setCellParticipant, setPTAActivityToken, } from '../utils/localStorage'
-import { addToActiveEncounter, getActiveEncounterWebSocket, removeFromActiveEncounter } from '../api/encounter.api'
+import { addToActiveEncounter, getActiveEncounterWebSocket, getEnvironments, removeFromActiveEncounter, setEnvironment } from '../api/setting.api'
 import { generateErrorModal } from '../utils/modalUtil'
 import CellModal from '../components/modals/CellModal.vue'
 import { deletePokemon, getGamePokemon } from '../api/pokemon.api'
@@ -134,6 +175,7 @@ import PokemonSheet from '../components/encounter/PokemonSheet.vue'
 import NpcSheet from '../components/encounter/NpcSheet.vue'
 import { getNpc, getNpcsInGame } from '../api/npc.api'
 import { getAllBasePokemon } from '../api/dex.api'
+import { getShops, getShopTrainer } from '../api/shop.api'
 export default {
     name: "Encounter",
     components: {
@@ -175,14 +217,22 @@ export default {
             npcMonSelection: null,
             selectedNpc: {},
             fontColor: '',
-            isDisabled: false,
-            socket: getActiveEncounterWebSocket()
+            isEnabled: true,
+            socket: getActiveEncounterWebSocket(),
+            environments: [],
+            trainerId: null,
+            path: [],
+            diagonalMovement: Math.sqrt(2),
+            shops: [],
+            shopSelection: null
         }
     },
     async beforeMount(){
         if (this.gameId){
             if (!this.isGM){
-                this.trainerMons = getTrainer().pokemonTeam
+                const trainer = getTrainer();
+                this.trainerMons = trainer.pokemonTeam
+                this.trainerId = trainer.trainerId
             }
             else {
                 await getNpcsInGame(this.gameId).then(response => {
@@ -199,6 +249,19 @@ export default {
                         }
                     })
                     .catch(generateErrorModal);
+                await getEnvironments()
+                    .then(response => {
+                        this.environments = response.data
+                    })
+                await getShops()
+                    .then(response => {
+                        this.shops = response.data.filter(shop => shop.isActive).map(shop => {
+                            return {
+                                name: shop.name,
+                                shopId: shop.shopId
+                            }
+                        })
+                    });
             }
 
             this.socket.onmessage = (event) => {
@@ -236,7 +299,6 @@ export default {
         async updateMap(){
             this.initializeMap()
             if (!this.encounter){
-                // this.encounterMap = []
                 return;
             }
             this.activeParticipants = this.encounter.ActiveParticipants;
@@ -251,6 +313,10 @@ export default {
                         case "Trainer":
                             this.encounterMap[participant.Position.X][participant.Position.Y].url = `http://play.pokemonshowdown.com/sprites/trainers/${source.sprite}.png`
                             this.encounterMap[participant.Position.X][participant.Position.Y].color = "bg-dark"
+                            break;
+                        case "Shop":
+                            this.encounterMap[participant.Position.X][participant.Position.Y].url = 'https://www.freeiconspng.com/thumbs/pokeball-png/pokeball-pokemon-ball-red-clipart-13.png'
+                            this.encounterMap[participant.Position.X][participant.Position.Y].color = "bg-secondary"
                             break;
                         case "Pokemon":
                             this.encounterMap[participant.Position.X][participant.Position.Y].url = this.getPokemonGif(source.isShiny, source.normalPortrait, source.shinyPortrait);
@@ -281,10 +347,10 @@ export default {
             }
             setTimeout(() => {
                 this.fontColor = ''
-                this.isDisabled = false
+                this.isEnabled = true
             }, 5000);
             this.fontColor = 'text-muted'
-            this.isDisabled = true
+            this.isEnabled = false
         },
         getPokemonGif(isShiny, normalPortrait, shinyPortrait){
             if (isShiny){
@@ -304,6 +370,74 @@ export default {
                         }
                     }
                 }
+            }
+        },
+        togglePath(x, y, id){
+            if (this.path.length){
+                for (const cell of this.path){
+                    document.getElementById(`cell_${cell}`).classList.remove("btn-info")
+                }
+                this.path = []
+                return;
+            }
+            if (!(this.isGM || this.trainerId == id || this.trainerMons.some(pokemon => pokemon.pokemonId == id))){
+                return;
+            }
+
+            const speed = this.encounterMap[x][y].participant.Speed;
+            this.path = [...new Set(this.getPath(x, y, speed))]
+            for (const cell of this.path){
+                document.getElementById(`cell_${cell}`).classList.add("btn-info")
+            }
+        },
+        getPath(x, y, speed){
+            let path = []
+            if (speed < 1 || x < 0 || y < 0 || x > this.length || y > this.length){
+                return path
+            }
+            const diagonalSpeed = speed - this.diagonalMovement
+            speed--;
+            if (x < this.length && !this.encounterMap[x+1][y].participant.ParticipantId){
+                path.push(`${x+1}_${y}`)
+                path = path.concat(this.getPath(x+1, y, speed))
+            }
+            if (x > 0 && !this.encounterMap[x-1][y].participant.ParticipantId){
+                path.push(`${x-1}_${y}`)
+                path = path.concat(this.getPath(x-1, y, speed))
+            }
+            if (y < this.length && !this.encounterMap[x][y+1].participant.ParticipantId){
+                path.push(`${x}_${y+1}`)
+                path = path.concat(this.getPath(x, y+1, speed))
+            }
+            if (y > 0 && !this.encounterMap[x][y-1].participant.ParticipantId){
+                path.push(`${x}_${y-1}`)
+                path = path.concat(this.getPath(x, y-1, speed))
+            }
+            if (diagonalSpeed >= this.diagonalMovement){
+                if (x < this.length && y < this.length && !this.encounterMap[x+1][y+1].participant.ParticipantId){
+                    path.push(`${x+1}_${y+1}`)
+                    path = path.concat(this.getPath(x+1, y+1, diagonalSpeed))
+                }
+                if (x < this.length && y > 0 && !this.encounterMap[x+1][y-1].participant.ParticipantId){
+                    path.push(`${x+1}_${y-1}`)
+                    path = path.concat(this.getPath(x+1, y-1, diagonalSpeed))
+                }
+                if (x > 0 && y < this.length && !this.encounterMap[x-1][y+1].participant.ParticipantId){
+                    path.push(`${x-1}_${y+1}`)
+                    path = path.concat(this.getPath(x+1, y+1, diagonalSpeed))
+                }
+                if (x > 0 && y > 0 && !this.encounterMap[x+1][y-1].participant.ParticipantId){
+                    path.push(`${x-1}_${y-1}`)
+                    path = path.concat(this.getPath(x+1, y-1, diagonalSpeed))
+                }
+            }
+
+            return path;
+        },
+        async setEnvironment(){
+            if (this.encounter.Environment.length > 0){
+                await setEnvironment(this.encounter.Environment.join(','))
+                    .catch(generateErrorModal);
             }
         },
         async addNpc(){
@@ -332,7 +466,41 @@ export default {
                 },
                 speed: npc.trainerStats.speed
             })
-            .catch(generateErrorModal)
+                .then(this.refresh)
+                .catch(generateErrorModal)
+        },
+        async addShop(){
+            if (this.encounter.Type != "NonHostile"){
+                return;
+            }
+            if (this.x > this.length || this.x < 0){
+                return;
+            }
+            if (this.y > this.length || this.y < 0){
+                return;
+            }
+            if (this.encounterMap[this.x][this.y].participant.id){
+                return;
+            }
+            if (!this.shopSelection){
+                return;
+            }
+
+            console.log(this.shopSelection)
+            const shop = this.shops[this.shopSelection - 1];
+            await addToActiveEncounter({
+                participantId: shop.shopId,
+                name: shop.name,
+                health: "Feeling fresh!",
+                type: "Shop",
+                position: {
+                    x: this.x,
+                    y: this.y
+                },
+                speed: 0
+            })
+                .then(this.refresh)
+                .catch(generateErrorModal)
         },
         async addNpcMon(){
             if (this.x > this.length || this.x < 0){
@@ -359,7 +527,8 @@ export default {
                 },
                 speed: this.npcMonSelection.pokemonStats.speed
             })
-            .catch(generateErrorModal)
+                .then(this.refresh)
+                .catch(generateErrorModal)
         },
         async setACellParticipant(participant){
             switch (participant.Type){
@@ -368,6 +537,13 @@ export default {
                         .then(response => {
                             setCellParticipant(participant.ParticipantId, response.data.trainer)
                             return response.data.trainer;
+                        })
+                        .catch(console.log);
+                case "Shop":
+                    return await getShopTrainer(participant.ParticipantId)
+                        .then(response => {
+                            setCellParticipant(participant.ParticipantId, response.data.inventory)
+                            return null
                         })
                         .catch(console.log);
                 case "Pokemon":
@@ -423,6 +599,7 @@ export default {
                         })
                     })
                 })
+                .then(this.refresh)
                 .catch(generateErrorModal);
         },
         changeDisplay(cellData){
