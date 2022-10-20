@@ -20,14 +20,14 @@
             <div class="col-3 border-bottom border-start">
                 {{item.name}}
             </div>
-            <button class="col-1 btn text-dark border-bottom border-start" @click="setUseItem(item)"  data-bs-toggle="modal" data-bs-target="#useItemModal-key">
+            <div class="col-1 text-dark border-bottom border-start">
                 {{item.amount}}
-            </button>
+            </div>
             <div class="col-8 border-bottom border-start">
                 {{item.effects}}
             </div>
         </div>
-        <div class="row border-bottom border-start">
+        <div class="row border-bottom border-start" v-if="isGM">
             <select class="form-select m-1 col text-dark bg-secondary bg-opacity-25" name="item" style="max-width: 150px" v-model="addedItem">
                 <option v-for="(item, index) in availableItems" :key="index" :id="item" :value="item">
                     {{item}}
@@ -37,15 +37,13 @@
             <button class="btn m-1 col text-dark" @click="addItem">Add more items</button>
         </div>
     </div>
-    <use-item-modal :item="itemToUse" :type="'key'" />
 </template>
 
 <script>
 import { getAllKeyItems, getKeyItem } from '../../../api/dex.api'
 import { addItems } from '../../../api/trainer.api'
-import { getTrainer, setPTAActivityToken } from '../../../utils/localStorage'
+import { getIsGM, getTrainer, setPTAActivityToken } from '../../../utils/localStorage'
 import { generateErrorModal } from '../../../utils/modalUtil'
-import UseItemModal from '../../modals/UseItemModal.vue'
 export default {
     name: 'KeyItems',
     data(){
@@ -57,11 +55,9 @@ export default {
             itemToUse: {
                 name: '',
                 amount: 0
-            }
+            },
+            isGM: getIsGM()
         }
-    },
-    components: {
-        UseItemModal
     },
     beforeMount: async function(){
         await getAllKeyItems()
@@ -89,9 +85,6 @@ export default {
                 })
             })
             .catch(generateErrorModal);
-        },
-        setUseItem(item){
-            this.itemToUse = item;
         }
     }
 }

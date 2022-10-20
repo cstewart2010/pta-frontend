@@ -27,7 +27,7 @@
                 {{item.effects}}
             </div>
         </div>
-        <div class="row border-bottom border-start">
+        <div class="row border-bottom border-start" v-if="isGM">
             <select class="form-select m-1 col bg-success bg-opacity-25" name="item" style="max-width: 150px" v-model="addedItem">
                 <option v-for="(item, index) in availableItems" :key="index" :id="item" :value="item">
                     {{item}}
@@ -43,7 +43,7 @@
 <script>
 import { getAllBerries, getBerry } from '../../../api/dex.api'
 import { addItems } from '../../../api/trainer.api'
-import { getTrainer, setPTAActivityToken } from '../../../utils/localStorage'
+import { getIsGM, getTrainer, setPTAActivityToken } from '../../../utils/localStorage'
 import { generateErrorModal } from '../../../utils/modalUtil'
 import UseItemModal from '../../modals/UseItemModal.vue'
 export default {
@@ -57,7 +57,8 @@ export default {
             itemToUse: {
                 name: '',
                 amount: 0
-            }
+            },
+            isGM: getIsGM()
         }
     },
     components: {

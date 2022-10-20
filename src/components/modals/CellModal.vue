@@ -1,5 +1,5 @@
 <template>
-    <div class="modal fade" :id="`cellModal_${x}_${y}`" tabindex="-1" :aria-labelledby="`cellModalLabel_${x}_${y}`" aria-hidden="true">
+    <div class="modal fade text-center" :id="`cellModal_${x}_${y}`" tabindex="-1" :aria-labelledby="`cellModalLabel_${x}_${y}`" aria-hidden="true">
         <div :class="`modal-dialog ${modalSize}`">
             <div class="modal-content">
                 <div class="modal-header d-block">
@@ -46,6 +46,9 @@
                     <div v-else-if="participant.Type == 'Trainer'">
                         <trainer-sheet :trainerId="participant.ParticipantId" />
                     </div>
+                    <div v-else-if="participant.Type == 'Shop'">
+                        <shop-sheet :shopId="participant.ParticipantId" />
+                    </div>
                     <div v-else-if="participant.Type.includes('Pokemon')">
                         <pokemon-sheet :pokemonId="participant.ParticipantId" :socket="socket" />
                     </div>
@@ -70,8 +73,10 @@ import NpcSheet from '../encounter/NpcSheet.vue'
 import { addToActiveEncounter, updateParticipantPosition, updatePokemonPosition, updateTrainerPosition } from '../../api/setting.api'
 import { generateErrorModal } from '../../utils/modalUtil'
 import { getGamePokemon } from '../../api/pokemon.api'
+import { getShopTrainer } from '../../api/shop.api'
+import ShopSheet from '../encounter/ShopSheet.vue'
 export default {
-  components: { TrainerSheet, PokemonSheet, NpcSheet },
+  components: { TrainerSheet, PokemonSheet, NpcSheet, ShopSheet },
     name: 'CellModal',
     props: {
         participant: {
@@ -100,7 +105,8 @@ export default {
         return {
             isGM: getIsGM(),
             self: {},
-            gameId: getGameId()
+            gameId: getGameId(),
+            inventory: {}
         }
     },
     async beforeMount(){
@@ -112,6 +118,14 @@ export default {
                 await findTrainerInGame(this.gameId, this.participant.ParticipantId)
                     .then(response => {
                         setCellParticipant(this.participant.ParticipantId, response.data.trainer)
+                    })
+                    .catch(console.log);
+            }
+            else if (this.participant.Type == "Shop"){
+                console.log("fgger")
+                await getShopTrainer(this.participant.ParticipantId)
+                    .then(response => {
+                        setCellParticipant(this.participant.ParticipantId, response.data.inventory)
                     })
                     .catch(console.log);
             }

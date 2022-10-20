@@ -41,7 +41,6 @@
             <incomplete-npc :npcId="npcId" />
         </section>
         <div id="npcs" class="my-3">
-            <h3 class="text-muted">NPCS</h3>
             <div class="row">
                 <div class="my-1" v-for="npc in npcs" :key="npc.npcId">
                     <button class="btn btn-secondary col-6" @click="updateNpcId(npc.npcId)">
@@ -68,6 +67,13 @@
                 </select>
                 <button class="btn btn-secondary" @click="onCreateNewNpc">Add Npc</button>
             </div>
+        </div>
+        <div class="my-3 row" id="shop">
+            <h3 class="text-muted">Shops</h3>
+            <button class="btn btn-primary col mx-2" data-bs-toggle="modal" data-bs-target="#createShopModal">Create Shop</button>
+            <button class="btn btn-primary col mx-2" data-bs-toggle="modal" data-bs-target="#updateShopModal">Update Shop</button>
+            <create-shop />
+            <update-shop />
         </div>
         <div id="settings" class="my-3">
             <h3 class="text-primary">Settings</h3>
@@ -131,6 +137,8 @@ import { getAllGeneralFeatures, getAllTrainerClasses} from '../../api/dex.api';
 import { createEncounter, getAllEncounters, setEncounterToActive, setEncounterToInactive } from '../../api/setting.api';
 import DeleteNpc from '../../components/modals/DeleteNpc.vue';
 import IncompleteNpc from '../../components/npcs/IncompleteNpc.vue';
+import CreateShop from '../../components/modals/CreateShopModal.vue'
+import UpdateShop from '../../components/modals/UpdateShopModal.vue'
 export default {
     name: 'GMPortal',
     data(){
@@ -161,7 +169,9 @@ export default {
         ExportGame,
         IncompleteTrainer,
         IncompleteNpc,
-        DeleteNpc
+        DeleteNpc,
+        CreateShop,
+        UpdateShop
     },
     beforeMount: async function(){
         await refreshInGame()
