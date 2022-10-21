@@ -60,6 +60,20 @@
                 <input type="number" min="0" :max="length" v-model="y">
                 <button class="btn btn-secondary" @click="addNpcMon">Add</button>
             </div>
+            <div class="input-group">
+                <span class="input-group-text">Shops</span>
+                <select class="form-select" v-model="shopSelection">
+                    <option value=""></option>
+                    <option v-for="(shop, index) in shops" :key="index" :value="index + 1">
+                        {{shop.name}}
+                    </option>
+                </select>
+                <span class="input-group-text">x-coordinate</span>
+                <input type="number" min="0" :max="length" v-model="x">
+                <span class="input-group-text">y-coordinate</span>
+                <input type="number" min="0" :max="length" v-model="y">
+                <button class="btn btn-secondary" @click="addShop">Add</button>
+            </div>
             <div class="input-group my-2">
                 <span class="input-group-text">Remove from encounter</span>
                 <select v-model="removalOption" class="form-select">
@@ -89,28 +103,29 @@
                     v-for="(cellData, columnIndex) in row"
                     :key="`${rowIndex}_${columnIndex}`"
                     :id="`cell_${rowIndex}_${columnIndex}`"
+                    data-bs-toggle="modal"
+                    :data-bs-target="`#cellModal_${rowIndex}_${columnIndex}`"
                     @contextmenu.prevent="togglePath(rowIndex,columnIndex,cellData.participant.ParticipantId)">
                     <img class="img-fluid"
                         :src="cellData.url"
                         :alt="cellData.alt"
-                        @click="changeDisplay(cellData)"
                         v-if="cellData.url && cellData.url.length > 0"
                         :title="cellData.alt">
                     <div
                         class=" grid-cell"
-                        data-bs-toggle="modal"
-                        :data-bs-target="`#cellModal_${rowIndex}_${columnIndex}`"
                         v-else>
                     </div>
-                    <cell-modal
-                        :participant="cellData.participant"
-                        :x="rowIndex"
-                        :y="columnIndex"
-                        :modalSize="cellData.modalSize"
-                        :trainerMons="trainerMons"
-                        :participants="activeParticipants"
-                        :socket="socket" />
                 </button>
+                <cell-modal
+                    v-for="(cellData, columnIndex) in row"
+                    :key="`${rowIndex}_${columnIndex}`"
+                    :participant="cellData.participant"
+                    :x="rowIndex"
+                    :y="columnIndex"
+                    :modalSize="cellData.modalSize"
+                    :trainerMons="trainerMons"
+                    :participants="activeParticipants"
+                    :socket="socket" />
             </div>
         </div>
         <div v-else>
@@ -120,29 +135,29 @@
                     v-for="(cellData, columnIndex) in row"
                     :key="`${rowIndex}_${columnIndex}`"
                     :id="`cell_${rowIndex}_${columnIndex}`"
+                    data-bs-toggle="modal"
+                    :data-bs-target="`#cellModal_${rowIndex}_${columnIndex}`"
                     @contextmenu.prevent="togglePath(rowIndex,columnIndex,cellData.participant.ParticipantId)">
                     <img class="img-fluid"
                         :src="cellData.url"
                         :alt="cellData.alt"
-                        data-bs-toggle="modal"
-                        :data-bs-target="`#cellModal_${rowIndex}_${columnIndex}`"
                         v-if="cellData.url && cellData.url.length > 0"
                         :title="cellData.alt">
                     <div
                         class=" grid-cell"
-                        data-bs-toggle="modal"
-                        :data-bs-target="`#cellModal_${rowIndex}_${columnIndex}`"
                         v-else>
                     </div>
-                    <cell-modal
-                        :participant="cellData.participant"
-                        :x="rowIndex"
-                        :y="columnIndex"
-                        :modalSize="cellData.modalSize"
-                        :trainerMons="trainerMons"
-                        :participants="activeParticipants"
-                        :socket="socket" />
                 </button>
+                <cell-modal
+                    v-for="(cellData, columnIndex) in row"
+                    :key="`${rowIndex}_${columnIndex}`"
+                    :participant="cellData.participant"
+                    :x="rowIndex"
+                    :y="columnIndex"
+                    :modalSize="cellData.modalSize"
+                    :trainerMons="trainerMons"
+                    :participants="activeParticipants"
+                    :socket="socket" />
             </div>
         </div>
     </div>
@@ -160,6 +175,7 @@ import PokemonSheet from '../components/encounter/PokemonSheet.vue'
 import NpcSheet from '../components/encounter/NpcSheet.vue'
 import { getNpc, getNpcsInGame } from '../api/npc.api'
 import { getAllBasePokemon } from '../api/dex.api'
+import { getShops, getShopTrainer } from '../api/shop.api'
 export default {
     name: "Encounter",
     components: {
@@ -206,7 +222,9 @@ export default {
             environments: [],
             trainerId: null,
             path: [],
-            diagonalMovement: Math.sqrt(2)
+            diagonalMovement: Math.sqrt(2),
+            shops: [],
+            shopSelection: null
         }
     },
     async beforeMount(){
@@ -235,6 +253,15 @@ export default {
                     .then(response => {
                         this.environments = response.data
                     })
+                await getShops()
+                    .then(response => {
+                        this.shops = response.data.filter(shop => shop.isActive).map(shop => {
+                            return {
+                                name: shop.name,
+                                shopId: shop.shopId
+                            }
+                        })
+                    });
             }
 
             this.socket.onmessage = (event) => {
@@ -286,6 +313,10 @@ export default {
                         case "Trainer":
                             this.encounterMap[participant.Position.X][participant.Position.Y].url = `http://play.pokemonshowdown.com/sprites/trainers/${source.sprite}.png`
                             this.encounterMap[participant.Position.X][participant.Position.Y].color = "bg-dark"
+                            break;
+                        case "Shop":
+                            this.encounterMap[participant.Position.X][participant.Position.Y].url = 'https://www.freeiconspng.com/thumbs/pokeball-png/pokeball-pokemon-ball-red-clipart-13.png'
+                            this.encounterMap[participant.Position.X][participant.Position.Y].color = "bg-secondary"
                             break;
                         case "Pokemon":
                             this.encounterMap[participant.Position.X][participant.Position.Y].url = this.getPokemonGif(source.isShiny, source.normalPortrait, source.shinyPortrait);
@@ -435,7 +466,41 @@ export default {
                 },
                 speed: npc.trainerStats.speed
             })
-            .catch(generateErrorModal)
+                .then(this.refresh)
+                .catch(generateErrorModal)
+        },
+        async addShop(){
+            if (this.encounter.Type != "NonHostile"){
+                return;
+            }
+            if (this.x > this.length || this.x < 0){
+                return;
+            }
+            if (this.y > this.length || this.y < 0){
+                return;
+            }
+            if (this.encounterMap[this.x][this.y].participant.id){
+                return;
+            }
+            if (!this.shopSelection){
+                return;
+            }
+
+            console.log(this.shopSelection)
+            const shop = this.shops[this.shopSelection - 1];
+            await addToActiveEncounter({
+                participantId: shop.shopId,
+                name: shop.name,
+                health: "Feeling fresh!",
+                type: "Shop",
+                position: {
+                    x: this.x,
+                    y: this.y
+                },
+                speed: 0
+            })
+                .then(this.refresh)
+                .catch(generateErrorModal)
         },
         async addNpcMon(){
             if (this.x > this.length || this.x < 0){
@@ -462,7 +527,8 @@ export default {
                 },
                 speed: this.npcMonSelection.pokemonStats.speed
             })
-            .catch(generateErrorModal)
+                .then(this.refresh)
+                .catch(generateErrorModal)
         },
         async setACellParticipant(participant){
             switch (participant.Type){
@@ -471,6 +537,13 @@ export default {
                         .then(response => {
                             setCellParticipant(participant.ParticipantId, response.data.trainer)
                             return response.data.trainer;
+                        })
+                        .catch(console.log);
+                case "Shop":
+                    return await getShopTrainer(participant.ParticipantId)
+                        .then(response => {
+                            setCellParticipant(participant.ParticipantId, response.data.inventory)
+                            return null
                         })
                         .catch(console.log);
                 case "Pokemon":
@@ -526,6 +599,7 @@ export default {
                         })
                     })
                 })
+                .then(this.refresh)
                 .catch(generateErrorModal);
         },
         changeDisplay(cellData){

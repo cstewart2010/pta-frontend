@@ -24,8 +24,8 @@
 </template>
 
 <script>
-import { removeItems } from '../../api/trainer.api';
-import { setPTAActivityToken } from '../../utils/localStorage';
+import { removeItems, removeItemsGm } from '../../api/trainer.api';
+import { getIsGM, setPTAActivityToken } from '../../utils/localStorage';
 import { generateErrorModal } from '../../utils/modalUtil';
 export default {
     name: 'UseItemModal',
@@ -42,7 +42,8 @@ export default {
     },
     data(){
         return {
-            useAmount: 0
+            useAmount: 0,
+            isGM: getIsGM()
         }
     },
     methods: {        
@@ -55,15 +56,27 @@ export default {
                 return;
             }
             
-            await removeItems([{
+            const itemPairs = [{
                 name: this.item.name,
                 amount: this.useAmount
-            }])
-                .then((response) => {
-                    setPTAActivityToken(response.headers['pta-activity-token']);
-                    this.$router.go();
-                })
-                .catch(generateErrorModal);
+            }]
+
+            if (this.isGM){
+                await removeItemsGm(itemPairs)
+                    .then((response) => {
+                        setPTAActivityToken(response.headers['pta-activity-token']);
+                        this.$router.go();
+                    })
+                    .catch(generateErrorModal);
+            }
+            else{
+                await removeItems(itemPairs)
+                    .then((response) => {
+                        setPTAActivityToken(response.headers['pta-activity-token']);
+                        this.$router.go();
+                    })
+                    .catch(generateErrorModal);
+            }
         }
     }
 }
