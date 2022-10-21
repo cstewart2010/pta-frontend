@@ -67,7 +67,7 @@ import { findTrainerInGame } from '../../api/game.api'
 import TrainerSheet from '../encounter/TrainerSheet.vue'
 import PokemonSheet from '../encounter/PokemonSheet.vue'
 import NpcSheet from '../encounter/NpcSheet.vue'
-import { addToActiveEncounter, updateParticipantPosition, updatePokemonPosition, updateTrainerPosition } from '../../api/encounter.api'
+import { addToActiveEncounter, updateParticipantPosition, updatePokemonPosition, updateTrainerPosition } from '../../api/setting.api'
 import { generateErrorModal } from '../../utils/modalUtil'
 import { getGamePokemon } from '../../api/pokemon.api'
 export default {

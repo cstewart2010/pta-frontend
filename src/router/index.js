@@ -61,9 +61,9 @@ const routes = [
     props: true
   },
   {
-    path: '/encounter',
-    name: 'Encounter',
-    component: () => import('../views/Encounter.vue'),
+    path: '/setting',
+    name: 'Setting',
+    component: () => import('../views/Setting.vue'),
     props: true
   },
   {

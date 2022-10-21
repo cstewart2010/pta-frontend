@@ -69,10 +69,10 @@
                 <button class="btn btn-secondary" @click="onCreateNewNpc">Add Npc</button>
             </div>
         </div>
-        <div id="encounters" class="my-3">
-            <h3 class="text-primary">Encounters</h3>
+        <div id="settings" class="my-3">
+            <h3 class="text-primary">Settings</h3>
             <div class="row">
-                <div class="my-1" v-for="encounter in encounters" :key="encounter.encounterId">
+                <div class="my-1" v-for="encounter in settings" :key="encounter.encounterId">
                     <button class="btn btn-primary col-6" @click="deactivateEncounter(encounter.encounterId)" v-if="encounter.isActive">
                         Deactive {{encounter.name}}
                     </button>
@@ -90,9 +90,8 @@
                 <input type="text" v-model="encounterName">
                 <select class="form-select" v-model="encounterType">
                     <option value="" selected></option>
-                    <option value="Wild">Wild</option>
-                    <option value="Trainer">Trainer</option>
-                    <option value="Hybrid">Hybrid</option>
+                    <option value="Hostile">Hostile</option>
+                    <option value="NonHostile">NonHostile</option>
                 </select>
                 <button class="btn btn-primary" @click="onNewEncounter">Add encounter</button>
             </div>
@@ -129,7 +128,7 @@ import DeleteEncounter from '../../components/modals/DeleteEncounter.vue'
 import ExportGame from '../../components/modals/ExportGame.vue'
 import { createNewNpc, getNpcsInGame } from '../../api/npc.api';
 import { getAllGeneralFeatures, getAllTrainerClasses} from '../../api/dex.api';
-import { createEncounter, getAllEncounters, setEncounterToActive, setEncounterToInactive } from '../../api/encounter.api';
+import { createEncounter, getAllEncounters, setEncounterToActive, setEncounterToInactive } from '../../api/setting.api';
 import DeleteNpc from '../../components/modals/DeleteNpc.vue';
 import IncompleteNpc from '../../components/npcs/IncompleteNpc.vue';
 export default {
@@ -152,7 +151,7 @@ export default {
             allFeats:[],
             encounterName: '',
             encounterType: '',
-            encounters: []
+            settings: []
         }
     },
     components: {
@@ -182,7 +181,7 @@ export default {
             });
             await getAllEncounters()
                 .then(response => {
-                    this.encounters = response.data;
+                    this.settings = response.data;
                 });
         })
         .catch(error => {

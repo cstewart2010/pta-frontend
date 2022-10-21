@@ -23,7 +23,7 @@
           <router-link to="/trade" class="nav-link">Trade Center</router-link>
         </li>
         <li class="nav-item" v-if="gameId && needsToAuthenticate==false">
-          <router-link to="/encounter" class="nav-link">Encounter</router-link>
+          <router-link to="/setting" class="nav-link">Setting</router-link>
         </li>
         <li class="nav-item" v-if="needsToAuthenticate==false">
           <router-link to="/games" class="nav-link">Games</router-link>
