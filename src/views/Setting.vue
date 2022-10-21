@@ -84,7 +84,12 @@
         </div>
         <div v-if="isGM">
             <div class="row" v-for="(row, rowIndex) in encounterMap" :key="rowIndex">
-                <button :class="'col border border-dark btn grid-cell ' + cellData.color" v-for="(cellData, columnIndex) in row" :key="`${rowIndex}_${columnIndex}`">
+                <button
+                    :class="'col border border-dark btn grid-cell ' + cellData.color"
+                    v-for="(cellData, columnIndex) in row"
+                    :key="`${rowIndex}_${columnIndex}`"
+                    :id="`cell_${rowIndex}_${columnIndex}`"
+                    @contextmenu.prevent="togglePath(rowIndex,columnIndex,cellData.participant.ParticipantId)">
                     <img class="img-fluid"
                         :src="cellData.url"
                         :alt="cellData.alt"
@@ -110,7 +115,12 @@
         </div>
         <div v-else>
             <div class="row" v-for="(row, rowIndex) in encounterMap" :key="rowIndex">
-                <button :class="'col border border-dark btn grid-cell ' + cellData.color" v-for="(cellData, columnIndex) in row" :key="`${rowIndex}_${columnIndex}`">
+                <button
+                    :class="'col border border-dark btn grid-cell ' + cellData.color"
+                    v-for="(cellData, columnIndex) in row"
+                    :key="`${rowIndex}_${columnIndex}`"
+                    :id="`cell_${rowIndex}_${columnIndex}`"
+                    @contextmenu.prevent="togglePath(rowIndex,columnIndex,cellData.participant.ParticipantId)">
                     <img class="img-fluid"
                         :src="cellData.url"
                         :alt="cellData.alt"
@@ -193,13 +203,18 @@ export default {
             fontColor: '',
             isEnabled: true,
             socket: getActiveEncounterWebSocket(),
-            environments: []
+            environments: [],
+            trainerId: null,
+            path: [],
+            diagonalMovement: Math.sqrt(2)
         }
     },
     async beforeMount(){
         if (this.gameId){
             if (!this.isGM){
-                this.trainerMons = getTrainer().pokemonTeam
+                const trainer = getTrainer();
+                this.trainerMons = trainer.pokemonTeam
+                this.trainerId = trainer.trainerId
             }
             else {
                 await getNpcsInGame(this.gameId).then(response => {
@@ -325,6 +340,68 @@ export default {
                     }
                 }
             }
+        },
+        togglePath(x, y, id){
+            if (this.path.length){
+                for (const cell of this.path){
+                    document.getElementById(`cell_${cell}`).classList.remove("btn-info")
+                }
+                this.path = []
+                return;
+            }
+            if (!(this.isGM || this.trainerId == id || this.trainerMons.some(pokemon => pokemon.pokemonId == id))){
+                return;
+            }
+
+            const speed = this.encounterMap[x][y].participant.Speed;
+            this.path = [...new Set(this.getPath(x, y, speed))]
+            for (const cell of this.path){
+                document.getElementById(`cell_${cell}`).classList.add("btn-info")
+            }
+        },
+        getPath(x, y, speed){
+            let path = []
+            if (speed < 1 || x < 0 || y < 0 || x > this.length || y > this.length){
+                return path
+            }
+            const diagonalSpeed = speed - this.diagonalMovement
+            speed--;
+            if (x < this.length && !this.encounterMap[x+1][y].participant.ParticipantId){
+                path.push(`${x+1}_${y}`)
+                path = path.concat(this.getPath(x+1, y, speed))
+            }
+            if (x > 0 && !this.encounterMap[x-1][y].participant.ParticipantId){
+                path.push(`${x-1}_${y}`)
+                path = path.concat(this.getPath(x-1, y, speed))
+            }
+            if (y < this.length && !this.encounterMap[x][y+1].participant.ParticipantId){
+                path.push(`${x}_${y+1}`)
+                path = path.concat(this.getPath(x, y+1, speed))
+            }
+            if (y > 0 && !this.encounterMap[x][y-1].participant.ParticipantId){
+                path.push(`${x}_${y-1}`)
+                path = path.concat(this.getPath(x, y-1, speed))
+            }
+            if (diagonalSpeed >= this.diagonalMovement){
+                if (x < this.length && y < this.length && !this.encounterMap[x+1][y+1].participant.ParticipantId){
+                    path.push(`${x+1}_${y+1}`)
+                    path = path.concat(this.getPath(x+1, y+1, diagonalSpeed))
+                }
+                if (x < this.length && y > 0 && !this.encounterMap[x+1][y-1].participant.ParticipantId){
+                    path.push(`${x+1}_${y-1}`)
+                    path = path.concat(this.getPath(x+1, y-1, diagonalSpeed))
+                }
+                if (x > 0 && y < this.length && !this.encounterMap[x-1][y+1].participant.ParticipantId){
+                    path.push(`${x-1}_${y+1}`)
+                    path = path.concat(this.getPath(x+1, y+1, diagonalSpeed))
+                }
+                if (x > 0 && y > 0 && !this.encounterMap[x+1][y-1].participant.ParticipantId){
+                    path.push(`${x-1}_${y-1}`)
+                    path = path.concat(this.getPath(x+1, y-1, diagonalSpeed))
+                }
+            }
+
+            return path;
         },
         async setEnvironment(){
             if (this.encounter.Environment.length > 0){

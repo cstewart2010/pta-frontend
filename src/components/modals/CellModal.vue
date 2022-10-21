@@ -127,10 +127,11 @@ export default {
     methods: {
         async moveTrainer(){
             var trainer = getTrainer();
-            if (this.participants.some(participant => participant.ParticipantId == trainer.trainerId)){
+            const selected = this.participants.find(participant => participant.ParticipantId == trainer.trainerId);
+            if (selected){
                 await updateTrainerPosition(this.x, this.y)
                     .then(() => this.socket.send(""))
-                    .catch(generateErrorModal);
+                    .catch(() => this.errorModal(selected));
             }
             else {
                 await addToActiveEncounter({
@@ -148,10 +149,11 @@ export default {
             }
         },
         async movePokemon(pokemon){
-            if (this.participants.some(participant => participant.ParticipantId == pokemon.pokemonId)){
-                updatePokemonPosition(pokemon.pokemonId, this.x, this.y)
+            const selected = this.participants.find(participant => participant.ParticipantId == pokemon.pokemonId);
+            if (selected){
+                updatePokemonPosition(selected.ParticipantId, this.x, this.y)
                     .then(() => this.socket.send(""))
-                    .catch(generateErrorModal);
+                    .catch(() => this.errorModal(selected));
             }
             else {
                 await addToActiveEncounter({
@@ -172,6 +174,15 @@ export default {
             await updateParticipantPosition(participantId, this.x, this.y)
                 .then(() => this.socket.send(""))
                 .catch(generateErrorModal);
+        },
+        errorModal(participant){
+            const name = participant.Name;
+            const speed = participant.Speed;
+            const distance = Math.ceil(Math.sqrt(Math.pow(this.x - participant.Position.X, 2) + Math.pow(this.y - participant.Position.Y, 2)));
+            generateErrorModal({
+                status: `Cannot move ${name} to (${this.y}, ${this.x})`,
+                reason: `${name} can only move ${speed} blocks. This position is ${distance} blocks away.`
+            })
         }
     }
 }
