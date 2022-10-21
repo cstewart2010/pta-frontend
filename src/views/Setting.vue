@@ -9,6 +9,15 @@
         </h1>
         <div v-if="isGM">
             <div class="input-group my-2">
+                <span class="input-group-text">Set Environments</span>
+                <select class="form-select" multiple v-model="encounter.Environment">
+                    <option v-for="(environment, index) in environments" :key="index" :value="environment">
+                        {{environment}}
+                    </option>
+                </select>
+                <button class="btn btn-secondary" @click="setEnvironment">Set</button>
+            </div>
+            <div class="input-group my-2">
                 <span class="input-group-text">Add Wild Pokemon</span>
                 <input class="form-control" list="datalistOptions" id="pokemonDataList" v-model="wildPokemon" placeholder="Type to search...">
                 <datalist id="datalistOptions" name="pokemon">
@@ -70,6 +79,9 @@
                 <npc-sheet :npcId="participantId" v-if="displaySection == 'Npc'" />
             </section>
         </div>
+        <div v-if="encounter.Environment.length > 0">
+            ({{encounter.Environment.join('/')}})
+        </div>
         <div v-if="isGM">
             <div class="row" v-for="(row, rowIndex) in encounterMap" :key="rowIndex">
                 <button :class="'col border border-dark btn grid-cell ' + cellData.color" v-for="(cellData, columnIndex) in row" :key="`${rowIndex}_${columnIndex}`">
@@ -128,7 +140,7 @@
 
 <script>
 import { getGameId, getIsGM, getTrainer, setCellParticipant, setPTAActivityToken, } from '../utils/localStorage'
-import { addToActiveEncounter, getActiveEncounterWebSocket, removeFromActiveEncounter } from '../api/setting.api'
+import { addToActiveEncounter, getActiveEncounterWebSocket, getEnvironments, removeFromActiveEncounter, setEnvironment } from '../api/setting.api'
 import { generateErrorModal } from '../utils/modalUtil'
 import CellModal from '../components/modals/CellModal.vue'
 import { deletePokemon, getGamePokemon } from '../api/pokemon.api'
@@ -180,7 +192,8 @@ export default {
             selectedNpc: {},
             fontColor: '',
             isEnabled: true,
-            socket: getActiveEncounterWebSocket()
+            socket: getActiveEncounterWebSocket(),
+            environments: []
         }
     },
     async beforeMount(){
@@ -203,6 +216,10 @@ export default {
                         }
                     })
                     .catch(generateErrorModal);
+                await getEnvironments()
+                    .then(response => {
+                        this.environments = response.data
+                    })
             }
 
             this.socket.onmessage = (event) => {
@@ -307,6 +324,12 @@ export default {
                         }
                     }
                 }
+            }
+        },
+        async setEnvironment(){
+            if (this.encounter.Environment.length > 0){
+                await setEnvironment(this.encounter.Environment.join(','))
+                    .catch(generateErrorModal);
             }
         },
         async addNpc(){
