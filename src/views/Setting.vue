@@ -390,6 +390,20 @@ export default {
         },
         getPath(x, y, speed){
             let path = []
+            if (speed > 8){
+                for (let i = 0; i <= this.length; i++){
+                    for (let j = 0; j <= this.length; j++){
+                        if (this.encounterMap[i][j].participant.ParticipantId){
+                            continue;
+                        }
+                        const distance = Math.sqrt(Math.pow(x - i, 2) + Math.pow(y - j, 2));
+                        if (distance <= speed){
+                            path.push(`${i}_${j}`)
+                        }
+                    }
+                }
+                return path;
+            }
             if (speed < 1 || x < 0 || y < 0 || x > this.length || y > this.length){
                 return path
             }
@@ -424,7 +438,7 @@ export default {
                     path.push(`${x-1}_${y+1}`)
                     path = path.concat(this.getPath(x-1, y+1, diagonalSpeed))
                 }
-                if (x > 0 && y > 0 && !this.encounterMap[x+1][y-1].participant.ParticipantId){
+                if (x > 0 && y > 0 && !this.encounterMap[x-1][y-1].participant.ParticipantId){
                     path.push(`${x-1}_${y-1}`)
                     path = path.concat(this.getPath(x-1, y-1, diagonalSpeed))
                 }
