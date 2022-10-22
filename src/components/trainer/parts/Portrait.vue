@@ -14,6 +14,7 @@
         <hr>
         <!-- Trainer image -->
         <div class="row">
+            <img class="img-fluid" :src="`http://play.pokemonshowdown.com/sprites/trainers/${trainer.sprite}.png`" alt="">
             <div class="input-group my-3">
                 <span class="input-group-text">Portrait</span>
                 <select v-model="selectedSprite" class="form-select" @change="updateSprite">
@@ -22,7 +23,6 @@
                     </option>
                 </select>
             </div>
-            <img class="img-fluid" :src="`http://play.pokemonshowdown.com/sprites/trainers/${trainer.sprite}.png`" alt="">
         </div>
         <hr>
         <!-- Trainer Origin -->

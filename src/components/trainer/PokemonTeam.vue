@@ -21,7 +21,7 @@
                 <hr/>
             </div>
         </div>
-        <div id="addedPokemon" class="my-1">
+        <div id="addedPokemon" class="my-1" v-if="!trainer.isComplete || isGM">
             <div v-for="(pokemon, index) in pokemonTeam" :key="pokemon">
                 <div class="row d-flex align-items-center" :id="'pokemon-'+index">
                     <added-pokemon :pokemon="pokemon" :isOnActiveTeam="true" :position="index + 1" />
@@ -32,7 +32,7 @@
                 <hr/>
             </div>
         </div>
-        <div class="row">
+        <div class="row" v-if="!trainer.isComplete || isGM">
             <div class="col-3">
                 <input class="form-control my-1" list="datalistOptions" id="pokemonDataList" v-model="addedPokemon" placeholder="Type to search...">
                 <datalist id="datalistOptions" name="pokemon">
@@ -49,7 +49,7 @@
 <script>
 import { getAllBasePokemon } from '../../api/dex.api'
 import { deletePokemon, getGamePokemon } from '../../api/pokemon.api'
-import { getPokemonNewTeam, setPokemonNewTeam, getPokemonNewHome, setPokemonNewHome, getTrainer, setPTAActivityToken } from '../../utils/localStorage';
+import { getIsGM, getPokemonNewTeam, setPokemonNewTeam, getPokemonNewHome, setPokemonNewHome, getTrainer, setPTAActivityToken } from '../../utils/localStorage';
 import { generateErrorModal } from '../../utils/modalUtil'
 import AddedPokemon from './parts/AddedPokemon.vue';
 import ActualPokemon from './parts/ActualPokemon.vue';
@@ -64,7 +64,8 @@ export default {
             pokemonTeam: [],
             actualHome: [],
             pokemonHome: [],
-            addedPokemon: ''
+            addedPokemon: '',
+            isGM: getIsGM()
         }
     },
     components:{

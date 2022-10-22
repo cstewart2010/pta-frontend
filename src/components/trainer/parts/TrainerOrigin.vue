@@ -1,9 +1,9 @@
 <template>
-    <div class="row">
-        <div class="col-12 mb-2">
+    <div class="row text-center">
+        <div class="col-12 mb-2" v-if="!trainer.isComplete || isGM">
             <div class="input-group">
                 <span class="input-group-text">Origin</span>
-                <select class="form-select text-center" name="origin" v-model="selectedOrigin" @change="updateOrigin" :disabled="isComplete">
+                <select class="form-select" name="origin" v-model="selectedOrigin" @change="updateOrigin">
                     <option value=""></option>
                     <option v-for="(origin, index) in origins" :key="index" :id="origin" :value="origin.replace('/', '_')">
                         {{origin}}
@@ -11,9 +11,9 @@
                 </select>
             </div>
         </div>
-        <div class="col-12">
-            <div class="text-center">{{selectedOrigin}} Specialty</div>
-            <div class="text-center">
+        <div class="col-12" v-if="selectedOrigin">
+            <div>{{selectedOrigin}} Specialty</div>
+            <div>
                 <p>Starting Equipment: {{originData.equipment}}</p>
                 <p>Starting pokemon: {{originData.startingPokemon}}</p>
                 <div v-if="originData.feature">
@@ -30,7 +30,7 @@
 
 <script>
 import { getAllOrigins, getOrigin } from '../../../api/dex.api';
-import { getTrainer, setTrainer } from '../../../utils/localStorage';
+import { getIsGM, getTrainer, setTrainer } from '../../../utils/localStorage';
 import { generateErrorModal } from '../../../utils/modalUtil';
 export default {
     name: 'TrainerOrigin',
@@ -40,7 +40,9 @@ export default {
             selectedOrigin: '',
             originData: {},
             money: 0,
-            isComplete: false
+            trainer: getTrainer(),
+            isComplete: false,
+            isGM: getIsGM()
         }
     },
     async beforeMount(){
@@ -50,10 +52,8 @@ export default {
             })
             .catch(generateErrorModal);
 
-        const trainer = getTrainer();
-        this.isComplete = trainer.isComplete;
-        this.selectedOrigin = trainer.origin
-        this.money = trainer.money
+        this.selectedOrigin = this.trainer.origin
+        this.money = this.trainer.money
         await this.updateOrigin();
     },
     methods: {
