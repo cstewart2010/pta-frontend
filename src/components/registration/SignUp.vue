@@ -1,27 +1,30 @@
 <template>
-    <h3>Sign Up</h3>
-    <form @submit.prevent="signUp">
-        <div class="input-group my-2">
-            <span class="input-group-text">Username:</span>
-            <input class="form-control" type="text" name="trainerName" v-model="signUpName">
+    <h3 class="text-center">Sign Up</h3>
+    <form class="row needs-validation" :id="formId" @submit.prevent="signUp" novalidate>
+        <div class="col-md">
+            <input id="username" class="form-control" placeholder="Username" type="text" name="trainerName" v-model="signUpName" minlength="6" maxlength="18" pattern="^\w+( +\w+)*$" required>
+            <validation-feedback name="Username" />
         </div>
-        <div class="input-group my-2">
-            <span class="input-group-text">Password:</span>
-            <input class="form-control" type="password" name="password" v-model="signUpPassword">
+        <div class="col-md">
+            <input id="password" class="form-control" placeholder="Password" type="password" name="password" v-model="signUpPassword" minlength="6" maxlength="18" pattern="^\w+( +\w+)*$" required>
+            <validation-feedback name="Passowrd" />
         </div>
-        <div class="input-group my-2">
-            <span class="input-group-text">Confirm Password:</span>
-            <input class="form-control" type="password" name="confirmUserPassword" v-model="confirmUserPassword">
+        <div class="col-md">
+            <input id="confirm-password" class="form-control" placeholder="Confirm Password" type="password" name="confirmUserPassword" v-model="confirmUserPassword" minlength="6" maxlength="18" pattern="^\w+( +\w+)*$" required>
+            <validation-feedback name="Confirm Password" />
         </div>
-        <button type="submit" class="btn btn-primary my-2">Sign up</button>
+        <div class="col-12">
+            <button type="submit" class="btn btn-primary my-2">Sign up</button>
+        </div>
     </form>
 </template>
 
 <script>
 import { createNewUser } from '../../api/user.api';
-import { areTrainerSignupCredentialsValid } from '../../utils/credentials'
+import { areTrainerSignupCredentialsValid, checkValidation } from '../../utils/credentials'
 import { setInitialCredentials } from '../../utils/localStorage';
 import { generateErrorModal } from "../../utils/modalUtil";
+    import ValidationFeedback from "../partials/ValidationFeedback.vue"
 
 export default {
     name: 'SignUp',
@@ -29,11 +32,18 @@ export default {
         return {
             signUpName: '',
             signUpPassword: '',
-            confirmUserPassword: ''
+            confirmUserPassword: '',
+            formId: 'signup-form'
         }
+    },
+    components: {
+        ValidationFeedback
     },
     methods: {
         async signUp(){
+            if (!checkValidation(this.formId)){
+                return;
+            }
             const trainerResult = await areTrainerSignupCredentialsValid(this.signUpName, this.signUpPassword, this.confirmUserPassword)
                 .catch(generateErrorModal);
             if (!trainerResult){

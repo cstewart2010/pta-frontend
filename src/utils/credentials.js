@@ -1,3 +1,26 @@
+/**
+ * Checks the validity of the form data
+ * @param {String} formId the id for the form 
+ * @returns true if the form data is valid
+ */
+export function checkValidation(formId){
+    var form = document.getElementById(formId);
+    if (form.checkValidity){
+        form.classList.add('was-validated');
+        return form.checkValidity();
+    }
+
+    return false;
+}
+
+/**
+ * Removes all validation styling from the form
+ * @param {String} formId the id for the form 
+ */
+export function removeValidation(formId){
+    var form = document.getElementById(formId);
+    form.classList.add('was-validated');
+}
 
 /**
  * Validates trainer credentials during signup

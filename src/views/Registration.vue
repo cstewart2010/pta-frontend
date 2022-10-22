@@ -2,7 +2,7 @@
     <div class="row">
         <h2>User Portal</h2>
         <div class="row">
-            <div class="col-lg col-12 my-2">
+            <div class="col-lg col-12 my-2 border-end">
                 <login />
             </div>
             <div class="col-lg col-12 my-2">

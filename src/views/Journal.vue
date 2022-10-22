@@ -55,7 +55,9 @@ export default {
     },
     beforeMount: async function(){
         this.isGM = getIsGM();
-        await this.refreshLogs();
+        if (this.gameId){
+            await this.refreshLogs();
+        }
     },
     methods: {
         changePage(){

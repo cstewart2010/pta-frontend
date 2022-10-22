@@ -1,8 +1,9 @@
 <template>
-    <form @submit.prevent="post">
+    <form :id="formId" class="needs-validation" @submit.prevent="post" novalidate>
         <div class="input-group my-2">
             <span class="input-group-text">Name:</span>
-            <input class="form-control" type="text" v-model="shopName">
+            <input class="form-control" type="text" v-model="shopName" minlength="6" maxlength="18" pattern="^\w+( +\w+)*$" required>
+            <validation-feedback name="Shop name" />
         </div>
         <div class="form-check form-switch">
             <input class="form-check-input" type="checkbox" v-model="isActive" id="isActiveCheckbox">
@@ -10,40 +11,40 @@
         </div>
         <div class="input-group my-2">
             <span class="input-group-text">Add an item:</span>
-            <select class="form-select" v-model="type" @select="chooseItemList">
-                <option value=""></option>
+            <select class="form-select" v-model="type" @change="chooseItemList">
+                <option value="" disabled selected></option>
                 <option value="Key">Key</option>
                 <option value="Medical">Medical</option>
                 <option value="Pokeball">Pokeball</option>
                 <option value="Pokemon">Pokemon</option>
                 <option value="Trainer">Trainer</option>
             </select>
-            <select class="form-select" v-model="itemName" @change="chooseItem(keyItems)" v-if="type == 'Key'">
-                <option value=""></option>
+            <select class="form-select" v-model="itemName" @change="chooseItem(keyItems)" v-if="type == 'Key'" >
+                <option value="" disabled selected></option>
                 <option v-for="(item, index) in keyItems" :key="index" :value="item.name">
                     {{item.name}}
                 </option>
             </select>
             <select class="form-select" v-model="itemName" @change="chooseItem(medicalItems)" v-else-if="type == 'Medical'">
-                <option value=""></option>
+                <option value="" disabled selected></option>
                 <option v-for="(item, index) in medicalItems" :key="index" :value="item.name">
                     {{item.name}}
                 </option>
             </select>
             <select class="form-select" v-model="itemName" @change="chooseItem(pokeballs)" v-else-if="type == 'Pokeball'">
-                <option value=""></option>
+                <option value="" disabled selected></option>
                 <option v-for="(item, index) in pokeballs" :key="index" :value="item.name">
                     {{item.name}}
                 </option>
             </select>
             <select class="form-select" v-model="itemName" @change="chooseItem(pokemonItems)" v-else-if="type == 'Pokemon'">
-                <option value=""></option>
+                <option value="" disabled selected></option>
                 <option v-for="(item, index) in pokemonItems" :key="index" :value="item.name">
                     {{item.name}}
                 </option>
             </select>
             <select class="form-select" v-model="itemName" @change="chooseItem(trainerItems)" v-else-if="type == 'Trainer'">
-                <option value=""></option>
+                <option value="" disabled selected></option>
                 <option v-for="(item, index) in trainerItems" :key="index" :value="item.name">
                     {{item.name}}
                 </option>
@@ -66,9 +67,11 @@
 <script>
 import { getAllKeyItems, getAllMedicalItems, getAllPokeballItems, getAllPokemonItems, getAllTrainerEquipment, getKeyItem, getMedicalItem, getPokeballItem, getPokemonItem, getTrainerEquipment } from '../../../api/dex.api';
 import { createShop, deleteShop, getShopGM, updateShop } from '../../../api/shop.api';
+import { checkValidation, removeValidation } from '../../../utils/credentials';
 import { shopData } from '../../../utils/initialStates'
 import { generateErrorModal } from '../../../utils/modalUtil';
 import ShopList from './ShopList.vue'
+    import ValidationFeedback from "../../partials/ValidationFeedback.vue"
 export default {
     name: 'ShopForm',
     props: {
@@ -83,11 +86,13 @@ export default {
             pokeballs: [],
             pokemonItems: [],
             trainerItems: [],
+            formId: 'shop-form',
             ...shopData()
         }
     },
     components: {
-        ShopList
+        ShopList,
+        ValidationFeedback
     },
     async beforeMount(){
         await getAllKeyItems()
@@ -162,6 +167,10 @@ export default {
             }
         },
         async post(){
+            if (!checkValidation(this.formId)){
+                return;
+            }
+            removeValidation(this.formId)
             if (this.shopId){
                 await this.update()
             }

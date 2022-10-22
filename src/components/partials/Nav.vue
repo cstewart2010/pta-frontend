@@ -55,12 +55,18 @@
         </li>
       </ul>
     </div>
-    <form class="d-inline-flex flex-column flex-lg-row" @submit.prevent="login" v-if="needsToAuthenticate">
-      <span class="input-group-text">Username: </span>
-      <input type="text" v-model="username">
-      <span class="input-group-text">Password: </span>
-      <input type="password" v-model="password">
-      <button type="submit" class="btn btn-primary">Sign in</button>
+    <form id="nav-form" class="row g-1 needs-validation my-2" @submit.prevent="login" v-if="needsToAuthenticate" novalidate>
+      <div class="col-lg">
+        <input class="form-control" id="username" type="text" v-model="username" placeholder="Username" minlength="6" maxlength="18" pattern="^\w+( +\w+)*$" required>
+        <validation-feedback :useInvalid="false" />
+      </div>
+      <div class="col-lg">
+        <input class="form-control" id="password" type="password" v-model="password" placeholder="Password" minlength="6" maxlength="18" pattern="^\w+( +\w+)*$" required>
+        <validation-feedback :useInvalid="false" />
+      </div>
+      <div class="col-12 col-lg">
+        <button type="submit" class="btn btn-primary">Sign in</button>
+      </div>
     </form>
   </div>
 </nav>
@@ -79,6 +85,8 @@ import { getGameId, getIsAdmin, getIsAuthenticate, getIsGM, removeFromStorage, s
 import { login, logout } from '../../api/user.api';
 import { generateErrorModal } from '../../utils/modalUtil';
 import Journal from '../../views/Journal.vue'
+import { checkValidation } from '../../utils/credentials';
+import ValidationFeedback from "./ValidationFeedback.vue"
   export default {
     name: 'Nav',
     data(){
@@ -92,7 +100,8 @@ import Journal from '../../views/Journal.vue'
       }
     },
     components: {
-      Journal
+      Journal,
+      ValidationFeedback
     },
     mounted:function(){
       this.needsToAuthenticate = !getIsAuthenticate();
@@ -101,7 +110,9 @@ import Journal from '../../views/Journal.vue'
     },
     methods: {
       async login(){
-        console.log(this.username)
+        if (!checkValidation('nav-form')){
+          return;
+        }
         await login(this.username, this.password)
           .then(response => {
             setIsAdmin(response.data.isAdmin);

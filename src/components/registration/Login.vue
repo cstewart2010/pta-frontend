@@ -1,23 +1,26 @@
 <template>
-    <h3>Log in</h3>
-    <form  @submit.prevent="login">
-        <div class="input-group my-2">
-            <span class="input-group-text">Username:</span>
-            <input class="form-control" type="text" name="trainerName" v-model="trainerName">
+    <h3 class="text-center">Log in</h3>
+    <form class="row needs-validation" :id="formId" @submit.prevent="login" novalidate>
+        <div class="col-md">
+            <input id="username" class="form-control" placeholder="Username" type="text" name="trainerName" v-model="trainerName" minlength="6" maxlength="18" pattern="^\w+( +\w+)*$" required>
+            <validation-feedback name="Username" />
         </div>
-        <div class="input-group my-2">
-            <span class="input-group-text">Password:</span>
-            <input class="form-control" type="password" name="password" v-model="password">
+        <div class="col-md">
+            <input id="password" class="form-control" placeholder="Password" type="password" name="password" v-model="password" minlength="6" maxlength="18" pattern="^\w+( +\w+)*$" required>
+            <validation-feedback name="Password" />
         </div>
-        <button type="submit" class="btn btn-primary my-2">Sign in</button>
+        <div class="col-12">
+            <button type="submit" class="btn btn-primary my-2">Sign in</button>
+        </div>
     </form>
 </template>
 
 <script>
     import { login } from '../../api/user.api';
-    import { areTrainerCredentialsValid } from '../../utils/credentials';
+    import { areTrainerCredentialsValid, checkValidation } from '../../utils/credentials';
     import { setInitialCredentials } from '../../utils/localStorage';
     import { generateErrorModal } from "../../utils/modalUtil"
+    import ValidationFeedback from "../partials/ValidationFeedback.vue"
 
     export default {
         name: 'Login',
@@ -25,10 +28,17 @@
             return {
                 trainerName: '',
                 password: '',
+                formId: 'login-form'
             }
+        },
+        components: {
+            ValidationFeedback
         },
         methods: {
             async login(){
+                if (!checkValidation(this.formId)){
+                    return;
+                }
                 const trainerResult = await areTrainerCredentialsValid(this.trainerName, this.password)
                     .catch(generateErrorModal);
                 if (!trainerResult){
