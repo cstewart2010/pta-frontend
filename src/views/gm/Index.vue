@@ -93,17 +93,17 @@
         <div id="settings" class="my-3">
             <h3 class="text-primary">Settings</h3>
             <div class="row">
-                <div class="my-1" v-for="encounter in settings" :key="encounter.encounterId">
-                    <button class="btn btn-primary col-6" @click="deactivateEncounter(encounter.encounterId)" v-if="encounter.isActive">
-                        Deactive {{encounter.name}}
+                <div class="my-1" v-for="(setting, index) in settings" :key="index">
+                    <button class="btn btn-primary col-6" @click="deactivateEncounter(setting.settingId)" v-if="setting.isActive">
+                        Deactive {{setting.name}}
                     </button>
-                    <button class="btn btn-secondary col-6" @click="activateEncounter(encounter.encounterId)" v-else>
-                        Activate {{encounter.name}}
+                    <button class="btn btn-secondary col-6" @click="activateEncounter(setting.settingId)" v-else>
+                        Activate {{setting.name}}
                     </button>
-                    <button class="btn btn-danger col-6" data-bs-toggle="modal" :data-bs-target="'#encounterConfirmationModal'+encounter.encounterId">
-                        Delete {{encounter.name}}
+                    <button class="btn btn-danger col-6" data-bs-toggle="modal" :data-bs-target="'#encounterConfirmationModal'+setting.settingId">
+                        Delete {{setting.name}}
                     </button>
-                    <delete-encounter :encounterName="encounter.name" :encounterId="encounter.encounterId" />
+                    <delete-encounter :encounterName="setting.name" :encounterId="setting.settingId" />
                 </div>
             </div>
             <div class="input-group my-1">
