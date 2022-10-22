@@ -1,3 +1,5 @@
+import { generateErrorModal } from "./modalUtil";
+
 /**
  * Checks the validity of the form data
  * @param {String} formId the id for the form 
@@ -10,6 +12,10 @@ export function checkValidation(formId){
         return form.checkValidity();
     }
 
+    generateErrorModal({
+        status: 'Incompatible Browser',
+        reason: 'Unable to validate the form from this browser. Try Firefox. :>)'
+    })
     return false;
 }
 
