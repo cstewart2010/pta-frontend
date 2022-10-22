@@ -112,7 +112,6 @@
                         v-if="cellData.url && cellData.url.length > 0"
                         :title="cellData.alt">
                     <div
-                        class=" grid-cell"
                         v-else>
                     </div>
                 </button>
@@ -144,7 +143,6 @@
                         v-if="cellData.url && cellData.url.length > 0"
                         :title="cellData.alt">
                     <div
-                        class=" grid-cell"
                         v-else>
                     </div>
                 </button>
@@ -424,11 +422,11 @@ export default {
                 }
                 if (x > 0 && y < this.length && !this.encounterMap[x-1][y+1].participant.ParticipantId){
                     path.push(`${x-1}_${y+1}`)
-                    path = path.concat(this.getPath(x+1, y+1, diagonalSpeed))
+                    path = path.concat(this.getPath(x-1, y+1, diagonalSpeed))
                 }
                 if (x > 0 && y > 0 && !this.encounterMap[x+1][y-1].participant.ParticipantId){
                     path.push(`${x-1}_${y-1}`)
-                    path = path.concat(this.getPath(x+1, y-1, diagonalSpeed))
+                    path = path.concat(this.getPath(x-1, y-1, diagonalSpeed))
                 }
             }
 

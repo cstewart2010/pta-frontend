@@ -182,35 +182,35 @@ export async function updatePokemonPosition(pokemonId, x, y){
 }
 
 /**
- * Set the selected encounter to active
- * @param {string} encounterId The encounter
+ * Set the selected setting to active
+ * @param {string} settingId The setting
  * @returns 200
  */
-export async function setEncounterToActive(encounterId){
+export async function setEncounterToActive(settingId){
     const gameId = getGameId();
     const [gameMasterId, activityToken, sessionAuth] = getUserCredentials();
     nullChecker(gameMasterId, 'gameMasterId');
-    nullChecker(encounterId, 'encounterId');
+    nullChecker(settingId, 'settingId');
     nullChecker(activityToken, 'activityToken');
     nullChecker(sessionAuth, 'sessionAuth');
     
-    return await requestHandler(`${ENCOUNTER_RESOURCE}/${gameId}/${gameMasterId}/${encounterId}/active`, METHODS.PUT, {activityToken, sessionAuth});
+    return await requestHandler(`${ENCOUNTER_RESOURCE}/${gameId}/${gameMasterId}/${settingId}/active`, METHODS.PUT, {activityToken, sessionAuth});
 }
 
 /**
- * Set the selected encounter to inactive
- * @param {string} encounterId The encounter
+ * Set the selected setting to inactive
+ * @param {string} settingId The setting
  * @returns 200
  */
-export async function setEncounterToInactive(encounterId){
+export async function setEncounterToInactive(settingId){
     const gameId = getGameId();
     const [gameMasterId, activityToken, sessionAuth] = getUserCredentials();
     nullChecker(gameMasterId, 'gameMasterId');
-    nullChecker(encounterId, 'encounterId');
+    nullChecker(settingId, 'settingId');
     nullChecker(activityToken, 'activityToken');
     nullChecker(sessionAuth, 'sessionAuth');
     
-    return await requestHandler(`${ENCOUNTER_RESOURCE}/${gameId}/${gameMasterId}/${encounterId}/inactive`, METHODS.PUT, {activityToken, sessionAuth});
+    return await requestHandler(`${ENCOUNTER_RESOURCE}/${gameId}/${gameMasterId}/${settingId}/inactive`, METHODS.PUT, {activityToken, sessionAuth});
 }
 
 /**

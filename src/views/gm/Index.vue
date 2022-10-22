@@ -100,10 +100,10 @@
                     <button class="btn btn-secondary col-6" @click="activateEncounter(setting.settingId)" v-else>
                         Activate {{setting.name}}
                     </button>
-                    <button class="btn btn-danger col-6" data-bs-toggle="modal" :data-bs-target="'#encounterConfirmationModal'+setting.settingId">
+                    <button class="btn btn-danger col-6" data-bs-toggle="modal" :data-bs-target="'#settingConfirmationModal'+setting.settingId">
                         Delete {{setting.name}}
                     </button>
-                    <delete-encounter :encounterName="setting.name" :encounterId="setting.settingId" />
+                    <delete-encounter :settingName="setting.name" :settingId="setting.settingId" />
                 </div>
             </div>
             <div class="input-group my-1">
@@ -301,13 +301,13 @@ export default {
                 .then(() => location.reload())
                 .catch(generateErrorModal);
         },
-        async activateEncounter(encounterId){
-            await setEncounterToActive(encounterId)
+        async activateEncounter(settingId){
+            await setEncounterToActive(settingId)
                 .then(() => location.reload())
                 .catch(generateErrorModal);
         },
-        async deactivateEncounter(encounterId){
-            await setEncounterToInactive(encounterId)
+        async deactivateEncounter(settingId){
+            await setEncounterToInactive(settingId)
                 .then(() => location.reload())
                 .catch(generateErrorModal);
         }

@@ -1,16 +1,16 @@
 <template>
-    <div class="modal fade" :id="'encounterConfirmationModal'+encounterId" tabindex="-1" aria-labelledby="encounterConfirmationModalLabel" aria-hidden="true">
+    <div class="modal fade" :id="'settingConfirmationModal'+encounterId" tabindex="-1" aria-labelledby="settingConfirmationModalLabel" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="encounterConfirmationModalLabel">Deletion Confirmation</h5>
+                    <h5 class="modal-title" id="settingConfirmationModalLabel">Deletion Confirmation</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    Are you sure you want to delete this encounter?
+                    Are you sure you want to delete this setting?
                 </div>
                 <div class="modal-footer">
-                    <button class="btn btn-danger" @click="deleteThisEncounter" data-bs-dismiss="modal">Delete {{encounterName}}</button>
+                    <button class="btn btn-danger" @click="deleteThisSetting" data-bs-dismiss="modal">Delete {{settingName}}</button>
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
                 </div>
             </div>
@@ -24,16 +24,16 @@ import { generateErrorModal } from '../../utils/modalUtil';
 export default {
     name: 'DeleteTrainer',
     props: {
-        encounterName: {
+        settingName: {
             default: null
         },
-        encounterId: {
+        settingId: {
             default: null
         }
     },
     methods: {        
-        async deleteThisEncounter(){
-            await deleteEncounter(this.encounterId)
+        async deleteThisSetting(){
+            await deleteEncounter(this.settingId)
                 .then(() => location.reload())
                 .catch(generateErrorModal);
         }
