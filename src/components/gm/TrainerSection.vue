@@ -1,24 +1,29 @@
 <template>
     <div class="my-3" id="trainers">
-        <h3>
-            Trainers
-            <button class="btn btn-lg" data-bs-toggle="modal" data-bs-target="#trainerGrantModal" title="Add a new shop"  v-if="regularTrainers.length">
+        <div class="d-flex align-items-center">
+            <h3>Trainers</h3>
+            <button class="btn btn-lg" data-bs-toggle="modal" data-bs-target="#trainerGrantModal" title="Provide a trainer grant" v-if="regularTrainers.length">
                 <i class="fa-solid fa-plus"></i>
             </button>
-        </h3>
-        <div class="row" v-for="trainer in regularTrainers" :key="trainer.trainerId">
-            <button class="btn btn-secondary m-1 col-12 col-md" @click="updateTrainerId(trainer.trainerId)">
-                {{trainer.trainerName}}
-            </button>
-            <button class="btn btn-danger m-1 col-12 col-md" data-bs-toggle="modal" :data-bs-target="'#trainerConfirmationModal'+trainer.trainerId">
-                Delete {{trainer.trainerName}}
-            </button>
-            <delete-trainer :trainerId="trainer.trainerId" :trainerName="trainer.trainerName" />
+            <div class="form-check form-switch">
+                <input type="checkbox" class="form-check-input" v-model="toggle">
+            </div>
         </div>
-        <trainer-grant :regularTrainers="regularTrainers" v-if="regularTrainers.length" />
-        <section class="m-2" v-if="trainerId">
-            <incomplete-trainer :trainerId="trainerId" />
-        </section>
+        <div v-show="toggle">
+            <div class="row" v-for="trainer in regularTrainers" :key="trainer.trainerId">
+                <button class="btn btn-secondary m-1 col-12 col-md" @click="updateTrainerId(trainer.trainerId)">
+                    {{trainer.trainerName}}
+                </button>
+                <button class="btn btn-danger m-1 col-12 col-md" data-bs-toggle="modal" :data-bs-target="'#trainerConfirmationModal'+trainer.trainerId">
+                    Delete {{trainer.trainerName}}
+                </button>
+                <delete-trainer :trainerId="trainer.trainerId" :trainerName="trainer.trainerName" />
+            </div>
+            <trainer-grant :regularTrainers="regularTrainers" v-if="regularTrainers.length" />
+            <section class="m-2" v-if="trainerId">
+                <incomplete-trainer :trainerId="trainerId" />
+            </section>
+        </div>
     </div>
 </template>
 
@@ -38,7 +43,8 @@ export default {
     data(){
         return {
             trainerId: '',
-            gameId: getGameId()
+            gameId: getGameId(),
+            toggle: true
         }
     },
     components: {

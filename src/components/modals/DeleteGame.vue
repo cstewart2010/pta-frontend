@@ -1,5 +1,4 @@
 <template>
-    <button class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#gameConfirmationModal">Delete Game</button>
     <div class="modal fade" id="gameConfirmationModal" tabindex="-1" aria-labelledby="gameConfirmationModalLabel" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">

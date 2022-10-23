@@ -1,27 +1,32 @@
 <template>
     <div class="my-3" id="settings">
-        <h3 class="text-primary">
-            Settings
+        <div class="d-flex align-items-center">
+            <h3 class="text-primary">Settings</h3>
             <button class="btn btn-lg" data-bs-toggle="modal" data-bs-target="#createSettingModal" title="Add a new setting">
                 <i class="fa-solid fa-plus text-primary"></i>
             </button>
+            <div class="form-check form-switch">
+                <input type="checkbox" class="form-check-input" v-model="toggle">
+            </div>
             <button class="btn btn-lg" @click="refresh" title="Refresh setting list" v-if="isEnabled">
                 <i :class="'fa fa-refresh'" aria-hidden="true"></i>
             </button>
-        </h3>
-        <div class="row" v-for="(setting, index) in settings" :key="index">
-            <button class="btn btn-primary m-1 col-12 col-md" @click="deactivateSetting(setting.settingId)" v-if="setting.isActive">
-                Deactive {{setting.name}}
-            </button>
-            <button class="btn btn-secondary m-1 col-12 col-md" @click="activateSetting(setting.settingId)" v-else>
-                Activate {{setting.name}}
-            </button>
-            <button class="btn btn-danger m-1 col-12 col-md" data-bs-toggle="modal" :data-bs-target="'#settingConfirmationModal'+setting.settingId">
-                Delete {{setting.name}}
-            </button>
-            <delete-encounter :settingName="setting.name" :settingId="setting.settingId" />
         </div>
-        <create-setting />
+        <div v-show="toggle">
+            <div class="row" v-for="(setting, index) in settings" :key="index">
+                <button class="btn btn-primary m-1 col-12 col-md" @click="deactivateSetting(setting.settingId)" v-if="setting.isActive">
+                    Deactive {{setting.name}}
+                </button>
+                <button class="btn btn-secondary m-1 col-12 col-md" @click="activateSetting(setting.settingId)" v-else>
+                    Activate {{setting.name}}
+                </button>
+                <button class="btn btn-danger m-1 col-12 col-md" data-bs-toggle="modal" :data-bs-target="'#settingConfirmationModal'+setting.settingId">
+                    Delete {{setting.name}}
+                </button>
+                <delete-encounter :settingName="setting.name" :settingId="setting.settingId" />
+            </div>
+            <create-setting />
+        </div>
     </div>
 </template>
 
@@ -37,7 +42,8 @@ export default {
             settingName: '',
             settingType: '',
             settings: [],
-            isEnabled: true
+            isEnabled: true,
+            toggle: true
         }
     },
     components: {
