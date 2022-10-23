@@ -20,44 +20,7 @@
     <div v-else-if="sheet=='pokedex'">
         <honors />
     </div>
-    <div class="modal fade" id="saveConfirmationModal" tabindex="-1" aria-labelledby="saveConfirmationModalLabel" aria-hidden="true" v-if="isGM || isComplete">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="saveConfirmationModalLabel">Save Confirmation</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    Are you sure you want to save your changes?
-                </div>
-                <div class="modal-footer">
-                    <button class="btn btn-success" data-bs-target="#saveConfirmationModal" @click="saveChange" data-bs-dismiss="modal">Save Changes</button>
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                </div>
-            </div>
-        </div>
-    </div>
-    <div class="modal fade" id="completeConfirmationModal" tabindex="-1" aria-labelledby="completeConfirmationModalLabel" aria-hidden="true" v-else>
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="completeConfirmationModalLabel">Save Confirmation</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    Are you sure you want to save your changes?
-                    <div class="text-danger">
-                        <strong>Warning:</strong>
-                        After saving your changes for the first time, you will no longer be change your origin or starting pokemon.
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button class="btn btn-success" data-bs-target="#completeConfirmationModal" @click="saveChange" data-bs-dismiss="modal">Save Changes</button>
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                </div>
-            </div>
-        </div>
-    </div>
+    <save-confirmation />
     <nav class="navbar navbar-expand-md navbar-dark fixed-bottom bg-dark">
         <div class="container">
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
@@ -104,10 +67,10 @@ import PokemonTeam from './PokemonTeam.vue';
 import PokemonHome from './PokemonHome.vue';
 import Honors from './Honors.vue';
 import Inventory from './Inventory.vue';
-import { getCurrentHP, getGameId, getPokemonNewHome, getPokemonNewTeam, getTrainer, removeFromStorage, setPokemonNewHome, setPokemonNewTeam, setPTAActivityToken, setTrainer, setTrainerId } from '../../utils/localStorage';
-import { generateErrorModal, generateNavigationModal } from '../../utils/modalUtil';
-import { completeTrainer, findTrainerInGame } from '../../api/game.api';
-import { refreshInGame } from '../../api/user.api'
+import SaveConfirmation from '../modals/SaveConfirmationModal.vue'
+import { getGameId, getIsGM, getTrainer, setTrainer, setTrainerId } from '../../utils/localStorage';
+import { generateErrorModal } from '../../utils/modalUtil';
+import { findTrainerInGame } from '../../api/game.api';
 
 export default {
     name: "IncompleteTrainer",
@@ -118,13 +81,14 @@ export default {
         PokemonTeam,
         PokemonHome,
         Honors,
-        Inventory
+        Inventory,
+        SaveConfirmation
     },
     data(){
         return {
             sheet: 'main',
             isComplete: false,
-            isGM: false
+            isGM: getIsGM()
         }
     },
     props: {
@@ -139,14 +103,12 @@ export default {
                     setTrainer(response.data.trainer);
                     setTrainerId(this.trainerId)
                     this.isComplete = response.data.trainer.isComplete
-                    this.isGM = response.data.trainer.isGM
                 })
                 .catch(generateErrorModal)
         }
         else {
             const trainer = getTrainer();
-                    this.isComplete = trainer.isComplete
-                    this.isGM = trainer.isGM
+            this.isComplete = trainer.isComplete
         }
         this.sheet = localStorage.getItem('savedSheet') || 'main';
     },
@@ -156,37 +118,6 @@ export default {
             localStorage.setItem('savedSheet', sheet);
             location.href = '/#';
         },
-        async saveChange(){
-            const trainer = getTrainer();
-            trainer.newPokemon = trainer.newPokemon.concat(getPokemonNewTeam())
-            trainer.newPokemon = trainer.newPokemon.concat(getPokemonNewHome())
-            trainer.currentHp = getCurrentHP() || trainer.currentHp;
-            trainer.pokemonTeam = [];
-            trainer.pokemonHome = [];
-            trainer.pokeDex = [];
-            await completeTrainer(trainer)
-                .then(async () => {
-                    await this.refreshTrainer();
-                    setPokemonNewTeam([])
-                    setPokemonNewHome([])
-                    this.$router.go();
-                })
-                .catch(generateErrorModal)
-        },
-        async refreshTrainer(){
-            await refreshInGame()
-            .then(response => {
-                this.isComplete = response.data.trainer.isComplete
-                setPTAActivityToken(response.headers['pta-activity-token']);
-                setTrainer(response.data.trainer);
-                this.trainer = response.data.trainer;
-                this.isComplete = response.data.trainer.isComplete
-            })
-            .catch(error => {
-                removeFromStorage();
-                generateNavigationModal(error.status, error.reason, '/');
-            })
-        }
     }
 }
 </script>

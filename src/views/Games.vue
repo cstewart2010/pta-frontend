@@ -86,7 +86,6 @@ export default {
                     this.title = nickname.toUpperCase();
                     this.participants = response.data.trainers;
                     this.gameId = gameId
-                    console.log(response.data)
                 })
                 .catch(generateErrorModal);
         },
