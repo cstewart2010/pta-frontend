@@ -58,7 +58,6 @@
             </button>
         </div>
         <button type="submit" class="btn btn-primary mx-1">Post</button>
-        <button type="button" class="btn btn-danger mx-1" @click="deleteIt" data-bs-dismiss="modal" v-if="shopId">Delete</button>
         <button type="button" class="btn btn-secondary mx-1" data-bs-dismiss="modal" @click="refresh">Close</button>
     </form>
     <shop-list :inventory="inventory" />
@@ -66,7 +65,7 @@
 
 <script>
 import { getAllKeyItems, getAllMedicalItems, getAllPokeballItems, getAllPokemonItems, getAllTrainerEquipment, getKeyItem, getMedicalItem, getPokeballItem, getPokemonItem, getTrainerEquipment } from '../../../api/dex.api';
-import { createShop, deleteShop, getShopGM, updateShop } from '../../../api/shop.api';
+import { createShop, updateShop } from '../../../api/shop.api';
 import { checkValidation, removeValidation } from '../../../utils/credentials';
 import { shopData } from '../../../utils/initialStates'
 import { generateErrorModal } from '../../../utils/modalUtil';
@@ -75,7 +74,7 @@ import ShopList from './ShopList.vue'
 export default {
     name: 'ShopForm',
     props: {
-        shopId: {
+        shop: {
             default: null
         }
     },
@@ -105,13 +104,10 @@ export default {
             .then(response => this.pokemonItems = response.data.results);
         await getAllTrainerEquipment()
             .then(response => this.trainerItems = response.data.results);
-        if (this.shopId){
-            await getShopGM(this.shopId)
-                .then(response => {
-                    this.shopName = response.data.name;
-                    this.isActive = response.data.isActive;
-                    this.inventory = response.data.inventory;
-                })
+        if (this.shop){
+            this.shopName = this.shop.name;
+            this.isActive = this.shop.isActive;
+            this.inventory = this.shop.inventory;
         }
     },
     methods: {
@@ -171,7 +167,7 @@ export default {
                 return;
             }
             removeValidation(this.formId)
-            if (this.shopId){
+            if (this.shop){
                 await this.update()
             }
             else {
@@ -194,17 +190,12 @@ export default {
                 isActive: this.isActive,
                 inventory: this.inventory
             }
-            await updateShop(this.shopId, shop)
+            await updateShop(this.shop.shopId, shop)
                 .then(this.refresh)
                 .catch(generateErrorModal);
         },
-        async deleteIt(){
-            await deleteShop(this.shopId)
-                .then(() => Object.assign(this.$data, shopData()))
-                .catch(generateErrorModal);
-        },
         refresh(){
-            if (!this.shopId){
+            if (!this.shop){
                 Object.assign(this.$data, shopData())
             }
         }

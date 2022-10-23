@@ -10,3 +10,18 @@ export function shopData(){
         quantity: 1,
     }
 }
+
+export function settingData(){
+    return {
+        settingName: '',
+        settingType: ''
+    }
+}
+
+export function npcData(){
+    return {
+        npcName: '',
+        npcClasses: [],
+        npcFeats: []
+    }
+}

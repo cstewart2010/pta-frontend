@@ -1,316 +1,59 @@
 <template>
-    <div>
-        <section class="m-2" v-if="trainerId!=null">
-            <incomplete-trainer :trainerId="trainerId" />
-        </section>
-        <div class="my-3" id="trainers">
-            <h3>Trainers</h3>
-            <div class="row">
-                <div class="my-1" v-for="trainer in regularTrainers" :key="trainer.trainerId">
-                    <button class="btn btn-secondary col-6" @click="updateTrainerId(trainer.trainerId)">
-                        {{trainer.trainerName}}
-                    </button>
-                    <button class="btn btn-danger col-6" data-bs-toggle="modal" :data-bs-target="'#trainerConfirmationModal'+trainer.trainerId">
-                        Delete {{trainer.trainerName}}
-                    </button>
-                    <delete-trainer :trainerId="trainer.trainerId" :trainerName="trainer.trainerName" />
-                </div>
-            </div>
-            <div v-if="regularTrainers.length > 0">
-                <div class="input-group my-2">
-                    <span class="input-group-text">Add a group honor</span>
-                    <textarea class="form-control" v-model="groupHonor" cols="30" rows="1" />
-                    <button class="btn btn-secondary" @click="onGroupHonor">Add honor</button>
-                </div>
-                <div class="input-group my-2">
-                    <span class="input-group-text">Add money to all</span>
-                    <input type="number" class="form-control" v-model="groupAddition">
-                    <button class="btn btn-secondary" @click="onGroupAddition">Add money</button>
-                </div>
-                <div class="input-group my-2">
-                    <span class="input-group-text">Add a single honor</span>
-                    <select class="form-select" v-model="singleHonorRecipient">
-                        <option value=""></option>
-                        <option v-for="trainer in regularTrainers" :key="trainer.trainerId" :value="trainer.trainerId">
-                            {{trainer.trainerName}}
-                        </option>
-                    </select>
-                    <textarea class="form-control" v-model="singleHonor" cols="30" rows="1" />
-                    <button class="btn btn-secondary" @click="onSingleHonor">Add honor</button>
-                </div>
-                <div class="input-group my-2">
-                    <span class="input-group-text">Add money to single trainer</span>
-                    <select class="form-select" v-model="singleAdditionRecipient">
-                        <option value=""></option>
-                        <option v-for="trainer in regularTrainers" :key="trainer.trainerId" :value="trainer.trainerId">
-                            {{trainer.trainerName}}
-                        </option>
-                    </select>
-                    <input type="number" class="form-control" v-model="singleAddition">
-                    <button class="btn btn-secondary" @click="onSingleAddition">Add money</button>
-                </div>
-            </div>
-        </div>
-            <section class="m-2" v-if="npcId!=null">
-            <incomplete-npc :npcId="npcId" />
-        </section>
-        <div id="npcs" class="my-3">
-            <h3 class="text-dark">Npcs</h3>
-            <div class="row">
-                <div class="my-1" v-for="npc in npcs" :key="npc.npcId">
-                    <button class="btn btn-secondary col-6" @click="updateNpcId(npc.npcId)">
-                        {{npc.trainerName}}
-                    </button>
-                    <button class="btn btn-danger col-6" data-bs-toggle="modal" :data-bs-target="'#npcConfirmationModal'+npc.npcId">
-                        Delete {{npc.trainerName}}
-                    </button>
-                    <delete-npc :trainerName="npc.trainerName" :npcId="npc.npcId"/>
-                </div>
-            </div>
-            <div class="input-group my-1">
-                <span class="input-group-text">Add a Npc</span>
-                <input class="form-control" v-model="npcName">
-                <select class="form-select" v-model="npcClasses" multiple>
-                    <option v-for="trainerClass in allClasses" :key="trainerClass" :value="trainerClass">
-                        {{trainerClass}}
-                    </option>
-                </select>
-                <select class="form-select" v-model="npcFeats" multiple>
-                    <option v-for="feat in allFeats" :key="feat" :value="feat">
-                        {{feat}}
-                    </option>
-                </select>
-                <button class="btn btn-secondary" @click="onCreateNewNpc">Add Npc</button>
-            </div>
-        </div>
-        <div class="my-3 row" id="shop">
-            <h3 class="text-muted">Shops</h3>
-            <button class="btn btn-primary col mx-2" data-bs-toggle="modal" data-bs-target="#createShopModal">Create Shop</button>
-            <button class="btn btn-primary col mx-2" data-bs-toggle="modal" data-bs-target="#updateShopModal">Update Shop</button>
-            <create-shop />
-            <update-shop />
-        </div>
-        <div id="settings" class="my-3">
-            <h3 class="text-primary">Settings</h3>
-            <div class="row">
-                <div class="my-1" v-for="(setting, index) in settings" :key="index">
-                    <button class="btn btn-primary col-6" @click="deactivateEncounter(setting.settingId)" v-if="setting.isActive">
-                        Deactive {{setting.name}}
-                    </button>
-                    <button class="btn btn-secondary col-6" @click="activateEncounter(setting.settingId)" v-else>
-                        Activate {{setting.name}}
-                    </button>
-                    <button class="btn btn-danger col-6" data-bs-toggle="modal" :data-bs-target="'#settingConfirmationModal'+setting.settingId">
-                        Delete {{setting.name}}
-                    </button>
-                    <delete-encounter :settingName="setting.name" :settingId="setting.settingId" />
-                </div>
-            </div>
-            <div class="input-group my-1">
-                <span class="input-group-text">Create a new encounter</span>
-                <input type="text" v-model="encounterName">
-                <select class="form-select" v-model="encounterType">
-                    <option value="" selected></option>
-                    <option value="Hostile">Hostile</option>
-                    <option value="NonHostile">NonHostile</option>
-                </select>
-                <button class="btn btn-primary" @click="onNewEncounter">Add encounter</button>
-            </div>
-        </div>
-        <div class="my-3" id="danger-zone">
-            <h3 class="text-danger">Danger Zone</h3>
-            <div class="row">
-                <div class="input-group my-1 col-2">
-                    <span class="input-group-text">Session Password</span>
-                    <input type="password" v-model="gameSessionPassword">
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-2">
-                    <delete-game :gameSessionPassword="gameSessionPassword" />
-                </div>
-                <div class="col-2">
-                    <export-game :gameSessionPassword="gameSessionPassword" />
-                </div>
-            </div>
-        </div>
+    <div v-if="readyToLoad">
+        <trainer-section :regularTrainers="regularTrainers" />
+        <npc-section />
+        <shop-section />
+        <settings-section />
+        <danger-zone />
+    </div>
+    <div v-else>
+        Loading...
     </div>
 </template>
 
 <script>
-import { addGroupHonor, addHonor, updateMoney, updateMoneyAll } from '../../api/trainer.api';
-import { getTrainers, setTrainers, removeFromStorage, setPTAActivityToken, setIsGM, getIsGM, removeTrainer } from '../../utils/localStorage';
-import { generateErrorModal, generateNavigationModal } from '../../utils/modalUtil';
+import { getTrainers, setTrainers, removeFromStorage, setPTAActivityToken, setIsGM, getIsGM } from '../../utils/localStorage';
+import { generateNavigationModal } from '../../utils/modalUtil';
 import { refreshInGame } from '../../api/user.api'
-import IncompleteTrainer from '../../components/trainer/IncompleteTrainer.vue'
-import DeleteGame from '../../components/modals/DeleteGame.vue'
-import DeleteTrainer from '../../components/modals/DeleteTrainer.vue'
-import DeleteEncounter from '../../components/modals/DeleteEncounter.vue'
-import ExportGame from '../../components/modals/ExportGame.vue'
-import { createNewNpc, getNpcsInGame } from '../../api/npc.api';
-import { getAllGeneralFeatures, getAllTrainerClasses} from '../../api/dex.api';
-import { createEncounter, getAllEncounters, setEncounterToActive, setEncounterToInactive } from '../../api/setting.api';
-import DeleteNpc from '../../components/modals/DeleteNpc.vue';
-import IncompleteNpc from '../../components/npcs/IncompleteNpc.vue';
-import CreateShop from '../../components/modals/CreateShopModal.vue'
-import UpdateShop from '../../components/modals/UpdateShopModal.vue'
+import TrainerSection from '../../components/gm/TrainerSection.vue'
+import NpcSection from '../../components/gm/NpcSection.vue'
+import ShopSection from '../../components/gm/ShopSection.vue'
+import SettingsSection from '../../components/gm/SettingsSection.vue'
+import DangerZone from '../../components/gm/DangerZoneSection.vue'
 export default {
     name: 'GMPortal',
     data(){
         return {
             trainers: [],
-            gameSessionPassword: '',
-            trainerId: null,
-            groupHonor: '',
-            singleHonor: '',
-            singleHonorRecipient: '',
-            singleAdditionRecipient: '',
             regularTrainers: [],
-            npcName: '',
-            npcId: null,
-            npcClasses: [],
-            npcFeats: [],
-            npcs: [],
-            allClasses: [],
-            allFeats:[],
-            encounterName: '',
-            encounterType: '',
-            settings: [],
-            singleAddition: 0,
-            groupAddition: 0
+            readyToLoad: false
         }
     },
     components: {
-        DeleteGame,
-        DeleteTrainer,
-        DeleteEncounter,
-        ExportGame,
-        IncompleteTrainer,
-        IncompleteNpc,
-        DeleteNpc,
-        CreateShop,
-        UpdateShop
+        TrainerSection,
+        NpcSection,
+        ShopSection,
+        SettingsSection,
+        DangerZone,
     },
-    beforeMount: async function(){
+    async beforeMount(){
         await refreshInGame()
         .then(async response => {
             var wasNotGM = !getIsGM();
             setTrainers(response.data.trainers)
             setPTAActivityToken(response.headers['pta-activity-token']);
+            this.readyToLoad = true
             if (wasNotGM){
                 setIsGM(true);
                 location.reload();
             }
             this.trainers = getTrainers();
             this.regularTrainers = this.trainers.filter(trainer => !trainer.isGM)
-            await getNpcsInGame()
-            .then(response => {
-                this.npcs = response.data;
-            });
-            await getAllEncounters()
-                .then(response => {
-                    this.settings = response.data;
-                });
         })
         .catch(error => {
             removeFromStorage();
             generateNavigationModal(error.status, error.reason, '/');
         })
-
-        await getAllTrainerClasses()
-        .then(response => {
-            this.allClasses = response.data.results.map(item => item.name)
-        });
-
-        await getAllGeneralFeatures()
-        .then(response => {
-            this.allFeats = response.data.results.map(item => item.name)
-        });
-   },
-    methods: {
-        updateTrainerId(trainerId){
-            if (this.trainerId == trainerId){
-                this.trainerId = null;
-                removeTrainer()
-            }
-            else {
-                this.npcId = null;
-                this.trainerId = trainerId;
-            }
-        },
-         updateNpcId(npcId){
-            if (this.npcId == npcId){
-                this.npcId = null;
-            }
-            else {
-                this.npcId = npcId;
-                this.trainerId = null;
-            }
-        },
-        async onGroupHonor(){
-            if (this.groupHonor.length == 0){
-                return;
-            }
-            await addGroupHonor(this.groupHonor)
-                .then(response => {
-                    setPTAActivityToken(response.headers['pta-activity-token']);
-                    location.reload();
-                })
-                .catch(generateErrorModal);
-        },
-        async onSingleHonor(){
-            if (this.singleHonor.length == 0){
-                return;
-            }
-            if (this.singleHonorRecipient.length == 0){
-                return;
-            }
-            await addHonor(this.singleHonor, this.singleRecipient)
-                .then(response => {
-                    setPTAActivityToken(response.headers['pta-activity-token']);
-                    location.reload();
-                })
-                .catch(generateErrorModal);
-        },
-        async onGroupAddition(){
-            await updateMoneyAll(this.groupAddition)
-                .catch(generateErrorModal);
-        },
-        async onSingleAddition(){
-            await updateMoney(this.singleAdditionRecipient, this.groupAddition)
-                .catch(generateErrorModal);
-        },
-        async onCreateNewNpc(){
-              if (this.npcName.length == 0){
-                return;
-            }
-            await createNewNpc(this.npcName, this.npcClasses, this.npcFeats)
-             .then(response => {
-                    setPTAActivityToken(response.headers['pta-activity-token']);
-                    location.reload();
-                })},
-        async onNewEncounter(){
-            if (this.encounterName.length == 0){
-                return;
-            }
-            if (this.encounterType.length == 0){
-                return;
-            }
-
-            await createEncounter(this.encounterName, this.encounterType)
-                .then(() => location.reload())
-                .catch(generateErrorModal);
-        },
-        async activateEncounter(settingId){
-            await setEncounterToActive(settingId)
-                .then(() => location.reload())
-                .catch(generateErrorModal);
-        },
-        async deactivateEncounter(settingId){
-            await setEncounterToInactive(settingId)
-                .then(() => location.reload())
-                .catch(generateErrorModal);
-        }
-    }
+   }
 }
 </script>

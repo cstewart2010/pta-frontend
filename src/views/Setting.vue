@@ -3,8 +3,8 @@
         <h1>
             <small class="text-muted">{{encounter.Type}}</small>
             {{encounter.Name}}
-            <button class="btn btn-lg" @click="refresh" v-if="isEnabled"
-                ><i :class="`fa fa-refresh ${fontColor}`" aria-hidden="true"></i>
+            <button class="btn btn-lg" @click="refresh" v-if="isEnabled">
+                <i :class="`fa fa-refresh ${fontColor}`" aria-hidden="true"></i>
             </button>
         </h1>
         <div v-if="isGM">

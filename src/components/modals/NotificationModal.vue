@@ -44,8 +44,10 @@ export default {
                 setGameId(this.gameId);
                 await findTrainerInGame(this.gameId, getUserId())
                     .then(response => {
-                        setTrainer(response.data.trainer);
                         setIsGM(response.data.trainer.isGM);
+                        if (!response.data.trainer.isGM){
+                            setTrainer(response.data.trainer);
+                        }
                         window.location.href = "/";
                     })
                     .catch(generateErrorModal);

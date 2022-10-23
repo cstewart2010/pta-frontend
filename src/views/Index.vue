@@ -21,13 +21,9 @@ export default {
     },
     data() {
         return {
-            gameId: '',
-            isGM: false
+            gameId: getGameId(),
+            isGM: getIsGM()
         }
-    },
-    beforeMount(){
-        this.gameId = getGameId();
-        this.isGM = getIsGM();
     }
 }
 </script>
