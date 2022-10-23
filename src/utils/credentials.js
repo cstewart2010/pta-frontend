@@ -25,7 +25,7 @@ export function checkValidation(formId){
  */
 export function removeValidation(formId){
     var form = document.getElementById(formId);
-    form.classList.add('was-validated');
+    form.classList.remove('was-validated');
 }
 
 /**
