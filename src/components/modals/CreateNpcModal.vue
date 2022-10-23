@@ -22,7 +22,8 @@
                             <validation-feedback name="Trainer classes" :useInvalid="false" />
                         </div>
                         <div class="col-12 my-2">
-                            <select id="" class="form-select" v-model="npcFeats" multiple required>
+                            <label class="form-label" for="trainer-feats"> Trainer Features</label>
+                            <select id="trainer-feats" class="form-select" v-model="npcFeats" multiple required>
                                 <option v-for="(feats, index) in allFeats" :key="index" :value="feats">
                                     {{feats}}
                                 </option>

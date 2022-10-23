@@ -6,13 +6,13 @@
                 <i class="fa-solid fa-minus text-danger"></i>
             </button>
             <div class="form-check form-switch">
-                <input type="checkbox" class="form-check-input" v-model="toggle">
+                <input type="checkbox" class="form-check-input" v-model="toggle" title="Toggle section visibility">
             </div>
             <button class="btn btn-lg" @click="refresh" title="Refresh npc list" v-if="isEnabled">
                 <i :class="'fa fa-refresh'" aria-hidden="true"></i>
             </button>
         </div>
-        <div v-show="toggle">
+        <div v-if="toggle">
             <div class="row">
                 <div class="my-2">
                     <input type="password" class="form-control" placeholder="Session Password" v-model="gameSessionPassword">

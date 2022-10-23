@@ -6,7 +6,7 @@
                 <i class="fa-solid fa-plus"></i>
             </button>
             <div class="form-check form-switch">
-                <input type="checkbox" class="form-check-input" v-model="toggle">
+                <input type="checkbox" class="form-check-input" v-model="toggle" title="Toggle section visibility">
             </div>
         </div>
         <div v-show="toggle">
@@ -19,11 +19,11 @@
                 </button>
                 <delete-trainer :trainerId="trainer.trainerId" :trainerName="trainer.trainerName" />
             </div>
-            <trainer-grant :regularTrainers="regularTrainers" v-if="regularTrainers.length" />
             <section class="m-2" v-if="trainerId">
                 <incomplete-trainer :trainerId="trainerId" />
             </section>
         </div>
+        <trainer-grant :regularTrainers="regularTrainers" v-if="regularTrainers.length" />
     </div>
 </template>
 

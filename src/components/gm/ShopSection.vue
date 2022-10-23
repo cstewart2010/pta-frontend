@@ -6,7 +6,7 @@
                 <i class="fa-solid fa-plus text-muted"></i>
             </button>
             <div class="form-check form-switch">
-                <input type="checkbox" class="form-check-input" v-model="toggle">
+                <input type="checkbox" class="form-check-input" v-model="toggle" title="Toggle section visibility">
             </div>
             <button class="btn btn-lg" @click="refresh" title="Refresh shop list" v-if="isEnabled">
                 <i :class="'fa fa-refresh'" aria-hidden="true"></i>
@@ -23,8 +23,8 @@
                 </button>
                 <delete-shop :shopId="shop.shopId" :shopName="shop.name" />
             </div>
-            <create-shop />
         </div>
+        <create-shop />
     </div>
 </template>
 

@@ -6,7 +6,7 @@
                 <i class="fa-solid fa-plus text-primary"></i>
             </button>
             <div class="form-check form-switch">
-                <input type="checkbox" class="form-check-input" v-model="toggle">
+                <input type="checkbox" class="form-check-input" v-model="toggle" title="Toggle section visibility">
             </div>
             <button class="btn btn-lg" @click="refresh" title="Refresh setting list" v-if="isEnabled">
                 <i :class="'fa fa-refresh'" aria-hidden="true"></i>
@@ -25,8 +25,8 @@
                 </button>
                 <delete-encounter :settingName="setting.name" :settingId="setting.settingId" />
             </div>
-            <create-setting />
         </div>
+        <create-setting />
     </div>
 </template>
 

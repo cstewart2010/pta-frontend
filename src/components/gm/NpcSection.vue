@@ -6,7 +6,7 @@
                 <i class="fa-solid fa-plus text-dark"></i>
             </button>
             <div class="form-check form-switch">
-                <input type="checkbox" class="form-check-input" v-model="toggle">
+                <input type="checkbox" class="form-check-input" v-model="toggle" title="Toggle section visibility">
             </div>
             <button class="btn btn-lg" @click="refresh" title="Refresh npc list" v-if="isEnabled">
                 <i :class="'fa fa-refresh'" aria-hidden="true"></i>
@@ -22,11 +22,11 @@
                 </button>
                 <delete-npc :trainerName="npc.trainerName" :npcId="npc.npcId"/>
             </div>
-            <create-npc />
             <section class="m-2" v-if="npcId">
                 <incomplete-npc :npcId="npcId" />
             </section>
         </div>
+        <create-npc />
     </div>
 </template>
 
