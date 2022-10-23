@@ -5,12 +5,15 @@ const client = axios.create();
 client.interceptors.response.use(dataUpdater);
 
 /**
- * Handles request for PTA
  * @typedef {Object} Options 
  * @property {String} activityToken the user's pta-activity-token
  * @property {String} sessionAuth the user's pta-session-auth
  * @property {Object} data
  * @property {String} contentType
+ */
+
+/**
+ * Handles request for PTA
  * @param {String} endpoint - endpoint to hit
  * @param {String} method - method to hit endpoint with
  * @param {Options} options - additional optional parameters

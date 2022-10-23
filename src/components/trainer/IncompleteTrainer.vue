@@ -1,39 +1,58 @@
 <template>
-    <div>
-        <div v-if="sheet=='main'">
-            <trainer-sheet />
-        </div>
-        <div v-else-if="sheet=='features'">
-            <class-features />
-        </div>
-        <div v-else-if="sheet=='moves'">
-            <trainer-moves />
-        </div>
-        <div v-else-if="sheet=='team'">
-            <pokemon-team />
-        </div>
-        <div v-else-if="sheet=='items'">
-            <inventory />
-        </div>
-        <div v-else-if="sheet=='home'">
-            <pokemon-home />
-        </div>
-        <div v-else-if="sheet=='pokedex'">
-            <honors />
-        </div>
+    <div v-if="sheet=='main'">
+        <trainer-sheet />
     </div>
-    <div class="modal fade" id="confirmationModal" tabindex="-1" aria-labelledby="confirmationModalLabel" aria-hidden="true">
+    <div v-else-if="sheet=='features'">
+        <class-features />
+    </div>
+    <div v-else-if="sheet=='moves'">
+        <trainer-moves />
+    </div>
+    <div v-else-if="sheet=='team'">
+        <pokemon-team />
+    </div>
+    <div v-else-if="sheet=='items'">
+        <inventory />
+    </div>
+    <div v-else-if="sheet=='home'">
+        <pokemon-home />
+    </div>
+    <div v-else-if="sheet=='pokedex'">
+        <honors />
+    </div>
+    <div class="modal fade" id="saveConfirmationModal" tabindex="-1" aria-labelledby="saveConfirmationModalLabel" aria-hidden="true" v-if="isGM || isComplete">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="confirmationModalLabel">Save Confirmation</h5>
+                    <h5 class="modal-title" id="saveConfirmationModalLabel">Save Confirmation</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
                     Are you sure you want to save your changes?
                 </div>
                 <div class="modal-footer">
-                    <button class="btn btn-success" data-bs-target="#confirmationModal" @click="saveChange" data-bs-dismiss="modal">Save Changes</button>
+                    <button class="btn btn-success" data-bs-target="#saveConfirmationModal" @click="saveChange" data-bs-dismiss="modal">Save Changes</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" id="completeConfirmationModal" tabindex="-1" aria-labelledby="completeConfirmationModalLabel" aria-hidden="true" v-else>
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="completeConfirmationModalLabel">Save Confirmation</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    Are you sure you want to save your changes?
+                    <div class="text-danger">
+                        <strong>Warning:</strong>
+                        After saving your changes for the first time, you will no longer be change your origin or starting pokemon.
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-success" data-bs-target="#completeConfirmationModal" @click="saveChange" data-bs-dismiss="modal">Save Changes</button>
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
                 </div>
             </div>
@@ -69,7 +88,8 @@
                     </li>
                 </ul>
                 <div class="d-flex">
-                    <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#confirmationModal">Save Changes</button>
+                    <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#saveConfirmationModal" v-if="isGM || isComplete">Save Changes</button>
+                    <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#completeConfirmationModal" v-else>Save Changes</button>
                 </div>
             </div>
         </div>
@@ -102,7 +122,9 @@ export default {
     },
     data(){
         return {
-            sheet: 'main'
+            sheet: 'main',
+            isComplete: false,
+            isGM: false
         }
     },
     props: {
@@ -110,14 +132,21 @@ export default {
             default: null
         }
     },
-    beforeMount: async function(){
+    async beforeMount(){
         if (this.trainerId){
             await findTrainerInGame(getGameId(), this.trainerId)
                 .then(response => {
                     setTrainer(response.data.trainer);
                     setTrainerId(this.trainerId)
+                    this.isComplete = response.data.trainer.isComplete
+                    this.isGM = response.data.trainer.isGM
                 })
                 .catch(generateErrorModal)
+        }
+        else {
+            const trainer = getTrainer();
+                    this.isComplete = trainer.isComplete
+                    this.isGM = trainer.isGM
         }
         this.sheet = localStorage.getItem('savedSheet') || 'main';
     },
@@ -151,6 +180,7 @@ export default {
                 setPTAActivityToken(response.headers['pta-activity-token']);
                 setTrainer(response.data.trainer);
                 this.trainer = response.data.trainer;
+                this.isComplete = response.data.trainer.isComplete
             })
             .catch(error => {
                 removeFromStorage();
