@@ -24,7 +24,12 @@
         </div>
         <button class="btn btn-secondary col-4 my-3" @click="refreshLogs" v-else>Refresh</button>
         <div class="border-bottom border-dark" v-for="(log, index) in logs" :key="index">
-            {{log.user.toUpperCase()}} {{log.action}}
+            <div v-if="log.logTimestamp">
+                {{new Date(log.logTimestamp).toLocaleString()}}: {{log.user.toUpperCase()}} {{log.action}}
+            </div>
+            <div v-else>
+                Unknown timestamp: {{log.user.toUpperCase()}} {{log.action}}
+            </div>
         </div>
         <div class="input-group my-3" v-if="isGM">
             <button class="btn btn-secondary" @click="refreshLogs">Refresh</button>
