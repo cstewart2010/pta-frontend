@@ -1,15 +1,21 @@
 <template>
     <div class="my-3" id="trainers">
-        <div class="d-flex align-items-center">
+        <div class="d-flex justify-content-between">
             <h3>Trainers</h3>
-            <button class="btn btn-lg" data-bs-toggle="modal" data-bs-target="#trainerGrantModal" title="Provide a trainer grant" v-if="regularTrainers.length">
-                <i class="fa-solid fa-plus"></i>
-            </button>
-            <div class="form-check form-switch">
-                <input type="checkbox" class="form-check-input" v-model="toggle" title="Toggle section visibility">
+            <div class="row" id="buttons">
+                <div class="col">
+                    <button class="btn btn-outline-dark rounded-circle" data-bs-toggle="modal" data-bs-target="#trainerGrantModal" title="Provide a trainer grant" v-if="regularTrainers.length">
+                        <i class="fa-solid fa-plus"></i>
+                    </button>
+                </div>
+                <div class="col">
+                    <div class="form-check form-switch mt-2">
+                        <input type="checkbox" class="form-check-input" v-model="toggle" title="Toggle section visibility">
+                    </div>
+                </div>
             </div>
         </div>
-        <div v-show="toggle">
+        <div v-show="toggle && regularTrainers.length">
             <div class="row" v-for="trainer in regularTrainers" :key="trainer.trainerId">
                 <button class="btn btn-secondary m-1 col-12 col-md" @click="updateTrainerId(trainer.trainerId)">
                     {{trainer.trainerName}}
@@ -22,6 +28,9 @@
             <section class="m-2" v-if="trainerId">
                 <incomplete-trainer :trainerId="trainerId" />
             </section>
+        </div>
+        <div v-if="!regularTrainers.length">
+            Here is where your trainers will populate
         </div>
         <trainer-grant :regularTrainers="regularTrainers" v-if="regularTrainers.length" />
     </div>

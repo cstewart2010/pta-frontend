@@ -1,18 +1,26 @@
 <template>
     <div class="my-3" id="shop">
-        <div class="d-flex align-items-center">
-            <h3 class="text-muted">Shops</h3>
-            <button class="btn btn-lg" data-bs-toggle="modal" data-bs-target="#createShopModal" title="Add a new shop">
-                <i class="fa-solid fa-plus text-muted"></i>
-            </button>
-            <div class="form-check form-switch">
-                <input type="checkbox" class="form-check-input" v-model="toggle" title="Toggle section visibility">
+        <div class="d-flex justify-content-between">
+            <h3 class="text-secondary">Shops</h3>
+            <div class="row" id="buttons">
+                <div class="col">
+                    <button class="btn btn-lg pe-2" @click="refresh" title="Refresh shop list" v-if="isEnabled && shops.length">
+                        <i class="fa fa-refresh" aria-hidden="true"></i>
+                    </button>
+                </div>
+                <div class="col">
+                    <button class="btn btn-outline-secondary rounded-circle" data-bs-toggle="modal" data-bs-target="#createShopModal" title="Add a new shop">
+                        <i class="fa-solid fa-plus"></i>
+                    </button>
+                </div>
+                <div class="col">
+                    <div class="form-check form-switch mt-2">
+                        <input type="checkbox" class="form-check-input" v-model="toggle" title="Toggle section visibility">
+                    </div>
+                </div>
             </div>
-            <button class="btn btn-lg" @click="refresh" title="Refresh shop list" v-if="isEnabled">
-                <i :class="'fa fa-refresh'" aria-hidden="true"></i>
-            </button>
         </div>
-        <div v-show="toggle">
+        <div v-show="toggle && shops.length">
             <div class="row" v-for="(shop, index) in shops" :key="index">
                 <button class="btn btn-primary m-1 col-12 col-md"  data-bs-toggle="modal" data-bs-target="#updateShopModal">
                     Update {{shop.name}}
@@ -23,6 +31,9 @@
                 </button>
                 <delete-shop :shopId="shop.shopId" :shopName="shop.name" />
             </div>
+        </div>
+        <div v-if="!shops.length">
+            Here is where your shops will populate
         </div>
         <create-shop />
     </div>

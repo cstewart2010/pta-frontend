@@ -1,18 +1,26 @@
 <template>
     <div class="my-3" id="settings">
-        <div class="d-flex align-items-center">
+        <div class="d-flex justify-content-between">
             <h3 class="text-primary">Settings</h3>
-            <button class="btn btn-lg" data-bs-toggle="modal" data-bs-target="#createSettingModal" title="Add a new setting">
-                <i class="fa-solid fa-plus text-primary"></i>
-            </button>
-            <div class="form-check form-switch">
-                <input type="checkbox" class="form-check-input" v-model="toggle" title="Toggle section visibility">
+            <div class="row" id="buttons">
+                <div class="col">
+                    <button class="btn btn-lg pe-2" @click="refresh" title="Refresh setting list" v-if="isEnabled && settings.length">
+                        <i class="fa fa-refresh" aria-hidden="true"></i>
+                    </button>
+                </div>
+                <div class="col">
+                    <button class="btn btn-outline-primary rounded-circle" data-bs-toggle="modal" data-bs-target="#createSettingModal" title="Add a new setting">
+                        <i class="fa-solid fa-plus"></i>
+                    </button>
+                </div>
+                <div class="col">
+                    <div class="form-check form-switch mt-2">
+                        <input type="checkbox" class="form-check-input" v-model="toggle" title="Toggle section visibility">
+                    </div>
+                </div>
             </div>
-            <button class="btn btn-lg" @click="refresh" title="Refresh setting list" v-if="isEnabled">
-                <i :class="'fa fa-refresh'" aria-hidden="true"></i>
-            </button>
         </div>
-        <div v-show="toggle">
+        <div v-show="toggle && settings.length">
             <div class="row" v-for="(setting, index) in settings" :key="index">
                 <button class="btn btn-primary m-1 col-12 col-md" @click="deactivateSetting(setting.settingId)" v-if="setting.isActive">
                     Deactive {{setting.name}}
@@ -25,6 +33,9 @@
                 </button>
                 <delete-encounter :settingName="setting.name" :settingId="setting.settingId" />
             </div>
+        </div>
+        <div v-if="!settings.length">
+            Here is where your settings will populate
         </div>
         <create-setting />
     </div>
