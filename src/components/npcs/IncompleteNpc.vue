@@ -59,8 +59,7 @@
 </template>
 
 <script>
-import { addNpcStats, getNpc, createNpcPokemon } from '../../api/npc.api'
-import { generateErrorModal } from '../../utils/modalUtil'
+import { addNpcStats, createNpcPokemon } from '../../api/npc.api'
 import NpcSheet from './NpcSheet.vue'
 import ClassFeatures from './ClassFeatures.vue'
 import TrainerMoves from './TrainerMoves.vue'
@@ -82,18 +81,10 @@ export default {
     },
     props: {
         npcId: {
-            default: null
+            default: ''
         }
     },
-    beforeMount: async function(){
-        if(this.npcId){
-            await getNpc(this.npcId)
-            .then(response => {
-                ptaLocalStorage.setNpc(response.data)
-                ptaLocalStorage.setPokemonNewTeam([]) 
-            })
-            .catch(generateErrorModal)
-        }
+    beforeMount(){
         this.sheet = localStorage.getItem('savedNpcSheet') || 'main'
     },
     methods: {
@@ -108,9 +99,9 @@ export default {
             await createNpcPokemon(this.npcId, ptaLocalStorage.getPokemonNewTeam())
             .then(async () => {
                     await addNpcStats(this.npcId)
-                    .then( () => {
-                           location.reload() 
-                    })
+                        .then( () => {
+                            location.reload() 
+                        })
             })
         }
     }

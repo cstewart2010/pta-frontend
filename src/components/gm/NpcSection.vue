@@ -42,7 +42,9 @@
 </template>
 
 <script>
-import { getNpcsInGame } from '../../api/npc.api';
+import { getNpc, getNpcsInGame } from '../../api/npc.api';
+import { setNpc, setPokemonNewTeam } from '../../utils/localStorage';
+import { generateErrorModal } from '../../utils/modalUtil';
 import CreateNpc from '../modals/CreateNpcModal.vue';
 import DeleteNpc from '../modals/DeleteNpc.vue';
 import IncompleteNpc from '../npcs/IncompleteNpc.vue'
@@ -74,11 +76,17 @@ export default {
                     setTimeout(() => this.isEnabled = true, 5000)
                 });
         },
-         updateNpcId(npcId){
+        async updateNpcId(npcId){
             if (this.npcId == npcId){
                 this.npcId = '';
             }
             else {
+                await getNpc(npcId)
+                .then(response => {
+                    setNpc(response.data)
+                    setPokemonNewTeam([]) 
+                })
+                .catch(generateErrorModal)
                 this.npcId = npcId;
             }
         }
