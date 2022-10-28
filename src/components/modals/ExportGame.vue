@@ -1,5 +1,4 @@
 <template>
-    <button class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#exportConfirmationModal">Export Game</button>
     <div class="modal fade" id="exportConfirmationModal" tabindex="-1" aria-labelledby="exportConfirmationModalLabel" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
@@ -9,10 +8,15 @@
                 </div>
                 <div class="modal-body">
                     Are you sure you want to export this game? (This will delete the session from the database)
-                </div>
-                <div class="modal-footer">
-                    <button class="btn btn-danger" data-bs-target="#exportConfirmationModal" data-bs-dismiss="modal" @click="exportThisGame">Export game</button>
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <form :id="formId" class="row needs-validation" @submit.prevent="exportThisGame" novalidate>
+                        <div class="col-12">
+                            <input type="password" class="form-control" v-model="gameSessionPassword" placeholder="Session password" minlength="6" maxlength="18" pattern="^\w+( +\w+)*$" required>
+                            <validation-feedback name="Game session password" />
+                        </div>
+                        <div class="col-12 mt-2">
+                            <button type="submit" class="btn btn-danger">Export game</button>
+                        </div>
+                    </form>
                 </div>
             </div>
         </div>
@@ -21,17 +25,28 @@
 
 <script>
 import { exportGame } from '../../api/game.api';
+import { checkValidation, removeValidation } from '../../utils/credentials';
 import { removeFromStorage } from '../../utils/localStorage';
 import { generateErrorModal } from '../../utils/modalUtil';
+import ValidationFeedback from '../partials/ValidationFeedback.vue';
 export default {
     name: 'ExportGame',
-    props: {
-        gameSessionPassword: {
-            default: ''
+    data(){
+        return {
+            gameSessionPassword: '',
+            formId: 'export-form'
         }
+    },
+    components: {
+        ValidationFeedback
     },
     methods: {
         async exportThisGame(){
+            if (!checkValidation(this.formId)){
+                return;
+            }
+            
+            removeValidation(this.formId);
             await exportGame(this.gameSessionPassword)
                 .then(response => {
                     removeFromStorage();

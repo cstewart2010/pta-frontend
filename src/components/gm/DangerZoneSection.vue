@@ -4,6 +4,11 @@
             <h3 class="text-danger">Danger Zone</h3>
             <div class="row" id="buttons">
                 <div class="col">
+                    <button class="btn" data-bs-toggle="modal" data-bs-target="#exportConfirmationModal">
+                        <i class="fa-solid text-danger fa-download"></i>
+                    </button>
+                </div>
+                <div class="col">
                     <button class="btn btn-outline-danger rounded-circle" data-bs-toggle="modal" data-bs-target="#gameConfirmationModal" title="Delete the game">
                         <i class="fa-solid fa-minus"></i>
                     </button>
@@ -15,17 +20,8 @@
                 </div>
             </div>
         </div>
-        <div v-if="toggle">
-            <div class="row">
-                <div class="my-2">
-                    <input type="password" class="form-control" placeholder="Session Password" v-model="gameSessionPassword">
-                </div>
-                <div class="col-2">
-                    <export-game :gameSessionPassword="gameSessionPassword" />
-                </div>
-            </div>
-            <delete-game :gameSessionPassword="gameSessionPassword" />
-        </div>
+        <export-game />
+        <delete-game />
     </div>
 </template>
 

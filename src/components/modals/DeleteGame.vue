@@ -8,10 +8,15 @@
                 </div>
                 <div class="modal-body">
                     Are you sure you want to delete this game?
-                </div>
-                <div class="modal-footer">
-                    <button class="btn btn-danger" data-bs-target="#gameConfirmationModal" data-bs-dismiss="modal" @click="deleteThisGame">Delete game</button>
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <form :id="formId" class="row needs-validation" @submit.prevent="deleteThisGame" novalidate>
+                        <div class="col-12">
+                            <input type="password" class="form-control" v-model="gameSessionPassword" placeholder="Session password" minlength="6" maxlength="18" pattern="^\w+( +\w+)*$" required>
+                            <validation-feedback name="Game session password" />
+                        </div>
+                        <div class="col-12 mt-2">
+                            <button type="submit" class="btn btn-danger">Export game</button>
+                        </div>
+                    </form>
                 </div>
             </div>
         </div>
@@ -20,17 +25,28 @@
 
 <script>
 import { deleteGame } from '../../api/game.api';
+import { checkValidation, removeValidation } from '../../utils/credentials';
 import { removeGameId } from '../../utils/localStorage';
 import { generateErrorModal } from '../../utils/modalUtil';
+import ValidationFeedback from '../partials/ValidationFeedback.vue';
 export default {
     name: 'DeleteGame',
-    props: {
-        gameSessionPassword: {
-            default: ''
+    data(){
+        return {
+            gameSessionPassword: '',
+            formId: 'export-form'
         }
+    },
+    components: {
+        ValidationFeedback
     },
     methods: {
         async deleteThisGame(){
+            if (!checkValidation(this.formId)){
+                return;
+            }
+            
+            removeValidation(this.formId);
             await deleteGame(this.gameSessionPassword)
                 .then(() => {
                     removeGameId();
