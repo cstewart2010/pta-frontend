@@ -4,7 +4,7 @@
             <h3 class="text-dark">Npcs</h3>
             <div class="row" id="buttons">
                 <div class="col">
-                    <button class="btn btn-lg pe-2" @click="refresh" title="Refresh npc list" v-if="isEnabled && npcs.length">
+                    <button class="btn btn-lg pe-2" @click="refresh" title="Refresh npc list" v-if="isEnabled">
                         <i class="fa fa-refresh" aria-hidden="true"></i>
                     </button>
                 </div>
