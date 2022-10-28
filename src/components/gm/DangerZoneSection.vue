@@ -4,7 +4,7 @@
             <h3 class="text-danger">Danger Zone</h3>
             <div class="row" id="buttons">
                 <div class="col">
-                    <button class="btn" data-bs-toggle="modal" data-bs-target="#exportConfirmationModal">
+                    <button class="btn" data-bs-toggle="modal" data-bs-target="#exportConfirmationModal" title="Export the game">
                         <i class="fa-solid text-danger fa-download"></i>
                     </button>
                 </div>
