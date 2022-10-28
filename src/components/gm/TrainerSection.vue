@@ -4,8 +4,8 @@
             <h3>Trainers</h3>
             <div class="row" id="buttons">
                 <div class="col">
-                    <button class="btn btn-outline-dark rounded-circle" data-bs-toggle="modal" data-bs-target="#trainerGrantModal" title="Provide a trainer grant" v-if="regularTrainers.length">
-                        <i class="fa-solid fa-plus"></i>
+                    <button class="btn btn-outline-dark rounded" data-bs-toggle="modal" data-bs-target="#trainerGrantModal" title="Provide a trainer grant" v-if="regularTrainers.length">
+                        <i class="fa-solid fa-edit"></i>
                     </button>
                 </div>
                 <div class="col">

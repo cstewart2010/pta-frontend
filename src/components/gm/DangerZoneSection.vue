@@ -5,7 +5,7 @@
             <div class="row" id="buttons">
                 <div class="col">
                     <button class="btn btn-outline-danger rounded-circle" data-bs-toggle="modal" data-bs-target="#gameConfirmationModal" title="Delete the game">
-                        <i class="fa-solid fa-plus"></i>
+                        <i class="fa-solid fa-minus"></i>
                     </button>
                 </div>
                 <div class="col">
