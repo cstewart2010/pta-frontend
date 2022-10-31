@@ -6,6 +6,18 @@
 
 <script>
 export default {
-  name: 'Documentation'
+  name: 'Documentation',
+  data(){
+    return {
+      modalName: '',
+      modalSrc: ''
+    }
+  },
+  methods: {
+    updateModalThings(name, src){
+      this.modalName = name
+      this.modalSrc = src
+    }
+  }
 }
 </script>
