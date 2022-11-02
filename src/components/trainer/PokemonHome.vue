@@ -1,5 +1,5 @@
 <template>
-    <div class="text-center">
+    <div class="text-center" v-if="isReady">
         <h3>Pokemon Home</h3>
         <hr/>
         <div id="pokemonTeam" class="my-1">
@@ -38,6 +38,7 @@
             </div>
         </div>
     </div>
+    <spinner v-else />
 </template>
 
 <script>
@@ -47,6 +48,7 @@ import { getIsGM, getPokemonNewHome, getTrainer, setPokemonNewHome, setPTAActivi
 import { generateErrorModal } from '../../utils/modalUtil'
 import AddedPokemon from './parts/AddedPokemon.vue';
 import ActualPokemon from './parts/ActualPokemon.vue';
+import Spinner from '../partials/Spinner.vue'
 
 export default {
     name: 'PokemonHome',
@@ -57,12 +59,14 @@ export default {
             pokemonHome: [],
             actualHome: [],
             addedPokemon: '',
-            isGM: getIsGM()
+            isGM: getIsGM(),
+            isReady: false
         }
     },
     components:{
         AddedPokemon,
-        ActualPokemon
+        ActualPokemon,
+        Spinner
     },
     beforeMount:async function(){
         await getAllBasePokemon()
@@ -80,10 +84,17 @@ export default {
                 }
             })
             .catch(generateErrorModal);
+            
         this.trainer.pokemonHome
-            .map(async pokemon => await getGamePokemon(pokemon.pokemonId).then(response => {
-                this.actualHome.push(response.data)
-            }) )
+            .map(async pokemon => 
+                await getGamePokemon(pokemon.pokemonId)
+                    .then(response => {
+                            this.actualHome.push(response.data)
+                        }
+                    )
+                )
+
+        this.isReady = true
     },
     methods:{
         addPokemon(){

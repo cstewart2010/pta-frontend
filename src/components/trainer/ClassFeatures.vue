@@ -5,7 +5,9 @@
         :columnDefs="columnDefs"
         :rowData="featureData"
         :rowHeight="500"
+        v-if="isReady"
     />
+    <spinner v-else />
 </template>
 
 <script>
@@ -15,16 +17,19 @@ import { generateErrorModal } from '../../utils/modalUtil';
 import "ag-grid-community/dist/styles/ag-grid.css";
 import "ag-grid-community/dist/styles/ag-theme-alpine.css";
 import { AgGridVue } from "ag-grid-vue3";
+import Spinner from '../partials/Spinner.vue'
 
 export default {
     name: "ClassFeatures",
     components:{
-        AgGridVue
+        AgGridVue,
+        Spinner
     },
     data(){
         return{
             featureData: [],
-            columnDefs: []
+            columnDefs: [],
+            isReady: false
         }
     },
     beforeMount:async function(){
@@ -93,6 +98,7 @@ export default {
 
         this.columnDefs = temp;
         this.featureData = temp2;
+        this.isReady = true
     }
 }
 </script>

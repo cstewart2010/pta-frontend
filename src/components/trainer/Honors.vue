@@ -1,5 +1,5 @@
 <template>
-    <div class="text-center">
+    <div class="text-center" v-if="isReady">
         <h3>Honors</h3>
         <div class="row d-flex flex-wrap flex-row justify-content-evenly">
             <div class="col-md-4" v-for="(honor, index) in honors" :key="index">
@@ -20,6 +20,7 @@
             />
         </div>
     </div>
+    <spinner v-else />
 </template>
 
 <script>
@@ -29,11 +30,13 @@ import { generateErrorModal } from '../../utils/modalUtil';
 import "ag-grid-community/dist/styles/ag-grid.css";
 import "ag-grid-community/dist/styles/ag-theme-alpine.css";
 import { AgGridVue } from "ag-grid-vue3";
+import Spinner from '../partials/Spinner.vue'
 
 export default {
     name: 'Honors',
     components: {
-        AgGridVue
+        AgGridVue,
+        Spinner
     },
     data() {
         return {
@@ -62,7 +65,8 @@ export default {
                     autoHeight: true,
                     filter: "agTextColumnFilter"
                 },
-            ]
+            ],
+            isReady: false
         }
     },
     beforeMount:async function(){
@@ -79,6 +83,7 @@ export default {
                         caught: item.isCaught ? "x": null
                     }
                 });
+                this.isReady = true
             })
             .catch(generateErrorModal);
     }

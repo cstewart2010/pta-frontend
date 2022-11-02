@@ -10,32 +10,43 @@
         <li class="nav-item" v-if="isAdmin">
           <router-link to="/missionControl" class="nav-link">Mission Control</router-link>
         </li>
-        <li class="nav-item">
+        <li class="nav-item" v-if="needsToAuthenticate">
           <router-link to="/" class="nav-link">Landing</router-link>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvas-journal" aria-controls="offcanvas-journal" v-if="gameId">Journal</a>
         </li>
         <li class="nav-item">
           <router-link to="/about" class="nav-link">About</router-link>
         </li>
-        <li class="nav-item" v-if="gameId && isGM==true && needsToAuthenticate==false">
-          <router-link to="/trade" class="nav-link">Trade Center</router-link>
+        <li class="nav-item" v-if="gameId">
+          <a class="nav-link" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvas-journal" aria-controls="offcanvas-journal">Journal</a>
         </li>
-        <li class="nav-item" v-if="gameId && needsToAuthenticate==false">
-          <router-link to="/setting" class="nav-link">Setting</router-link>
+        <li class="nav-item dropdown" v-if="gameId && !needsToAuthenticate">
+          <a class="nav-link dropdown-toggle" href="#" id="current-session" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+            Current Session
+          </a>
+          <ul class="dropdown-menu" aria-labelledby="current-session">
+            <li>
+              <router-link to="/" class="dropdown-item">Game</router-link>
+            </li>
+            <li>
+              <router-link to="/setting" class="dropdown-item">Setting</router-link>
+            </li>
+            <li>
+              <router-link to="/trade" class="dropdown-item" v-if="isGM">Trade Center</router-link>
+            </li>
+          </ul>
         </li>
-        <li class="nav-item" v-if="needsToAuthenticate==false">
-          <router-link to="/games" class="nav-link">Games</router-link>
-        </li>
-        <li class="nav-item" v-if="needsToAuthenticate==false">
-          <router-link to="/new" class="nav-link">New Game</router-link>
-        </li>
-        <li class="nav-item" v-if="needsToAuthenticate==false">
-          <router-link to="/" class="nav-link" @click="logout">Log out</router-link>
-        </li>
-        <li class="nav-item" v-if="needsToAuthenticate">
-          <router-link to="/registration" class="nav-link">Sign up</router-link>
+        <li class="nav-item dropdown" v-if="!needsToAuthenticate">
+          <a class="nav-link dropdown-toggle" href="#" id="game-control" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+            Game Control
+          </a>
+          <ul class="dropdown-menu" aria-labelledby="game-control">
+            <li>
+              <router-link to="/games" class="dropdown-item">Games</router-link>
+            </li>
+            <li>
+              <router-link to="/new" class="dropdown-item">New Game</router-link>
+            </li>
+          </ul>
         </li>
         <li class="nav-item dropdown">
           <a class="nav-link dropdown-toggle" href="#" id="other-stuff" role="button" data-bs-toggle="dropdown" aria-expanded="false">
@@ -52,6 +63,12 @@
               <router-link class="dropdown-item" to="/bug">Report A Bug</router-link>
             </li>
           </ul>
+        </li>
+        <li class="nav-item" v-if="needsToAuthenticate==false">
+          <router-link to="/" class="nav-link" @click="logout">Log out</router-link>
+        </li>
+        <li class="nav-item" v-if="needsToAuthenticate">
+          <router-link to="/registration" class="nav-link">Sign up</router-link>
         </li>
       </ul>
     </div>

@@ -1,25 +1,11 @@
 <template>
-    <div v-if="sheet=='main'">
-        <trainer-sheet />
-    </div>
-    <div v-else-if="sheet=='features'">
-        <class-features />
-    </div>
-    <div v-else-if="sheet=='moves'">
-        <trainer-moves />
-    </div>
-    <div v-else-if="sheet=='team'">
-        <pokemon-team />
-    </div>
-    <div v-else-if="sheet=='items'">
-        <inventory />
-    </div>
-    <div v-else-if="sheet=='home'">
-        <pokemon-home />
-    </div>
-    <div v-else-if="sheet=='pokedex'">
-        <honors />
-    </div>
+    <trainer-sheet v-if="sheet=='main'" />
+    <class-features v-else-if="sheet=='features'" />
+    <trainer-moves v-else-if="sheet=='moves'" />
+    <pokemon-team v-else-if="sheet=='team'" />
+    <inventory v-else-if="sheet=='items'" />
+    <pokemon-home v-else-if="sheet=='home'" />
+    <honors v-else-if="sheet=='pokedex'" />
     <save-confirmation />
     <nav class="navbar navbar-expand-md navbar-dark fixed-bottom bg-dark">
         <div class="container">

@@ -1,0 +1,7 @@
+<template>
+    <div class="d-flex justify-content-center vh-100 align-items-center" role="status">
+        <div class="spinner-border">
+            <span class="visually-hidden">Loading...</span>
+        </div>
+    </div>
+</template>

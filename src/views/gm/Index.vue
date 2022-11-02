@@ -6,9 +6,7 @@
         <settings-section />
         <danger-zone />
     </div>
-    <div v-else>
-        Loading...
-    </div>
+    <spinner v-else />
 </template>
 
 <script>
@@ -20,6 +18,7 @@ import NpcSection from '../../components/gm/NpcSection.vue'
 import ShopSection from '../../components/gm/ShopSection.vue'
 import SettingsSection from '../../components/gm/SettingsSection.vue'
 import DangerZone from '../../components/gm/DangerZoneSection.vue'
+import Spinner from '../../components/partials/Spinner.vue'
 export default {
     name: 'GMPortal',
     data(){
@@ -35,6 +34,7 @@ export default {
         ShopSection,
         SettingsSection,
         DangerZone,
+        Spinner
     },
     async beforeMount(){
         await refreshInGame()

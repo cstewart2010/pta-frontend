@@ -10,7 +10,7 @@
     <hr>
     <div class="row">
         <div class="col-10 my-auto">
-            <div class="row d-flex align-items-center">
+            <div class="row d-flex align-items-center" v-if="trainerStats">
                 <div class="col-2">
                     <div class="text-center">Current HP</div>
                     <input class="w-100" type="number" :min="-trainerStats.hp" :max="trainerStats.hp" v-model="hp" @change="updateTrainerHP">
@@ -82,7 +82,7 @@ export default {
     data(){
         return {            
             trainerClasses: [''],
-            trainerStats: {},
+            trainerStats: null,
             hp: 0,
             selectedTrainerClasses: [],
         }

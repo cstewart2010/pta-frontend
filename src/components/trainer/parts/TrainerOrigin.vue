@@ -4,7 +4,6 @@
             <div class="input-group">
                 <span class="input-group-text">Origin</span>
                 <select class="form-select" name="origin" v-model="selectedOrigin" @change="updateOrigin">
-                    <option value=""></option>
                     <option v-for="(origin, index) in origins" :key="index" :id="origin" :value="origin.replace('/', '_')">
                         {{origin}}
                     </option>

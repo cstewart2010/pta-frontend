@@ -1,5 +1,5 @@
 <template>
-    <div class="text-center">
+    <div class="text-center" v-if="isReady">
         <h3>Pokemon Team</h3>
         <hr/>
         <div class="row">
@@ -44,6 +44,7 @@
             </div>
         </div>
     </div>
+    <spinner v-else />
 </template>
 
 <script>
@@ -53,6 +54,7 @@ import { getIsGM, getPokemonNewTeam, setPokemonNewTeam, getPokemonNewHome, setPo
 import { generateErrorModal } from '../../utils/modalUtil'
 import AddedPokemon from './parts/AddedPokemon.vue';
 import ActualPokemon from './parts/ActualPokemon.vue';
+import Spinner from '../partials/Spinner.vue'
 
 export default {
     name: 'PokemonTeam',
@@ -65,12 +67,14 @@ export default {
             actualHome: [],
             pokemonHome: [],
             addedPokemon: '',
-            isGM: getIsGM()
+            isGM: getIsGM(),
+            isReady: false
         }
     },
     components:{
         AddedPokemon,
-        ActualPokemon
+        ActualPokemon,
+        Spinner
     },
     beforeMount:async function(){        
         await getAllBasePokemon()
@@ -98,6 +102,8 @@ export default {
                 if (pokemonHome){
                     this.pokemonHome = pokemonHome;
                 }
+
+                this.isReady = true
             })
             .catch(generateErrorModal);
     },
