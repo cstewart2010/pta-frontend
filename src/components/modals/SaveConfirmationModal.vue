@@ -67,21 +67,22 @@ export default {
             trainer.pokeDex = [];
             await completeTrainer(trainer)
                 .then(async () => {
-                    await this.refreshTrainer();
                     setPokemonNewTeam([])
                     setPokemonNewHome([])
-                    this.$router.go();
+                    await this.refreshTrainer();
                 })
                 .catch(generateErrorModal)
         },
         async refreshTrainer(){
             await refreshInGame()
             .then(response => {
-                this.isComplete = response.data.trainer.isComplete
-                setPTAActivityToken(response.headers['pta-activity-token']);
-                setTrainer(response.data.trainer);
-                this.trainer = response.data.trainer;
-                this.isComplete = response.data.trainer.isComplete
+                setPTAActivityToken(response.headers['pta-activity-token'])
+                if (!this.isGM){
+                    setTrainer(response.data.trainer);
+                    this.trainer = response.data.trainer;
+                    this.isComplete = response.data.trainer.isComplete
+                }
+                this.$router.go();
             })
             .catch(error => {
                 removeFromStorage();
