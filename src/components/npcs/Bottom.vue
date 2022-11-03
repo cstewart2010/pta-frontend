@@ -35,7 +35,7 @@ export default {
         }
 
     },
-    beforeMount: function(){
+    beforeMount(){
         const npc = getNpc(this.npcId);
         if (npc){
             this.description = npc.description;

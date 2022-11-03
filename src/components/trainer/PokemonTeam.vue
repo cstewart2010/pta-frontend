@@ -33,7 +33,7 @@
             </div>
         </div>
         <div class="row" v-if="!trainer.isComplete || isGM">
-            <div class="col-3">
+            <div class="col-3" v-if="pokemonCol">
                 <input class="form-control my-1" list="datalistOptions" id="pokemonDataList" v-model="addedPokemon" placeholder="Type to search...">
                 <datalist id="datalistOptions" name="pokemon">
                     <option v-for="(pokemon, index) in pokemonCol" :key="index" :id="pokemon.name+'_'+pokemon.form" :value="pokemon.friendly">
@@ -49,8 +49,8 @@
 
 <script>
 import { getAllBasePokemon } from '../../api/dex.api'
-import { deletePokemon, getGamePokemon } from '../../api/pokemon.api'
-import { getIsGM, getPokemonNewTeam, setPokemonNewTeam, getPokemonNewHome, setPokemonNewHome, getTrainer, setPTAActivityToken } from '../../utils/localStorage';
+import { deletePokemon } from '../../api/pokemon.api'
+import { getIsGM, getPokemonNewTeam, setPokemonNewTeam, getPokemonNewHome, setPokemonNewHome, getTrainer, setPTAActivityToken, getDBPokedex, getActualTeam, getActualHome, setActualTeam, setActualHome, setDBPokedex } from '../../utils/localStorage';
 import { generateErrorModal } from '../../utils/modalUtil'
 import AddedPokemon from './parts/AddedPokemon.vue';
 import ActualPokemon from './parts/ActualPokemon.vue';
@@ -61,11 +61,11 @@ export default {
     data(){
         return {
             trainer: getTrainer(),
-            pokemonCol: {},
-            actualTeam: [],
-            pokemonTeam: [],
-            actualHome: [],
-            pokemonHome: [],
+            pokemonCol: getDBPokedex(),
+            actualTeam: getActualTeam(),
+            pokemonTeam: getPokemonNewTeam() || [],
+            actualHome: getActualHome(),
+            pokemonHome: getPokemonNewHome() || [],
             addedPokemon: '',
             isGM: getIsGM(),
             isReady: false
@@ -76,36 +76,33 @@ export default {
         ActualPokemon,
         Spinner
     },
-    beforeMount:async function(){        
-        await getAllBasePokemon()
-            .then(response => {
-                for (const item of response.data){
-                    let friendly = item.name;
-                    if (item.form != "Base"){
-                        friendly = `${item.form.replace("Base/", "")} ${item.name}`
+    async beforeMount(){
+        if (!this.actualTeam){
+            this.actualTeam = this.trainer.pokemonTeam;            
+            setActualTeam(this.actualTeam)
+        }
+        if (!this.actualHome){
+            this.actualHome = this.trainer.pokemonHome;
+            setActualHome(this.actualHome)
+        }
+        
+        if (!(this.pokemonCol || this.trainer.isComplete)){
+            await getAllBasePokemon()
+                .then(response => {
+                    for (const item of response.data){
+                        let friendly = item.name;
+                        if (item.form != "Base"){
+                            friendly = `${item.form.replace("Base/", "")} ${item.name}`
+                        }
+                        this.pokemonCol[friendly] = item;
                     }
-                    this.pokemonCol[friendly] = item;
-                }
-                this.trainer.pokemonTeam
-                    .map(async pokemon => await getGamePokemon(pokemon.pokemonId).then(response => {
-                        this.actualTeam.push(response.data)
-                    }) )
-                this.trainer.pokemonHome
-                    .map(async pokemon => await getGamePokemon(pokemon.pokemonId).then(response => {
-                        this.actualHome.push(response.data)
-                    }) )
-                const pokemonTeam = getPokemonNewTeam();
-                if (pokemonTeam){
-                    this.pokemonTeam = pokemonTeam;
-                }
-                const pokemonHome = getPokemonNewHome();
-                if (pokemonHome){
-                    this.pokemonHome = pokemonHome;
-                }
+                })
+                .catch(generateErrorModal);
+            
+            setDBPokedex(this.pokemonCol)
+        }
 
-                this.isReady = true
-            })
-            .catch(generateErrorModal);
+        this.isReady = true
     },
     methods:{
         addPokemon(){

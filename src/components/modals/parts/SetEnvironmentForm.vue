@@ -16,6 +16,7 @@
 
 <script>
 import { getEnvironments, setEnvironment } from '../../../api/setting.api'
+import { getDBEnvironments, setDBEnvironments } from '../../../utils/localStorage'
 import { generateErrorModal } from '../../../utils/modalUtil'
 export default {
     name: 'SetEnvironment',
@@ -27,15 +28,18 @@ export default {
     data(){
         return {
             newEnvironments: [],
-            environments: [],
+            environments: getDBEnvironments(),
             setEnvironmentFormId: 'set-environment'
         }
     },
     async beforeMount(){
-        await getEnvironments()
-            .then(response => {
-                this.environments = response.data
-            })
+        if (!this.environments){
+            await getEnvironments()
+                .then(response => {
+                    this.environments = response.data
+                    setDBEnvironments(this.environments)
+                })
+        }
     },
     methods: {
         async setEnvironment(){

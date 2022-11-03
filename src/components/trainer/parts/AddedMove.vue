@@ -63,7 +63,7 @@ export default {
             formattedName: ''
         }
     },
-    beforeMount:async function(){
+    async beforeMount(){
         await getMove(this.move)
             .then(response => {
                 this.moveData = response.data

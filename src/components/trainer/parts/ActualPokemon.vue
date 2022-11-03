@@ -50,7 +50,7 @@ export default {
             display: false
         }
     },
-    beforeMount:async function(){
+    async beforeMount(){
         await getGamePokemon(this.pokemonId)
             .then(response => {
                 this.pokemonData = response.data

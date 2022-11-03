@@ -23,16 +23,14 @@
 
 <script>
 import { getAllSprites } from '../../api/game.api'
-import { getNpc, setNpc } from '../../utils/localStorage'
+import { getDBSprites, getNpc, setDBSprites, setNpc } from '../../utils/localStorage'
 import { generateErrorModal } from '../../utils/modalUtil'
 export default {
     name: 'Portrait',
     data() {
         return {
-            npc: {
-                sprite: 'acetrainer'
-            },
-            sprites: [],
+            npc: getNpc(this.npcId),
+            sprites: getDBSprites(),
             selectedSprite: '',
             level: 0
         }
@@ -44,13 +42,15 @@ export default {
 
     },
     async beforeMount(){
-        await getAllSprites()
-            .then(response => {
-                this.sprites = response.data
-                this.npc = getNpc(this.npcId);
-                this.level = this.npc.level;
-            })
-            .catch(generateErrorModal);
+        if (!this.sprites){
+            await getAllSprites()
+                .then(response => {
+                    this.sprites = response.data
+                    setDBSprites(this.sprites)
+                })
+                .catch(generateErrorModal);
+        }
+        this.level = this.npc.level;
     },
     methods: {
         updateSprite(){

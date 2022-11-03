@@ -26,6 +26,11 @@ export default {
         Spinner
     },
     beforeMount:async function(){
+        if (this.trainer){
+            this.isReady = true
+            return;
+        }
+
         await refreshInGame()
         .then(response => {
             this.isComplete = response.data.trainer.isComplete

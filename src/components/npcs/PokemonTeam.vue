@@ -48,8 +48,8 @@
 
 <script>
 import { getAllBasePokemon } from '../../api/dex.api'
-import { deletePokemon, getGamePokemon } from '../../api/pokemon.api'
-import { getPokemonNewTeam, setPokemonNewTeam, setPTAActivityToken, getNpc } from '../../utils/localStorage';
+import { deletePokemon } from '../../api/pokemon.api'
+import { setPokemonNewTeam, setPTAActivityToken, getNpc, getDBPokedex, getActualTeam, getActualHome, setActualTeam, setActualHome, setDBPokedex } from '../../utils/localStorage';
 import { generateErrorModal } from '../../utils/modalUtil'
 import AddedPokemon from '../trainer/parts/AddedPokemon.vue';
 import ActualPokemon from '../trainer/parts/ActualPokemon.vue';
@@ -58,9 +58,10 @@ export default {
     name: 'NpcPokemonTeam',
     data(){
         return {
-            pokemonCol: {},
-            actualTeam: [],
-            pokemonTeam: [],
+            pokemonCol: getDBPokedex(),
+            actualTeam: getActualTeam(),
+            pokemonTeam: getActualHome(),
+            trainer: getNpc(this.npcId),
             addedPokemon: ''
         }
     },
@@ -73,28 +74,33 @@ export default {
             default: null
         }
     },
-    beforeMount:async function(){        
-        await getAllBasePokemon()
-            .then(response => {
-                for (const item of response.data){
-                    let friendly = item.name;
-                    if (item.form != "Base"){
-                        friendly = `${item.form.replace("Base/", "")} ${item.name}`
+    async beforeMount(){       
+        if (!this.actualTeam){
+            this.actualTeam = this.trainer.pokemonTeam;            
+            setActualTeam(this.actualTeam)
+        }
+        if (!this.actualHome){
+            this.actualHome = this.trainer.pokemonHome;
+            setActualHome(this.actualHome)
+        }
+        
+        if (!(this.pokemonCol || this.trainer.isComplete)){
+            await getAllBasePokemon()
+                .then(response => {
+                    for (const item of response.data){
+                        let friendly = item.name;
+                        if (item.form != "Base"){
+                            friendly = `${item.form.replace("Base/", "")} ${item.name}`
+                        }
+                        this.pokemonCol[friendly] = item;
                     }
-                    this.pokemonCol[friendly] = item;
-                }
-                this.trainer = getNpc(this.npcId);
-                console.log(this.trainer);
-                this.trainer.pokemonTeam
-                    .map(async pokemon => await getGamePokemon(pokemon.pokemonId).then(response => {
-                        this.actualTeam.push(response.data)
-                    }) )
-                const pokemonTeam = getPokemonNewTeam();
-                if (pokemonTeam){
-                    this.pokemonTeam = pokemonTeam;
-                }
-            })
-            .catch(generateErrorModal);
+                })
+                .catch(generateErrorModal);
+            
+            setDBPokedex(this.pokemonCol)
+        }
+
+        this.isReady = true
     },
     methods:{
         addPokemon(){

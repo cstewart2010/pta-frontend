@@ -15,25 +15,28 @@
             <div class="collapse navbar-collapse" id="navbarCollapse">
                 <ul class="navbar-nav me-auto mb-2 mb-md-0">
                     <li class="nav-item">
-                        <button class="btn btn-dark" @click="switchSheet('main')">Trainer Sheet</button>
+                        <button class="btn btn-dark" @click="switchSheet('main')" title="Opens the Trainer sheet">Trainer Sheet</button>
                     </li>
                     <li class="nav-item">
-                        <button class="btn btn-dark" @click="switchSheet('features')">Class Features</button>
+                        <button class="btn btn-dark" @click="switchSheet('features')" title="Open the Features sheet">Class Features</button>
                     </li>
                     <li class="nav-item">
-                        <button class="btn btn-dark" @click="switchSheet('moves')">Trainer Moves</button>
+                        <button class="btn btn-dark" @click="switchSheet('moves')" title="Opens the Moves sheet">Trainer Moves</button>
                     </li>
                     <li class="nav-item">
-                        <button class="btn btn-dark" @click="switchSheet('items')">Inventory</button>
+                        <button class="btn btn-dark" @click="switchSheet('items')" title="Opens the Inventory sheet">Inventory</button>
                     </li>
                     <li class="nav-item">
-                        <button class="btn btn-dark" @click="switchSheet('pokedex')">Pokedex and Honors</button>
+                        <button class="btn btn-dark" @click="switchSheet('pokedex')" title="Opens the Pokedex sheet">Pokedex and Honors</button>
                     </li>
                     <li class="nav-item">
-                        <button class="btn btn-dark" @click="switchSheet('team')">Pokemon Team</button>
+                        <button class="btn btn-dark" @click="switchSheet('team')" title="Opens the Pokemon Team sheet">Pokemon Team</button>
                     </li>
                     <li class="nav-item">
-                        <button class="btn btn-dark" @click="switchSheet('home')">Pokemon Home</button>
+                        <button class="btn btn-dark" @click="switchSheet('home')" title="Opens the Pokemon Home sheet">Pokemon Home</button>
+                    </li>
+                    <li class="nav-item" v-if="!isGM">
+                        <button class="btn btn-dark" @click="refresh" title="Removes unsaved changes">Refresh</button>
                     </li>
                 </ul>
                 <div class="d-flex">
@@ -54,9 +57,10 @@ import PokemonHome from './PokemonHome.vue';
 import Honors from './Honors.vue';
 import Inventory from './Inventory.vue';
 import SaveConfirmation from '../modals/SaveConfirmationModal.vue'
-import { getGameId, getIsGM, getTrainer, setTrainer, setTrainerId } from '../../utils/localStorage';
-import { generateErrorModal } from '../../utils/modalUtil';
+import { getGameId, getIsGM, getTrainer, removeFromStorage, setGameMasterId, setIsGM, setPTAActivityToken, setTrainer, setTrainerId } from '../../utils/localStorage';
+import { generateErrorModal, generateNavigationModal } from '../../utils/modalUtil';
 import { findTrainerInGame } from '../../api/game.api';
+import { refreshInGame } from '../../api/user.api';
 
 export default {
     name: "IncompleteTrainer",
@@ -104,6 +108,26 @@ export default {
             localStorage.setItem('savedSheet', sheet);
             location.href = '/#';
         },
+        async refresh(){
+            await refreshInGame()
+            .then(response => {
+                this.isComplete = response.data.trainer.isComplete
+                setPTAActivityToken(response.headers['pta-activity-token']);
+                if (response.data.trainer.isGM){
+                    setGameMasterId(response.data.trainer.trainerId);
+                    setTrainerId(null);
+                    setIsGM(true);
+                }
+                else {
+                    setTrainer(response.data.trainer);
+                }
+                location.reload();
+            })
+            .catch(error => {
+                removeFromStorage();
+                generateNavigationModal(error.status, error.reason, '/');
+            })
+        }
     }
 }
 </script>

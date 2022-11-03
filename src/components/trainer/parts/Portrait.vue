@@ -32,17 +32,15 @@
 
 <script>
 import { getAllSprites } from '../../../api/game.api'
-import { getTrainer, setTrainer } from '../../../utils/localStorage'
+import { getDBSprites, getTrainer, setDBSprites, setTrainer } from '../../../utils/localStorage'
 import { generateErrorModal } from '../../../utils/modalUtil'
 import TrainerOrigin from './TrainerOrigin.vue'
 export default {
     name: 'Portrait',
     data() {
         return {
-            trainer: getTrainer() || {
-                honors: 0
-            },
-            sprites: [],
+            trainer: getTrainer(),
+            sprites: getDBSprites(),
             selectedSprite: ''
         }
     },
@@ -50,11 +48,14 @@ export default {
         TrainerOrigin
     },
     async beforeMount(){
-        await getAllSprites()
-            .then(response => {
-                this.sprites = response.data
-            })
-            .catch(generateErrorModal);
+        if (!this.sprites){
+            await getAllSprites()
+                .then(response => {
+                    this.sprites = response.data
+                    setDBSprites(this.sprites)
+                })
+                .catch(generateErrorModal);
+        }
     },
     methods: {
         updateSprite(){

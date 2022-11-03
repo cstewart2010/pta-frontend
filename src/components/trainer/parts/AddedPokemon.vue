@@ -39,7 +39,7 @@ export default {
             nickname: ''
         }
     },
-    beforeMount:async function(){
+    async beforeMount(){
         await getPokemon(this.pokemon.speciesName)
             .then(response => {
                 this.pokemonData = response.data

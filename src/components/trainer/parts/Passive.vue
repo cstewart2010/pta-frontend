@@ -22,7 +22,7 @@ export default {
             passive: {}
         }
     },
-    beforeMount: async function() {
+    async beforeMount() {
         await getPassiveFeature(this.passiveName)
             .then(response => {
                 this.passive = response.data

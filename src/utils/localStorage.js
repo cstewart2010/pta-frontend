@@ -16,6 +16,186 @@ const POKEMON_NEW_TEAM = "pokemonNewTeam"
 const POKEMON_NEW_HOME = "pokemonNewHome"
 const CURRENT_HP = "currentHP"
 const IS_ADMIN = "isAdmin"
+const DB_MOVES = "db_moves"
+const DB_POKEDEX = "db_pokedex"
+const DB_FULLPOKEDEX = "db_fullPokedex"
+const DB_TRAINERCLASSES = "db_trainerclasses"
+const DB_ORIGINS = "db_origins"
+const DB_TRAINERITEMS = "db_trainerItems"
+const DB_POKEMONITEMS = "db_pokemonItems"
+const DB_POKEBALLS = "db_pokeballs"
+const DB_MEDITEMS = "db_meditems"
+const DB_KEYITEMS = "db_keyitems"
+const DB_TRAINERITEMSFULL = "db_trainerItemsFull"
+const DB_POKEMONITEMSFULL = "db_pokemonItemsFull"
+const DB_POKEBALLSFULL = "db_pokeballsFull"
+const DB_MEDITEMSFULL = "db_meditemsFull"
+const DB_KEYITEMSFULL = "db_keyitemsFull"
+const DB_BERRIES = "db_berries"
+const DB_SPRITES = "db_sprites"
+const DB_ACTUALTEAM = "db_actualTeam"
+const DB_ACTUALHOME = "db_actualHome"
+const DB_ENVIRONMENTS = "db_environments"
+
+export function getActualTeam(){
+    return JSON.parse(localStorage.getItem(DB_ACTUALTEAM));
+}
+
+export function getActualHome(){
+    return JSON.parse(localStorage.getItem(DB_ACTUALHOME));
+}
+
+export function setActualTeam(team){
+    localStorage.setItem(DB_ACTUALTEAM, JSON.stringify(team))
+}
+
+export function setActualHome(home){
+    localStorage.setItem(DB_ACTUALHOME, JSON.stringify(home))
+}
+
+export function getDBMoves(){
+    return JSON.parse(localStorage.getItem(DB_MOVES));
+}
+
+export function setDBMoves(moves){
+    localStorage.setItem(DB_MOVES, JSON.stringify(moves))
+}
+
+export function getDBPokedex(){
+    return JSON.parse(localStorage.getItem(DB_POKEDEX));
+}
+
+export function setDBPokedex(pokedex){
+    localStorage.setItem(DB_POKEDEX, JSON.stringify(pokedex))
+}
+
+export function getDBFullPokedex(){
+    return JSON.parse(localStorage.getItem(DB_FULLPOKEDEX));
+}
+
+export function setDBFullPokedex(pokedex){
+    localStorage.setItem(DB_FULLPOKEDEX, JSON.stringify(pokedex))
+}
+
+export function getDBTrainerClasses(){
+    return JSON.parse(localStorage.getItem(DB_TRAINERCLASSES));
+}
+
+export function setDBTrainerClasses(classes){
+    localStorage.setItem(DB_TRAINERCLASSES, JSON.stringify(classes))
+}
+
+export function getDBOrigins(){
+    return JSON.parse(localStorage.getItem(DB_ORIGINS));
+}
+
+export function setDBOrigins(origins){
+    localStorage.setItem(DB_ORIGINS, JSON.stringify(origins))
+}
+
+export function getDBTrainerItems(){
+    return JSON.parse(localStorage.getItem(DB_TRAINERITEMS));
+}
+
+export function setDBTrainerItems(items){
+    localStorage.setItem(DB_TRAINERITEMS, JSON.stringify(items))
+}
+
+export function getDBPokemonItems(){
+    return JSON.parse(localStorage.getItem(DB_POKEMONITEMS));
+}
+
+export function setDBPokemonItems(items){
+    localStorage.setItem(DB_POKEMONITEMS, JSON.stringify(items))
+}
+
+export function getDBPokeballs(){
+    return JSON.parse(localStorage.getItem(DB_POKEBALLS));
+}
+
+export function setDBPokeballs(items){
+    localStorage.setItem(DB_POKEBALLS, JSON.stringify(items))
+}
+
+export function getDBMedItems(){
+    return JSON.parse(localStorage.getItem(DB_MEDITEMS));
+}
+
+export function setDBMedItems(items){
+    localStorage.setItem(DB_MEDITEMS, JSON.stringify(items))
+}
+
+export function getDBKeyItems(){
+    return JSON.parse(localStorage.getItem(DB_KEYITEMS));
+}
+
+export function setDBKeyItems(items){
+    localStorage.setItem(DB_KEYITEMS, JSON.stringify(items))
+}
+
+export function getDBTrainerItemsFull(){
+    return JSON.parse(localStorage.getItem(DB_TRAINERITEMSFULL));
+}
+
+export function setDBTrainerItemsFull(items){
+    localStorage.setItem(DB_TRAINERITEMSFULL, JSON.stringify(items))
+}
+
+export function getDBPokemonItemsFull(){
+    return JSON.parse(localStorage.getItem(DB_POKEMONITEMSFULL));
+}
+
+export function setDBPokemonItemsFull(items){
+    localStorage.setItem(DB_POKEMONITEMSFULL, JSON.stringify(items))
+}
+
+export function getDBPokeballsFull(){
+    return JSON.parse(localStorage.getItem(DB_POKEBALLSFULL));
+}
+
+export function setDBPokeballsFull(items){
+    localStorage.setItem(DB_POKEBALLSFULL, JSON.stringify(items))
+}
+
+export function getDBMedItemsFull(){
+    return JSON.parse(localStorage.getItem(DB_MEDITEMSFULL));
+}
+
+export function setDBMedItemsFull(items){
+    localStorage.setItem(DB_MEDITEMSFULL, JSON.stringify(items))
+}
+
+export function getDBKeyItemsFull(){
+    return JSON.parse(localStorage.getItem(DB_KEYITEMSFULL));
+}
+
+export function setDBKeyItemsFull(items){
+    localStorage.setItem(DB_KEYITEMSFULL, JSON.stringify(items))
+}
+
+export function getDBBerries(){
+    return JSON.parse(localStorage.getItem(DB_BERRIES));
+}
+
+export function setDBBerries(items){
+    localStorage.setItem(DB_BERRIES, JSON.stringify(items))
+}
+
+export function getDBSprites(){
+    return JSON.parse(localStorage.getItem(DB_SPRITES));
+}
+
+export function setDBSprites(sprites){
+    localStorage.setItem(DB_SPRITES, JSON.stringify(sprites))
+}
+
+export function getDBEnvironments(){
+    return JSON.parse(localStorage.getItem(DB_ENVIRONMENTS));
+}
+
+export function setDBEnvironments(environments){
+    localStorage.setItem(DB_ENVIRONMENTS, JSON.stringify(environments))
+}
 
 /**
  * Gets a logged in user's credentials

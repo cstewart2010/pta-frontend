@@ -43,7 +43,7 @@
                 </div>
             </div>
         </div>
-        <div class="col-2 my-auto">
+        <div class="col-2 my-auto" v-if="trainerClasses">
             <select class="form-select" v-model="selectedTrainerClasses[0]" @change="updateClass(0)">
                 <option value=""></option>
                 <option v-for="(trainerClass, index) in trainerClasses" :key="index" :id="trainerClass" :value="trainerClass.replace('/', '_')">
@@ -75,25 +75,27 @@
 
 <script>
 import { getAllTrainerClasses, getTrainerClass } from '../../../api/dex.api';
-import { getCurrentHP, getTrainer, setCurrentHP, setTrainer } from '../../../utils/localStorage';
+import { getCurrentHP, getDBTrainerClasses, getTrainer, setCurrentHP, setDBTrainerClasses, setTrainer } from '../../../utils/localStorage';
 import { generateErrorModal } from '../../../utils/modalUtil';
 export default {
     name: 'TrainerStats',
     data(){
         return {            
-            trainerClasses: [''],
+            trainerClasses: getDBTrainerClasses(),
             trainerStats: null,
             hp: 0,
             selectedTrainerClasses: [],
         }
     },
-    beforeMount: async function(){
-        await getAllTrainerClasses()
-            .then(response => {
-                this.trainerClasses = response.data.results.map(item => item.name)
-                this.trainerClasses.push('')
-            })
-            .catch(generateErrorModal);
+    async beforeMount(){
+        if (!this.trainerClasses){
+            await getAllTrainerClasses()
+                .then(response => {
+                    this.trainerClasses = response.data.results.map(item => item.name)
+                    setDBTrainerClasses(this.trainerClasses)
+                })
+                .catch(generateErrorModal);
+        }
 
         const trainer = getTrainer();
         this.trainerStats = trainer.trainerStats;

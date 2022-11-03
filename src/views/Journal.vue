@@ -58,7 +58,7 @@ export default {
             alert: ''
         }
     },
-    beforeMount: async function(){
+    async beforeMount(){
         this.isGM = getIsGM();
         if (this.gameId){
             await this.refreshLogs();

@@ -144,7 +144,7 @@ import Passive from '../../trainer/parts/Passive.vue'
 import HalvedRowSlot from '../../partials/HalvedRowSlot.vue'
 import { changeForm, markAsEvolvable, updateHP } from '../../../api/pokemon.api'
 import { generateErrorModal } from '../../../utils/modalUtil'
-import { getIsGM, setPTAActivityToken } from '../../../utils/localStorage'
+import { getDBPokemonItems, getIsGM, setDBPokemonItems, setPTAActivityToken } from '../../../utils/localStorage'
 import EvolvePokemon from '../EvolvePokemon.vue'
 
 export default {
@@ -162,7 +162,7 @@ export default {
             selectedItem: '',
             skillData: '',
             itemData: '',
-            items: [],
+            items: getDBPokemonItems(),
             url: '',
             differentForm: '',
             isGM: getIsGM()
@@ -175,10 +175,13 @@ export default {
         EvolvePokemon
     },
     async beforeMount(){
-        await getAllPokemonItems()
-            .then(response => {
-                this.items = response.data.results.map(item => item.name)
-            })
+        if (!this.items){
+            await getAllPokemonItems()
+                .then(response => {
+                    this.items = response.data.results.map(item => item.name)
+                    setDBPokemonItems(this.items)
+                })
+        }
         this.hp = this.pokemon.currentHP;
         if (this.pokemon.isShiny){
             this.url = `https://play.pokemonshowdown.com/sprites/ani-shiny/${this.pokemon.shinyPortrait}.gif`

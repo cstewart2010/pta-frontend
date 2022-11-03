@@ -27,7 +27,7 @@
                 {{item.effects}}
             </div>
         </div>
-        <div class="row border-bottom border-start" v-if="isGM">
+        <div class="row border-bottom border-start" v-if="isGM && availableItems">
             <select class="form-select m-1 col bg-success bg-opacity-25" name="item" style="max-width: 150px" v-model="addedItem">
                 <option v-for="(item, index) in availableItems" :key="index" :id="item" :value="item">
                     {{item}}
@@ -43,15 +43,15 @@
 <script>
 import { getAllBerries, getBerry } from '../../../api/dex.api'
 import { addItems } from '../../../api/trainer.api'
-import { getIsGM, getTrainer, setPTAActivityToken } from '../../../utils/localStorage'
+import { getDBBerries, getIsGM, getTrainer, setDBBerries, setPTAActivityToken } from '../../../utils/localStorage'
 import { generateErrorModal } from '../../../utils/modalUtil'
 import UseItemModal from '../../modals/UseItemModal.vue'
 export default {
     name: 'KeyItems',
     data(){
         return {
-            items: null,
-            availableItems: [],
+            items: getTrainer().items.filter(item => item.type == 'Berry'),
+            availableItems: getDBBerries(),
             addedItem: "",
             addedAmount: 1,
             itemToUse: {
@@ -64,13 +64,14 @@ export default {
     components: {
         UseItemModal
     },
-    beforeMount: async function(){
-        await getAllBerries()
-            .then(response => {
-                this.items = getTrainer().items
-            .filter(item => item.type == 'Berry')
-                this.availableItems = response.data.results.map(item => item.name)
-            })
+    async beforeMount(){
+        if (!this.availableItems && this.isGM){
+            await getAllBerries()
+                .then(response => {
+                    this.availableItems = response.data.results.map(item => item.name)
+                    setDBBerries(this.availableItems)
+                })
+        }
     },
     methods: {
         async addItem(){

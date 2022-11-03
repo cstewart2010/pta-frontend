@@ -6,11 +6,11 @@
         </div>
         <div class="col">
             <div class="text-center">Species</div>
-            <div class="text-center">
+            <div class="text-center" v-if="pokemonCol">
                 <select class="form-select text-center my-1 w-100" v-model="species" @change="updateNpc('species', species)">
                     <option value="Human">Human</option> 
-                    <option v-for="(pokemon, index) in pokemonCol" :key="index" :id="pokemon" :value="pokemon">
-                        {{pokemon}}
+                    <option v-for="(pokemon, index) in pokemonCol" :key="index" :id="pokemon.name" :value="pokemon.name">
+                        {{pokemon.name}}
                     </option>
                 </select>
                 {{updateNpc('species', species)}}
@@ -44,8 +44,8 @@
 </template>
 
 <script>
-import { getAllPokemon } from '../../api/dex.api'
-import {getNpc, setNpc} from '../../utils/localStorage'
+import { getAllBasePokemon } from '../../api/dex.api'
+import {getDBFullPokedex, getNpc, setDBFullPokedex, setNpc} from '../../utils/localStorage'
 export default {
     name: "GenericData",
     props:{
@@ -55,7 +55,7 @@ export default {
     },
     data() {
          return {
-            pokemonCol: [],
+            pokemonCol: getDBFullPokedex(),
             species: '',
             trainerName: '',
             gender: 'male',
@@ -63,16 +63,19 @@ export default {
             weight: 0
         }
     },
-    beforeMount: async function(){
-         await getAllPokemon()
-            .then(response => {
-                this.pokemonCol = response.data.results.map(item => item.name)
-                const npc = getNpc(this.npcId);
-                this.trainerName = npc.trainerName;
-                this.gender = npc.gender;
-                this.height = npc.height;
-                this.weight = npc.weight;
-            })
+    async beforeMount(){
+        const npc = getNpc(this.npcId);
+        this.trainerName = npc.trainerName;
+        this.gender = npc.gender;
+        this.height = npc.height;
+        this.weight = npc.weight;
+        if (this.origin.includes('Pokémon')){
+            await getAllBasePokemon()
+                .then(response => {
+                    this.pokemonCol = response.data
+                    setDBFullPokedex(this.pokemonCol)
+                })
+        }
     },
 
     methods: {

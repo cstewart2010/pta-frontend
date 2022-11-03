@@ -120,7 +120,7 @@ import ValidationFeedback from "./ValidationFeedback.vue"
       Journal,
       ValidationFeedback
     },
-    mounted:function(){
+    mounted(){
       this.needsToAuthenticate = !getIsAuthenticate();
       this.isGM = getIsGM() === true;
       this.isAdmin = getIsAdmin() === true;

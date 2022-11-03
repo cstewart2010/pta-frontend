@@ -29,7 +29,7 @@ export default {
             goals: ""
         }
     },
-    beforeMount: function(){
+    beforeMount(){
         const trainer = getTrainer();
         if (trainer){
             this.description = trainer.description;

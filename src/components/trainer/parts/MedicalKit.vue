@@ -27,7 +27,7 @@
                 {{item.effects}}
             </div>
         </div>
-        <div class="row border-bottom border-start" v-if="isGM">
+        <div class="row border-bottom border-start" v-if="isGM && availableItems">
             <select class="form-select m-1 col text-dark bg-danger bg-opacity-25" name="item" style="max-width: 150px" v-model="addedItem">
                 <option v-for="(item, index) in availableItems" :key="index" :id="item" :value="item">
                     {{item}}
@@ -43,15 +43,15 @@
 <script>
 import { getAllMedicalItems, getMedicalItem } from '../../../api/dex.api'
 import { addItems } from '../../../api/trainer.api'
-import { getIsGM, getTrainer, setPTAActivityToken } from '../../../utils/localStorage'
+import { getDBMedItems, getIsGM, getTrainer, setDBMedItems, setPTAActivityToken } from '../../../utils/localStorage'
 import { generateErrorModal } from '../../../utils/modalUtil'
 import UseItemModal from '../../modals/UseItemModal.vue'
 export default {
     name: 'MedicalKit',
     data(){
         return {
-            items: null,
-            availableItems: [],
+            items: getTrainer().items.filter(item => item.type == 'Medical'),
+            availableItems: getDBMedItems(),
             addedItem: "",
             addedAmount: 1,
             itemToUse: {
@@ -64,13 +64,14 @@ export default {
     components: {
         UseItemModal
     },
-    beforeMount: async function(){
-        await getAllMedicalItems()
-            .then(response => {
-                this.items = getTrainer().items
-            .filter(item => item.type == 'Medical')
-                this.availableItems = response.data.results.map(item => item.name)
-            })
+    async beforeMount(){
+        if (!this.availableItems && this.isGM){
+            await getAllMedicalItems()
+                .then(response => {
+                    this.availableItems = response.data.results.map(item => item.name)
+                    setDBMedItems(this.availableItems)
+                })
+        }
     },
     methods: {
         async addItem(){

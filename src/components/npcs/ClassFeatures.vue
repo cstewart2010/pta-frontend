@@ -32,7 +32,7 @@ export default {
             default: null
         }
     },
-    beforeMount:async function(){
+    async beforeMount(){
         let current = {};
         const npc =  getNpc(this.npcId);
         const temp = []

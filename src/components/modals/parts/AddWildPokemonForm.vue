@@ -1,7 +1,7 @@
 <template>
     <form :id="addWildPokemonFormId" class="row needs-validation" @submit.prevent="addWild">
         <h5>Add Wild Pokemon</h5>
-        <div class="col-3">
+        <div class="col-3" v-if="pokemonCollection">
             <input class="form-control" list="datalistOptions" id="pokemon-data-list" v-model="wildPokemon" placeholder="Type to search..." required>
             <datalist id="datalistOptions" name="pokemon">
                 <option v-for="(pokemon, index) in pokemonCollection" :key="index" :id="pokemon.name+'_'+pokemon.form" :value="pokemon.friendly">
@@ -39,7 +39,7 @@ import { createWildPokemon } from '../../../api/game.api';
 import { deletePokemon } from '../../../api/pokemon.api';
 import { addToActiveEncounter } from '../../../api/setting.api';
 import { checkValidation, removeValidation } from '../../../utils/credentials';
-import { setPTAActivityToken } from '../../../utils/localStorage';
+import { getDBPokedex, setDBPokedex, setPTAActivityToken } from '../../../utils/localStorage';
 import { generateErrorModal } from '../../../utils/modalUtil';
 export default {
     name: 'AddWildPokemon',
@@ -54,7 +54,7 @@ export default {
     data(){
         return {
             addWildPokemonFormId: 'add-wild-pokemon',
-            pokemonCollection: {},
+            pokemonCollection: getDBPokedex(),
             wildPokemon: '',
             length: 15,
             x: 0,
@@ -63,17 +63,21 @@ export default {
         }
     },
     async beforeMount(){
-        await getAllBasePokemon()
-            .then(response => {
-                for (const item of response.data){
-                    let friendly = item.name;
-                    if (item.form != "Base"){
-                        friendly = `${item.form.replace("Base/", "")} ${item.name}`
+        if (!this.pokemonCollection){
+            await getAllBasePokemon()
+                .then(response => {
+                    for (const item of response.data){
+                        let friendly = item.name;
+                        if (item.form != "Base"){
+                            friendly = `${item.form.replace("Base/", "")} ${item.name}`
+                        }
+                        this.pokemonCollection[friendly] = item;
                     }
-                    this.pokemonCollection[friendly] = item;
-                }
-            })
-            .catch(generateErrorModal);
+                })
+                .catch(generateErrorModal);
+
+            setDBPokedex(this.pokemonCollection)
+        }
     },
     methods: {
         async addWild(){

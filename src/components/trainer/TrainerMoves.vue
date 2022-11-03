@@ -23,7 +23,7 @@
         </div>
         <hr/>
     </div>
-    <div id="addedMvoes" class="my-1">
+    <div id="addedMvoes" class="my-1" v-if="trainerMoves">
         <div v-for="(move, index) in trainerMoves" :key="move">
             <div class="row d-flex align-items-center" :id="'move-'+index">
                 <added-move :move="move" :user="trainerName" />
@@ -34,7 +34,7 @@
             <hr/>
         </div>
     </div>
-    <div class="row">
+    <div class="row" v-if="moves">
         <div class="col-3">
             <select class="form-select text-center my-1" name="move" v-model="addedMove">
                 <option value=""></option>
@@ -49,7 +49,7 @@
 
 <script>
 import { getAllMoves } from '../../api/dex.api'
-import { getMoves, getTrainer, setMoves } from '../../utils/localStorage';
+import { getDBMoves, getMoves, getTrainer, setDBMoves, setMoves } from '../../utils/localStorage';
 import { generateErrorModal } from '../../utils/modalUtil'
 import AddedMove from './parts/AddedMove.vue';
 
@@ -57,23 +57,23 @@ export default {
     name: 'Trainer Moves',
     data(){
         return {
-            moves: [],
+            moves: getDBMoves(),
             addedMove: '',
-            trainerMoves: [],
+            trainerMoves: getMoves(),
             trainerName: getTrainer().trainerName
         }
     },
     components:{
         AddedMove
     },
-    beforeMount:async function(){
+    async beforeMount(){
+        if (this.moves){
+            return;
+        }
         await getAllMoves()
             .then(response => {
                 this.moves = response.data.results.map(result => result.name)
-                const moves = getMoves();
-                if (moves){
-                    this.trainerMoves = moves;
-                }
+                setDBMoves(this.moves);
             })
             .catch(generateErrorModal);
     },

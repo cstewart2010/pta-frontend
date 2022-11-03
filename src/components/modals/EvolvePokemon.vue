@@ -75,7 +75,7 @@ export default {
             newMoves: []
         }
     },
-    beforeMount: async function(){
+    async beforeMount(){
         await getPossibleEvolutions(this.pokemon.pokemonId)
             .then(response => {
                 this.possibleForms = response.data

@@ -70,7 +70,8 @@ import { checkValidation, removeValidation } from '../../../utils/credentials';
 import { shopData } from '../../../utils/initialStates'
 import { generateErrorModal } from '../../../utils/modalUtil';
 import ShopList from './ShopList.vue'
-    import ValidationFeedback from "../../partials/ValidationFeedback.vue"
+import ValidationFeedback from "../../partials/ValidationFeedback.vue"
+import { getDBKeyItemsFull, getDBMedItemsFull, getDBPokeballsFull, getDBPokemonItemsFull, getDBTrainerItemsFull, setDBKeyItemsFull, setDBMedItemsFull, setDBPokeballsFull, setDBPokemonItemsFull, setDBTrainerItemsFull } from '../../../utils/localStorage';
 export default {
     name: 'ShopForm',
     props: {
@@ -80,11 +81,11 @@ export default {
     },
     data(){
         return {
-            keyItems: [],
-            medicalItems: [],
-            pokeballs: [],
-            pokemonItems: [],
-            trainerItems: [],
+            keyItems: getDBKeyItemsFull(),
+            medicalItems: getDBMedItemsFull(),
+            pokeballs: getDBPokeballsFull(),
+            pokemonItems: getDBPokemonItemsFull(),
+            trainerItems: getDBTrainerItemsFull(),
             formId: 'shop-form',
             ...shopData()
         }
@@ -94,16 +95,31 @@ export default {
         ValidationFeedback
     },
     async beforeMount(){
-        await getAllKeyItems()
-            .then(response => this.keyItems = response.data.results);
-        await getAllMedicalItems()
-            .then(response => this.medicalItems = response.data.results);
-        await getAllPokeballItems()
-            .then(response => this.pokeballs = response.data.results);
-        await getAllPokemonItems()
-            .then(response => this.pokemonItems = response.data.results);
-        await getAllTrainerEquipment()
-            .then(response => this.trainerItems = response.data.results);
+        if (!this.keyItems){
+            await getAllKeyItems()
+                .then(response => this.keyItems = response.data.results)
+                .then(() => setDBKeyItemsFull(this.keyItems))
+        }
+        if (!this.medicalItems){
+            await getAllMedicalItems()
+                .then(response => this.medicalItems = response.data.results)
+                .then(() => setDBMedItemsFull(this.medicalItems))
+        }
+        if (!this.pokeballs){
+            await getAllPokeballItems()
+                .then(response => this.pokeballs = response.data.results)
+                .then(() => setDBPokeballsFull(this.pokeballs))
+        }
+        if (!this.pokemonItems){
+            await getAllPokemonItems()
+                .then(response => this.pokemonItems = response.data.results)
+                .then(() => setDBPokemonItemsFull(this.pokemonItems))
+        }
+        if (!this.trainerItems){
+            await getAllTrainerEquipment()
+                .then(response => this.trainerItems = response.data.results)
+                .then(() => setDBTrainerItemsFull(this.trainerItems))
+        }
         if (this.shop){
             this.shopName = this.shop.name;
             this.isActive = this.shop.isActive;

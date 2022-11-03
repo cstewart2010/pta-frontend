@@ -1,13 +1,13 @@
 <template>
+    <spinner v-if="!isReady" />
     <ag-grid-vue
         style="width: 50vw; height: 75vh"
         class="ag-theme-alpine w-100"
         :columnDefs="columnDefs"
         :rowData="featureData"
         :rowHeight="500"
-        v-if="isReady"
+        v-else-if="columnDefs.length"
     />
-    <spinner v-else />
 </template>
 
 <script>
@@ -32,7 +32,7 @@ export default {
             isReady: false
         }
     },
-    beforeMount:async function(){
+    async beforeMount(){
         let current = {};
         const trainer = getTrainer();
         const temp = []

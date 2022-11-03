@@ -29,27 +29,29 @@
 
 <script>
 import { getAllOrigins, getOrigin } from '../../../api/dex.api';
-import { getIsGM, getTrainer, setTrainer } from '../../../utils/localStorage';
+import { getDBOrigins, getIsGM, getTrainer, setDBOrigins, setTrainer } from '../../../utils/localStorage';
 import { generateErrorModal } from '../../../utils/modalUtil';
 export default {
     name: 'TrainerOrigin',
     data(){
         return {
-            origins: [],
+            origins: getDBOrigins(),
             selectedOrigin: '',
             originData: {},
             money: 0,
             trainer: getTrainer(),
-            isComplete: false,
             isGM: getIsGM()
         }
     },
     async beforeMount(){
-        await getAllOrigins()
-            .then(response => {
-                this.origins = response.data.results.map(item => item.name)
-            })
-            .catch(generateErrorModal);
+        if (!(this.origins || this.trainer.isComplete)){
+            await getAllOrigins()
+                .then(response => {
+                    this.origins = response.data.results.map(item => item.name)
+                    setDBOrigins(this.origins)
+                })
+                .catch(generateErrorModal);
+        }
 
         this.selectedOrigin = this.trainer.origin
         this.money = this.trainer.money

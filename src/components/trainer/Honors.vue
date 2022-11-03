@@ -24,13 +24,12 @@
 </template>
 
 <script>
-import { getAllPokemon } from '../../api/dex.api';
-import { getTrainer } from '../../utils/localStorage';
-import { generateErrorModal } from '../../utils/modalUtil';
+import { getDBFullPokedex, getTrainer, setDBFullPokedex } from '../../utils/localStorage';
 import "ag-grid-community/dist/styles/ag-grid.css";
 import "ag-grid-community/dist/styles/ag-theme-alpine.css";
 import { AgGridVue } from "ag-grid-vue3";
 import Spinner from '../partials/Spinner.vue'
+import { getAllBasePokemon } from '../../api/dex.api';
 
 export default {
     name: 'Honors',
@@ -69,23 +68,37 @@ export default {
             isReady: false
         }
     },
-    beforeMount:async function(){
+    async beforeMount(){
         const trainer = getTrainer();
         this.caughtTotal = trainer.caughtTotal;
         this.honors = trainer.honors;
-        await getAllPokemon()
-            .then(response => {
-                this.dexTotal = response.data.count
-                this.pokeDex = trainer.pokeDex.map(item => {
-                    return {
-                        species: response.data.results[item.dexNo - 1].name,
-                        seen: "x",
-                        caught: item.isCaught ? "x": null
-                    }
-                });
-                this.isReady = true
-            })
-            .catch(generateErrorModal);
+        let fullPokedex = getDBFullPokedex();
+        if (!fullPokedex){
+            fullPokedex = await getAllBasePokemon()
+                .then(response => response.data)
+            
+            setDBFullPokedex(fullPokedex)
+        }
+
+        const pokedex = fullPokedex
+            .reduce((curr, next) => {
+                if (!curr.includes(next.name)){
+                    curr.push(next.name)
+                }
+
+                return curr
+            }, [])
+        
+        this.dexTotal = pokedex.length
+        this.pokeDex = trainer.pokeDex.map(item => {
+            return {
+                species: pokedex[item.dexNo - 1],
+                seen: "x",
+                caught: item.isCaught ? "x": null
+            }
+        });
+        
+        this.isReady = true
     }
 }
 </script>

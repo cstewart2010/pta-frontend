@@ -51,7 +51,7 @@ export default {
             default: null
         }
     },
-    beforeMount: async function(){     
+    async beforeMount(){     
         const npc = getNpc(this.npcId);
         this.trainerName = npc.trainerName;
         this.trainerSkills = npc.trainerSkills

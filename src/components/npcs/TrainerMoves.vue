@@ -49,7 +49,7 @@
 
 <script>
 import { getAllMoves } from '../../api/dex.api'
-import { getMoves, getNpc, setMoves } from '../../utils/localStorage';
+import { getDBMoves, getMoves, getNpc, setDBMoves, setMoves } from '../../utils/localStorage';
 import { generateErrorModal } from '../../utils/modalUtil'
 import AddedMove from '../trainer/parts/AddedMove.vue';
 
@@ -57,10 +57,10 @@ export default {
     name: 'Npc Moves',
     data(){
         return {
-            moves: [],
+            moves: getDBMoves(),
             addedMove: '',
-            trainerMoves: [],
-            trainerName: null
+            trainerMoves: getMoves(),
+            trainerName: getNpc(this.npcId).trainerName
         }
     },
     components:{
@@ -71,15 +71,14 @@ export default {
             default: null
         }
     },
-    beforeMount:async function(){
+    async beforeMount(){
+        if (this.moves){
+            return;
+        }
         await getAllMoves()
             .then(response => {
                 this.moves = response.data.results.map(result => result.name)
-                this.trainerName = getNpc(this.npcId).trainerName;
-                const moves = getMoves();
-                if (moves){
-                    this.trainerMoves = moves;
-                }
+                setDBMoves(this.moves);
             })
             .catch(generateErrorModal);
     },

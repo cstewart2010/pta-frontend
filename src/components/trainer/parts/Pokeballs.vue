@@ -27,7 +27,7 @@
                 {{item.effects}}
             </div>
         </div>
-        <div class="row border-bottom border-start" v-if="isGM">
+        <div class="row border-bottom border-start" v-if="isGM && availableItems">
             <select class="form-select m-1 col text-dark bg-info bg-opacity-25" name="item" style="max-width: 150px" v-model="addedItem">
                 <option v-for="(item, index) in availableItems" :key="index" :id="item" :value="item">
                     {{item}}
@@ -42,14 +42,14 @@
 <script>
 import { getAllPokeballItems, getPokeballItem } from '../../../api/dex.api'
 import { addItems } from '../../../api/trainer.api'
-import { getIsGM, getTrainer, setPTAActivityToken } from '../../../utils/localStorage'
+import { getDBPokeballs, getIsGM, getTrainer, setDBPokeballs, setPTAActivityToken } from '../../../utils/localStorage'
 import { generateErrorModal } from '../../../utils/modalUtil'
 export default {
     name: 'Pokeballs',
     data(){
         return {
-            items: null,
-            availableItems: [],
+            items: getTrainer().items.filter(item => item.type == 'Pokeball'),
+            availableItems: getDBPokeballs(),
             addedItem: "",
             addedAmount: 1,
             itemToUse: {
@@ -59,12 +59,14 @@ export default {
             isGM: getIsGM()
         }
     },
-    beforeMount: async function(){
-        await getAllPokeballItems()
-            .then(response => {
-                this.items = getTrainer().items.filter(item => item.type == 'Pokeball')
-                this.availableItems = response.data.results.map(item => item.name)
-            })
+    async beforeMount(){
+        if (!this.availableItems && this.isGM){
+            await getAllPokeballItems()
+                .then(response => {
+                    this.availableItems = response.data.results.map(item => item.name)
+                    setDBPokeballs(this.availableItems)
+                })
+        }
     },
     methods: {
         async addItem(){

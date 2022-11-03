@@ -6,10 +6,10 @@
         </div>
         <div class="col-2">
             <div class="text-center">Species</div>
-            <div class="text-center" v-if="origin.includes('Pokémon')">
+            <div class="text-center" v-if="origin.includes('Pokémon') && pokemonCol">
                 <select class="form-select text-center my-1 w-100" v-model="species" @change="updateTrainer('species', species)">
-                    <option v-for="(pokemon, index) in pokemonCol" :key="index" :id="pokemon" :value="pokemon">
-                        {{pokemon}}
+                    <option v-for="(pokemon, index) in pokemonCol" :key="index" :id="pokemon.name" :value="pokemon.name">
+                        {{pokemon.name}}
                     </option>
                 </select>
                 {{updateTrainer('species', species)}}
@@ -49,13 +49,13 @@
 </template>
 
 <script>
-import { getAllPokemon } from '../../../api/dex.api'
-import { getTrainer, setTrainer } from '../../../utils/localStorage'
+import { getAllBasePokemon } from '../../../api/dex.api'
+import { getDBFullPokedex, getTrainer, setDBFullPokedex, setTrainer } from '../../../utils/localStorage'
 export default {
     name: "GenericData",
     data() {
         return {
-            pokemonCol: [],
+            pokemonCol: getDBFullPokedex(),
             species: '',
             trainerName: '',
             age: 0,
@@ -65,18 +65,21 @@ export default {
             origin: ''
         }
     },
-    beforeMount: async function(){
-        await getAllPokemon()
-            .then(response => {
-                this.pokemonCol = response.data.results.map(item => item.name)
-                const trainer = getTrainer()
-                this.trainerName = trainer.trainerName;
-                this.age = trainer.age;
-                this.gender = trainer.gender;
-                this.height = trainer.height;
-                this.weight = trainer.weight;
-                this.origin = trainer.origin;
-            })
+    async beforeMount(){
+        const trainer = getTrainer()
+        this.trainerName = trainer.trainerName;
+        this.age = trainer.age;
+        this.gender = trainer.gender;
+        this.height = trainer.height;
+        this.weight = trainer.weight;
+        this.origin = trainer.origin;
+        if (this.origin.includes('Pokémon')){
+            await getAllBasePokemon()
+                .then(response => {
+                    this.pokemonCol = response.data
+                    setDBFullPokedex(this.pokemonCol)
+                })
+        }
     },
     methods: {
         updateTrainer(section, value){

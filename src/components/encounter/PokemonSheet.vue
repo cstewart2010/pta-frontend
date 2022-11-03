@@ -62,7 +62,7 @@
                     <hr>
                     <halved-row-slot left="Catch Rate" :right="catchRate" v-if="isGM"/>
                     <hr>
-                    <div class="row" v-if="isGM">
+                    <div class="row" v-if="isGM && items">
                         <div>
                             <select class="form-select" v-model="selectedItem" @change="updateItem">
                                 <option value=""></option>
@@ -192,7 +192,7 @@ import Passive from '../trainer/parts/Passive.vue'
 import HalvedRowSlot from '../partials/HalvedRowSlot.vue'
 import { changeForm, markAsEvolvable, updateHP } from '../../api/pokemon.api'
 import { generateErrorModal } from '../../utils/modalUtil'
-import { getCellParticipant, getIsGM, getTrainer, setPTAActivityToken } from '../../utils/localStorage'
+import { getCellParticipant, getDBPokemonItems, getIsGM, getTrainer, setDBPokemonItems, setPTAActivityToken } from '../../utils/localStorage'
 import EvolvePokemon from '../modals/EvolvePokemon.vue'
 import { catchPokemon, returnToPokeball } from '../../api/setting.api'
 
@@ -214,7 +214,7 @@ export default {
             selectedItem: '',
             skillData: '',
             itemData: '',
-            items: [],
+            items: getDBPokemonItems(),
             url: '',
             differentForm: '',
             isGM: getIsGM(),
@@ -239,10 +239,13 @@ export default {
         this.pokemon = getCellParticipant(this.pokemonId);
         this.isWild = this.pokemon.trainerId == '00000000-0000-0000-0000-000000000000';
         if (this.isGM){
-            await getAllPokemonItems()
-                .then(response => {
-                    this.items = response.data.results.map(item => item.name)
-                })
+            if (!this.items){
+                await getAllPokemonItems()
+                    .then(response => {
+                        this.items = response.data.results.map(item => item.name)
+                    })
+                setDBPokemonItems(this.items)
+            }
             this.hp = this.pokemon.currentHP;
             this.updateCatchRate();
         }

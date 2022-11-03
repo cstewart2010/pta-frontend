@@ -50,7 +50,7 @@ export default {
             trainerName: ''
         }
     },
-    beforeMount: async function(){     
+    async beforeMount(){     
         const trainer = getTrainer();
         this.trainerName = trainer.trainerName;
         this.trainerSkills = trainer.trainerSkills
