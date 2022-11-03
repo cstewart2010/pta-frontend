@@ -1,5 +1,5 @@
 <template>
-    <div>
+    <npc-doc v-if="isReady">
         <div v-if="sheet=='main'">
             <npc-sheet :npcId="npcId"/>
         </div>
@@ -12,7 +12,7 @@
         <div v-else-if="sheet=='team'">
            <pokemon-team :npcId="npcId"/>
         </div> 
-    </div>
+    </npc-doc>
     <div class="modal fade" id="confirmationModal" tabindex="-1" aria-labelledby="confirmationModalLabel" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
@@ -76,7 +76,8 @@ export default {
     }, 
     data(){
         return {
-            sheet : 'main'
+            sheet: 'main',
+            isReady: false
         }
     },
     props: {
@@ -86,6 +87,7 @@ export default {
     },
     beforeMount(){
         this.sheet = localStorage.getItem('savedNpcSheet') || 'main'
+        this.isReady = true;
     },
     methods: {
         switchSheet(sheet){
@@ -93,16 +95,13 @@ export default {
             localStorage.setItem('savedNpcSheet', sheet);
         },
         async saveChange(){
+            this.isReady = false;
             const npc = ptaLocalStorage.getNpc(this.npcId);
             npc.currentHp = ptaLocalStorage.getNpcHP() || npc.currentHp;
             npc.pokemonTeam = [];
-            await createNpcPokemon(this.npcId, ptaLocalStorage.getPokemonNewTeam())
-            .then(async () => {
-                    await addNpcStats(this.npcId)
-                        .then( () => {
-                            location.reload() 
-                        })
-            })
+            await createNpcPokemon(this.npcId, ptaLocalStorage.getPokemonNewTeam());
+            await addNpcStats(this.npcId)
+                .then(() => this.isReady = true)
         }
     }
 }

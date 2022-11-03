@@ -66,10 +66,10 @@ export default {
             trainer.pokemonHome = [];
             trainer.pokeDex = [];
             await completeTrainer(trainer)
-                .then(async () => {
+                .then(() => {
                     setPokemonNewTeam([])
                     setPokemonNewHome([])
-                    await this.refreshTrainer();
+                    this.refreshTrainer();
                 })
                 .catch(generateErrorModal)
         },

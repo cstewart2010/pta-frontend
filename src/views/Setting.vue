@@ -230,7 +230,6 @@ export default {
                     document.getElementById(`cell_${cell}`).classList.remove("btn-info")
                 }
                 this.path = []
-                return;
             }
             if (!(this.isGM || this.trainerId == id || this.trainerMons.some(pokemon => pokemon.pokemonId == id))){
                 return;

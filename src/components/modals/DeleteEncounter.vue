@@ -34,7 +34,6 @@ export default {
     methods: {        
         async deleteThisSetting(){
             await deleteEncounter(this.settingId)
-                .then(() => location.reload())
                 .catch(generateErrorModal);
         }
     }

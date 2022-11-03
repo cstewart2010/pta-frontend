@@ -92,7 +92,6 @@ export default {
                     await evolvePokemon(this.pokemon.pokemonId, this.selectedForm.name, this.keptMoves, this.newMoves)
                         .then(response => {
                             setPTAActivityToken(response.headers["pta-activity-token"])
-                            location.reload();
                         })
                         .catch(generateErrorModal)
                 }

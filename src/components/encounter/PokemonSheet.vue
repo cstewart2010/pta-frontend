@@ -286,11 +286,9 @@ export default {
         },
         async switchForm(){
             if (this.differentForm.length > 0){
-                console.log(this.differentForm)
                 await changeForm(this.pokemon.pokemonId, this.differentForm.replace("/", "_"))
                     .then(response => {
                         setPTAActivityToken(response.headers['pta-activity-token']);
-                        location.reload();
                     })
                     .catch(generateErrorModal);
             }

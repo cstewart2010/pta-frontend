@@ -1,11 +1,13 @@
 <template>
-    <trainer-sheet v-if="sheet=='main'" />
-    <class-features v-else-if="sheet=='features'" />
-    <trainer-moves v-else-if="sheet=='moves'" />
-    <pokemon-team v-else-if="sheet=='team'" />
-    <inventory v-else-if="sheet=='items'" />
-    <pokemon-home v-else-if="sheet=='home'" />
-    <honors v-else-if="sheet=='pokedex'" />
+    <trainer-doc v-if="isReady">
+        <trainer-sheet v-if="sheet=='main'" />
+        <class-features v-else-if="sheet=='features'" />
+        <trainer-moves v-else-if="sheet=='moves'" />
+        <pokemon-team v-else-if="sheet=='team'" />
+        <inventory v-else-if="sheet=='items'" />
+        <pokemon-home v-else-if="sheet=='home'" />
+        <honors v-else-if="sheet=='pokedex'" />
+    </trainer-doc>
     <save-confirmation />
     <nav class="navbar navbar-expand-md navbar-dark fixed-bottom bg-dark">
         <div class="container">
@@ -57,7 +59,7 @@ import PokemonHome from './PokemonHome.vue';
 import Honors from './Honors.vue';
 import Inventory from './Inventory.vue';
 import SaveConfirmation from '../modals/SaveConfirmationModal.vue'
-import { getGameId, getIsGM, getTrainer, removeFromStorage, setGameMasterId, setIsGM, setPTAActivityToken, setTrainer, setTrainerId } from '../../utils/localStorage';
+import { getGameId, getIsGM, getTrainer, removeFromStorage, setPTAActivityToken, setTrainer, setTrainerId } from '../../utils/localStorage';
 import { generateErrorModal, generateNavigationModal } from '../../utils/modalUtil';
 import { findTrainerInGame } from '../../api/game.api';
 import { refreshInGame } from '../../api/user.api';
@@ -78,7 +80,8 @@ export default {
         return {
             sheet: 'main',
             isComplete: false,
-            isGM: getIsGM()
+            isGM: getIsGM(),
+            isReady: false
         }
     },
     props: {
@@ -101,6 +104,7 @@ export default {
             this.isComplete = trainer.isComplete
         }
         this.sheet = localStorage.getItem('savedSheet') || 'main';
+        this.isReady = true
     },
     methods: {        
         switchSheet(sheet){
@@ -109,19 +113,13 @@ export default {
             location.href = '/#';
         },
         async refresh(){
+            this.isReady = false;
             await refreshInGame()
             .then(response => {
                 this.isComplete = response.data.trainer.isComplete
                 setPTAActivityToken(response.headers['pta-activity-token']);
-                if (response.data.trainer.isGM){
-                    setGameMasterId(response.data.trainer.trainerId);
-                    setTrainerId(null);
-                    setIsGM(true);
-                }
-                else {
-                    setTrainer(response.data.trainer);
-                }
-                location.reload();
+                setTrainer(response.data.trainer);
+                this.isReady = true;
             })
             .catch(error => {
                 removeFromStorage();

@@ -78,7 +78,6 @@ export default {
                 await addItems([item])
                 .then(response => {
                     setPTAActivityToken(response.headers['pta-activity-token']);
-                    location.reload();
                 })
             })
             .catch(generateErrorModal);
