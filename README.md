@@ -1,5 +1,7 @@
 # pta-frontend
 
+No longer in use
+
 ## Project setup
 ```
 npm install
